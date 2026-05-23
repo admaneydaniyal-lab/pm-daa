@@ -367,7 +367,7 @@ function CardBriefing({ variant = "won" }) {
     result:    "LOST 1\u20132",
     resultClr: LOSS_RED,
     role:      "Subbed in",
-    roleMins:  "40 minutes (50' \u2192)",
+    roleMins:  <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>40 minutes (50' <Pic.sub size={10}/>)</span>,
     heroValue: "2",
     heroLabel: "goal contributions",
     narrative: "1 goal, 1 assist off the bench. Your most impactful sub appearance of the season.",
@@ -405,21 +405,10 @@ function CardBriefing({ variant = "won" }) {
         <div style={{
           marginLeft: "auto",
           textAlign: "right",
-          display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3,
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-            {isLost && <Pic.sub size={14} style={{ color: "var(--fg-muted)" }}/>}
-            <span style={{
-              fontSize: 10, fontWeight: 700, color: "var(--fg-muted)",
-              letterSpacing: "0.14em", textTransform: "uppercase",
-            }}>{data.role}</span>
-          </div>
-          <span style={{
-            fontSize: 10, fontWeight: 700, color: "var(--fg-muted)",
-            letterSpacing: "0.14em", textTransform: "uppercase",
-            lineHeight: 1.3,
-          }}>{data.roleMins}</span>
-        </div>
+          fontSize: 10, fontWeight: 700, color: "var(--fg-muted)",
+          letterSpacing: "0.14em", textTransform: "uppercase",
+          lineHeight: 1.3,
+        }}>{data.role}<br/>{data.roleMins}</div>
       </div>
 
       <div style={{
