@@ -98,7 +98,7 @@ function TopBar() {
 function Greeting({ name }) {
   return (
     <div style={{
-      padding: "20px 20px 16px",
+      padding: "20px 16px 16px",
     }}>
       <div style={{
         fontSize: 24, fontWeight: 900, color: "var(--fg)",
@@ -822,7 +822,7 @@ function LeagueCard() {
       {/* Column headers */}
       <div style={{
         display: "grid",
-        gridTemplateColumns: "24px 1fr 32px 36px 32px",
+        gridTemplateColumns: "24px 24px 1fr 32px 36px 32px",
         gap: 8,
         fontSize: 10, fontWeight: 700,
         color: "var(--fg-muted)",
@@ -830,6 +830,7 @@ function LeagueCard() {
         padding: "0 4px 8px",
         borderBottom: "1px solid var(--border)",
       }}>
+        <div/>
         <div/>
         <div/>
         <div style={{ textAlign: "right" }}>PLD</div>
@@ -886,7 +887,7 @@ function NewsfeedHeader() {
   return (
     <div style={{
       display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "0 20px",
+      padding: "0 16px",
     }}>
       <div style={{
         display: "flex", alignItems: "center", gap: 10,
@@ -1129,12 +1130,11 @@ function App() {
         {/* NEW — 4-card carousel hero */}
         <HeroCarousel briefingVariant={t.briefingVariant}/>
 
-        <div style={{ height: 24 }}/>
-        <QuickAccess/>
-        <div style={{ height: 24 }}/>
-        <LeagueCard/>
-        <div style={{ height: 28 }}/>
-        <Newsfeed/>
+        <div style={{ display: "flex", flexDirection: "column", gap: 24, marginTop: 24 }}>
+          <QuickAccess/>
+          <LeagueCard/>
+          <Newsfeed/>
+        </div>
         <div style={{ height: 24 }}/>
       </div>
       <TabBar/>
