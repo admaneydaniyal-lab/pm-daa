@@ -364,7 +364,7 @@ function CardBriefing({ variant = "won" }) {
 
   const data = isLost ? {
     sub:       "vs Mansfield · Sat 11 May",
-    result:    "LOST 1\u20132",
+    result:    "LOST 2\u20134",
     resultClr: LOSS_RED,
     role:      "Subbed in",
     roleMins:  <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>40 minutes (50' <Pic.sub size={10}/>)</span>,
@@ -457,7 +457,7 @@ function CardForm() {
       subheader="Last 5 matches"
       narrativeIcon={<Pic.shield size={20}/>}
       narrative="Team won 3 of last 5. You scored in all 3 wins."
-      cta="See form breakdown"
+      cta="View recent matches"
     >
       {/* Form indicators */}
       <div style={{
@@ -473,31 +473,25 @@ function CardForm() {
       }}/>
 
       {/* Two stat lines */}
-      <div style={{ display: "flex", gap: 24 }}>
-        <div>
-          <div style={{
-            fontSize: 10, fontWeight: 700, color: "var(--fg-muted)",
-            letterSpacing: "0.18em", textTransform: "uppercase",
-          }}>Started</div>
-          <div style={{
-            marginTop: 2,
-            fontWeight: 900, fontSize: 20, color: "var(--fg)",
-            letterSpacing: "-0.02em",
-            fontVariantNumeric: "tabular-nums",
-          }}>5 <span style={{ fontWeight: 500, color: "var(--fg-muted)", fontSize: 13 }}>of 5</span></div>
-        </div>
-        <div>
-          <div style={{
-            fontSize: 10, fontWeight: 700, color: "var(--fg-muted)",
-            letterSpacing: "0.18em", textTransform: "uppercase",
-          }}>Played</div>
-          <div style={{
-            marginTop: 2,
-            fontWeight: 900, fontSize: 20, color: "var(--fg)",
-            letterSpacing: "-0.02em",
-            fontVariantNumeric: "tabular-nums",
-          }}>440 <span style={{ fontWeight: 500, color: "var(--fg-muted)", fontSize: 13 }}>of 450 min</span></div>
-        </div>
+      <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+        {[
+          { label: "Started", value: "5", sub: "of 5" },
+          { label: "Played",  value: "440", sub: "min" },
+          { label: "Goals",   value: "3",   sub: null },
+          { label: "Assists", value: "1",   sub: null },
+        ].map(({ label, value, sub }) => (
+          <div key={label}>
+            <div style={{
+              fontSize: 10, fontWeight: 700, color: "var(--fg-muted)",
+              letterSpacing: "0.18em", textTransform: "uppercase",
+            }}>{label}</div>
+            <div style={{
+              marginTop: 2,
+              fontWeight: 900, fontSize: 20, color: "var(--fg)",
+              letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums",
+            }}>{value}{sub && <span style={{ fontWeight: 500, color: "var(--fg-muted)", fontSize: 13 }}> {sub}</span>}</div>
+          </div>
+        ))}
       </div>
     </CardShell>
   );
@@ -513,7 +507,7 @@ function CardStanding() {
       subheader="League scoring chart"
       narrativeIcon={<Pic.trophy size={20}/>}
       narrative={<>Joint top with <span style={{ fontWeight: 700 }}>Marcus Webb</span> of Bramall&nbsp;FC.</>}
-      cta="View league rankings"
+      cta="View full statistics"
     >
       <div style={{ marginTop: 14, display: "flex", alignItems: "flex-end", gap: 8 }}>
         <LimeHero value="T-1st" fontSize={64} underlineWidth="86%"/>
