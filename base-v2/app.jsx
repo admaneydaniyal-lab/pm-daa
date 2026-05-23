@@ -890,18 +890,9 @@ function NewsfeedHeader() {
       padding: "0 16px",
     }}>
       <div style={{
-        display: "flex", alignItems: "center", gap: 10,
-      }}>
-        <div style={{
-          fontSize: 26, fontWeight: 900, color: "var(--fg)",
-          letterSpacing: "-0.02em", textTransform: "uppercase",
-        }}>Newsfeed</div>
-        <Sicon size={20} stroke="var(--fg-muted)" sw={1.6}>
-          <rect x="3" y="6" width="18" height="12" rx="1.5"/>
-          <path d="M3 10h18M8 6v12M16 6v12"/>
-        </Sicon>
-      </div>
-      <Ic.cursor size={22} stroke="#f5b53b" fill="#f5b53b" sw={0.5}/>
+        fontSize: 26, fontWeight: 900, color: "var(--fg)",
+        letterSpacing: "-0.02em", textTransform: "uppercase",
+      }}>Newsfeed</div>
     </div>
   );
 }
@@ -1132,7 +1123,14 @@ function App() {
 
         <div style={{ display: "flex", flexDirection: "column", gap: 24, marginTop: 24 }}>
           <QuickAccess/>
-          <LeagueCard/>
+          <div>
+            <div style={{
+              fontSize: 26, fontWeight: 900, color: "var(--fg)",
+              letterSpacing: "-0.02em", textTransform: "uppercase",
+              padding: "0 16px 14px",
+            }}>League Table</div>
+            <LeagueCard/>
+          </div>
           <Newsfeed/>
         </div>
         <div style={{ height: 24 }}/>
