@@ -455,7 +455,7 @@ function CardForm() {
     <CardShell
       header="Form & You"
       subheader="Last 5 matches"
-      narrativeIcon={<Pic.shield size={20}/>}
+      narrativeIcon={<i className="ph ph-fire" style={{ fontSize: 20 }}/>}
       narrative="You've been scoring an avg of 1 goal per 147 mins recently. That's a hot streak — keep it going!"
       cta="View recent matches"
     >
