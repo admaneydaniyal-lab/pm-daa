@@ -617,7 +617,7 @@ function CardMarket() {
         <div style={{
           fontSize: 12, fontWeight: 800, color: "var(--accent)",
           letterSpacing: "-0.01em",
-          display: "inline-flex", alignItems: "center", gap: 3,
+          display: "inline-flex", alignItems: "baseline", gap: 3,
         }}>↗ +12.4% <span style={{ color: "var(--fg-muted)", fontWeight: 600 }}>this month</span></div>
       </div>
 
