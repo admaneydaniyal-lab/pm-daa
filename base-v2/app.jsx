@@ -86,7 +86,9 @@ function TopBar() {
           background: "transparent", border: 0, color: "#fff",
           padding: 8, cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center",
-        }}><Ic.bell size={22}/></button>
+        }} onClick={() => window.postMessage({ type: '__activate_edit_mode' }, '*')}>
+          <Ic.bell size={22}/>
+        </button>
       </div>
     </div>
   );
