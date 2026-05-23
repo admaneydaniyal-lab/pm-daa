@@ -262,6 +262,12 @@ const Pic = {
       <path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/>
     </svg>
   ),
+  sub: (p) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width={p?.size || 16} height={p?.size || 16}
+         viewBox="0 0 256 256" fill="currentColor" style={p?.style}>
+      <path d="M213.66,181.66l-32,32a8,8,0,0,1-11.32-11.32L188.69,184H48a8,8,0,0,1,0-16H188.69l-18.35-18.34a8,8,0,0,1,11.32-11.32l32,32A8,8,0,0,1,213.66,181.66Zm-139.32-64a8,8,0,0,0,11.32-11.32L67.31,88H208a8,8,0,0,0,0-16H67.31L85.66,53.66A8,8,0,0,0,74.34,42.34l-32,32a8,8,0,0,0,0,11.32Z"/>
+    </svg>
+  ),
 };
 
 // Shared result colors — used by both Card 1 result text and Card 2 form pills
@@ -399,10 +405,21 @@ function CardBriefing({ variant = "won" }) {
         <div style={{
           marginLeft: "auto",
           textAlign: "right",
-          fontSize: 10, fontWeight: 700, color: "var(--fg-muted)",
-          letterSpacing: "0.14em", textTransform: "uppercase",
-          lineHeight: 1.3,
-        }}>{data.role}<br/>{data.roleMins}</div>
+          display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            {isLost && <Pic.sub size={14} style={{ color: "var(--fg-muted)" }}/>}
+            <span style={{
+              fontSize: 10, fontWeight: 700, color: "var(--fg-muted)",
+              letterSpacing: "0.14em", textTransform: "uppercase",
+            }}>{data.role}</span>
+          </div>
+          <span style={{
+            fontSize: 10, fontWeight: 700, color: "var(--fg-muted)",
+            letterSpacing: "0.14em", textTransform: "uppercase",
+            lineHeight: 1.3,
+          }}>{data.roleMins}</span>
+        </div>
       </div>
 
       <div style={{
