@@ -456,7 +456,7 @@ function CardForm() {
       header="Form & You"
       subheader="Last 5 matches"
       narrativeIcon={<Pic.shield size={20}/>}
-      narrative="Team won 3 of last 5. You're averaging a goal every 147 mins — your hottest scoring run this season."
+      narrative="You've been scoring an avg of 1 goal per 147 mins recently. That's a hot streak — keep it going!"
       cta="View recent matches"
     >
       {/* Form indicators */}
