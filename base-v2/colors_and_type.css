@@ -1,0 +1,192 @@
+/* =========================================================================
+   Prematch Design System — Colors & Type
+   Mobile-first · Dark theme · Lime accent · Stats as hero
+   ========================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  /* ---------- Color tokens (locked) ---------- */
+  --pm-bg:           #0d0d0d;   /* Page background        */
+  --pm-surface:      #1a1a1a;   /* Card / panel surface   */
+  --pm-surface-2:    #141414;   /* Slight elevation below surface */
+  --pm-border:       #2a2a2a;   /* Subtle hairline border */
+  --pm-fg:           #ffffff;   /* Primary text           */
+  --pm-fg-muted:     #666666;   /* Secondary / labels     */
+  --pm-fg-dim:       #404040;   /* Tertiary / placeholder */
+  --pm-accent:       #c8f135;   /* Lime — single accent   */
+  --pm-accent-press: #b3d92e;   /* Lime press / hover     */
+  --pm-accent-ink:   #0d0d0d;   /* Text on lime           */
+
+  /* Semantic aliases (used everywhere — never hardcode hex) */
+  --bg:        var(--pm-bg);
+  --surface:   var(--pm-surface);
+  --border:    var(--pm-border);
+  --fg:        var(--pm-fg);
+  --fg-muted:  var(--pm-fg-muted);
+  --fg-dim:    var(--pm-fg-dim);
+  --accent:    var(--pm-accent);
+
+  /* ---------- Type ---------- */
+  --font-sans: 'Archivo', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+  --font-mono: 'Archivo', ui-monospace, Menlo, monospace; /* tabular-nums variant */
+
+  /* Display + heading scale (mobile 390px viewport) */
+  --type-hero:    96px;  /* Single hero number (e.g. profile rating) */
+  --type-stat-xl: 64px;  /* Primary stat card number                 */
+  --type-stat:    48px;  /* Standard stat card number                */
+  --type-stat-sm: 32px;  /* Compact stat in a row                    */
+  --type-h1:      28px;  /* Screen title                             */
+  --type-h2:      20px;  /* Section title                            */
+  --type-h3:      16px;  /* Sub-section / card title                 */
+  --type-body:    15px;  /* Narrative line / body copy               */
+  --type-meta:    13px;  /* Meta info                                */
+  --type-label:   11px;  /* Small-caps label above a stat            */
+  --type-micro:   10px;  /* Tag / chip                               */
+
+  /* Weights */
+  --w-regular: 400;
+  --w-medium:  500;
+  --w-semi:    600;
+  --w-bold:    700;
+  --w-black:   900;
+
+  /* Letter-spacing — labels use wide tracking, numbers tight */
+  --ls-label:  0.14em;  /* SMALL CAPS LABEL                         */
+  --ls-tight: -0.02em;  /* Big numbers                              */
+  --ls-tighter: -0.04em;/* Hero numbers                             */
+
+  /* Line-heights */
+  --lh-tight: 0.95;     /* Hero numbers                             */
+  --lh-snug:  1.15;     /* Headings                                 */
+  --lh-body:  1.45;     /* Narrative                                */
+
+  /* ---------- Space / radius / motion ---------- */
+  --r-sm:  6px;
+  --r-md:  10px;
+  --r-lg:  14px;
+  --r-xl:  20px;
+  --r-pill: 999px;
+
+  --s-1:  4px;
+  --s-2:  8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-5:  20px;
+  --s-6:  24px;
+  --s-7:  32px;
+  --s-8:  48px;
+
+  /* Mobile screen rails */
+  --screen-w: 390px;
+  --gutter:   20px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --t-fast: 120ms;
+  --t-base: 200ms;
+}
+
+/* =========================================================================
+   Base
+   ========================================================================= */
+
+html, body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "ss01", "cv11";
+}
+
+/* =========================================================================
+   Type primitives — semantic
+   ========================================================================= */
+
+.pm-hero {
+  font-family: var(--font-sans);
+  font-weight: var(--w-black);
+  font-size: var(--type-hero);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tighter);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+}
+
+.pm-stat-xl,
+.pm-stat,
+.pm-stat-sm {
+  font-family: var(--font-sans);
+  font-weight: var(--w-black);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+}
+.pm-stat-xl { font-size: var(--type-stat-xl); }
+.pm-stat    { font-size: var(--type-stat); }
+.pm-stat-sm { font-size: var(--type-stat-sm); }
+
+.pm-h1 {
+  font-weight: var(--w-black);
+  font-size: var(--type-h1);
+  letter-spacing: var(--ls-tight);
+  line-height: var(--lh-snug);
+  color: var(--fg);
+}
+.pm-h2 {
+  font-weight: var(--w-bold);
+  font-size: var(--type-h2);
+  letter-spacing: var(--ls-tight);
+  line-height: var(--lh-snug);
+  color: var(--fg);
+}
+.pm-h3 {
+  font-weight: var(--w-bold);
+  font-size: var(--type-h3);
+  line-height: var(--lh-snug);
+  color: var(--fg);
+}
+
+/* Narrative line that sits BELOW a number, regular weight, white */
+.pm-narrative {
+  font-weight: var(--w-regular);
+  font-size: var(--type-body);
+  line-height: var(--lh-body);
+  color: var(--fg);
+}
+
+/* Small caps label above a number */
+.pm-label {
+  font-weight: var(--w-semi);
+  font-size: var(--type-label);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+/* Comparison / delta line — lime, with ↳ arrow */
+.pm-compare {
+  font-weight: var(--w-medium);
+  font-size: var(--type-meta);
+  color: var(--accent);
+  line-height: var(--lh-body);
+}
+.pm-compare::before {
+  content: "↳ ";
+  font-weight: var(--w-bold);
+}
+
+.pm-meta {
+  font-size: var(--type-meta);
+  color: var(--fg-muted);
+  font-weight: var(--w-medium);
+}
+.pm-micro {
+  font-size: var(--type-micro);
+  color: var(--fg-muted);
+  font-weight: var(--w-semi);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+}
