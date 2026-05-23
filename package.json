@@ -1,0 +1,7 @@
+{
+  "name": "pm-daa",
+  "private": true,
+  "scripts": {
+    "dev": "npx live-server base-v2 --open=/Base.html --watch=base-v2"
+  }
+}
