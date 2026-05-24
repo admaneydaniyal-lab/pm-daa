@@ -765,7 +765,7 @@ function PlayerProfile() {
                   }}>Personal Season ·<br/>Percentages</div>
                   <div style={{
                     fontSize: 10, fontWeight: 500, color: "#555", marginTop: 3,
-                  }}>You versus your {pctCompareMode === "team" ? "squad" : "league"}.</div>
+                  }}>You vs your {pctCompareMode === "team" ? "squad" : "league"}.</div>
                 </div>
                 <CompareToggle value={pctCompareMode} onChange={setPctCompareMode}/>
               </div>
