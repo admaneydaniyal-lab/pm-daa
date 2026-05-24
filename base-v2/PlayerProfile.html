@@ -198,10 +198,10 @@
     <div class="ann-label">
       <div class="ann-pill">Season Performance</div>
       <div class="ann-desc">
-        • Season stats with ranking at a glance.<br>
-        • Team/League toggle to adjust comparison, increases engagement.<br>
-        • Additional quick glance statistics to give further context.<br>
-        • CTA takes user to full stats leaderboards. User stays in the app loop.
+        <span style="display:block;margin-bottom:4px">• Season stats with ranking at a glance.</span>
+        <span style="display:block;margin-bottom:4px">• Team/League toggle to adjust comparison, increases engagement.</span>
+        <span style="display:block;margin-bottom:4px">• Additional quick glance statistics to give further context.</span>
+        <span style="display:block">• CTA takes user to full stats leaderboards. User stays in the app loop.</span>
       </div>
     </div>
   </div>
@@ -212,10 +212,10 @@
     <div class="ann-label">
       <div class="ann-pill">Percentages</div>
       <div class="ann-desc">
-        • Horizontal bars that fill up to max 100%. More bar, better the performance.<br>
-        • Percentage rankings vs team/league for context.<br>
-        • Arrow up or down, depending on change in ranking.<br>
-        • CTA leads to full stats table under Player Profile/Stats tab.
+        <span style="display:block;margin-bottom:4px">• Horizontal bars that fill up to max 100%. Higher the bar, higher the performance.</span>
+        <span style="display:block;margin-bottom:4px">• Percentage rankings vs team/league for context.</span>
+        <span style="display:block;margin-bottom:4px">• Arrow up or down, depending on change in ranking.</span>
+        <span style="display:block">• CTA leads to full stats table under Player Profile/Stats tab.</span>
       </div>
     </div>
   </div>
@@ -231,12 +231,12 @@
 
 <script>
   const TARGETS = [
-    { annId: 'ann-1',        targetId: 'ann-target-1',        frac: 0.5 },
-    { annId: 'ann-2',        targetId: 'ann-target-2',        frac: 0.5 },
-    { annId: 'ann-overview', targetId: 'ann-target-overview', frac: 0.5 },
-    { annId: 'ann-3',        targetId: 'ann-target-3',        frac: 0.5 },
-    { annId: 'ann-4',        targetId: 'ann-target-4',        frac: 0.5 },
-    { annId: 'ann-5',        targetId: 'ann-target-5',        frac: 0.5 },
+    { annId: 'ann-1',        targetId: 'ann-target-1',        frac: 0.5, offset:  0 },
+    { annId: 'ann-2',        targetId: 'ann-target-2',        frac: 0.5, offset: 20 },
+    { annId: 'ann-overview', targetId: 'ann-target-overview', frac: 0.5, offset:  0 },
+    { annId: 'ann-3',        targetId: 'ann-target-3',        frac: 0.5, offset:  0 },
+    { annId: 'ann-4',        targetId: 'ann-target-4',        frac: 0.5, offset:  0 },
+    { annId: 'ann-5',        targetId: 'ann-target-5',        frac: 0.5, offset: 20 },
   ];
 
   const revealed = new Set();
@@ -246,7 +246,7 @@
     if (!wrap) return;
     const wrapTop = wrap.getBoundingClientRect().top;
 
-    TARGETS.forEach(({ annId, targetId, frac }) => {
+    TARGETS.forEach(({ annId, targetId, frac, offset = 0 }) => {
       const target = document.getElementById(targetId);
       const ann    = document.getElementById(annId);
       if (!target || !ann) return;
@@ -257,7 +257,7 @@
       }
 
       const rect   = target.getBoundingClientRect();
-      const y      = rect.top + rect.height * frac - wrapTop;
+      const y      = rect.top + rect.height * frac - wrapTop + offset;
       const inView = y > 16 && y < 828;
 
       ann.style.top = y + 'px';
