@@ -178,7 +178,7 @@ function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, tr
       {narrative && (
         <div style={{
           marginTop: 22,
-          display: "flex", alignItems: "flex-start", gap: 10,
+          display: "flex", alignItems: "center", gap: 10,
           paddingRight: 4,
         }}>
           {narrativeIcon && (
