@@ -180,22 +180,31 @@
 <script type="text/babel" src="playerProfile.jsx"></script>
 
 <script>
-  // Wait for React to mount the scroll area, then wire up scroll-triggered annotations
-  const ANNS = [
-    { id: 'ann-1', threshold: 0,   delay: 400 },
-    { id: 'ann-2', threshold: 0,   delay: 620 },
-    { id: 'ann-3', threshold: 180, delay: 0   },
-    { id: 'ann-4', threshold: 440, delay: 0   },
-    { id: 'ann-5', threshold: 870, delay: 0   },
+  // Track each annotation to its target section via getBoundingClientRect
+  const TARGETS = [
+    { annId: 'ann-1', targetId: 'ann-target-1', frac: 0.4 },
+    { annId: 'ann-2', targetId: 'ann-target-2', frac: 0.5 },
+    { annId: 'ann-3', targetId: 'ann-target-3', frac: 0.3 },
+    { annId: 'ann-4', targetId: 'ann-target-4', frac: 0.3 },
+    { annId: 'ann-5', targetId: 'ann-target-5', frac: 0.3 },
   ];
 
-  const els = {};
-  ANNS.forEach(a => { els[a.id] = document.getElementById(a.id); });
+  function updateAnnotations() {
+    const wrap = document.querySelector('.ann-wrap');
+    if (!wrap) return;
+    const wrapTop = wrap.getBoundingClientRect().top;
 
-  function applyScroll(scrollTop) {
-    ANNS.forEach(({ id, threshold }) => {
-      if (threshold === 0) return; // handled on load
-      if (scrollTop >= threshold) els[id].classList.add('visible');
+    TARGETS.forEach(({ annId, targetId, frac }) => {
+      const target = document.getElementById(targetId);
+      const ann    = document.getElementById(annId);
+      if (!target || !ann) return;
+
+      const rect = target.getBoundingClientRect();
+      const y    = rect.top + rect.height * frac - wrapTop;
+      const inView = y > 16 && y < 828;
+
+      ann.style.top = y + 'px';
+      ann.classList.toggle('visible', inView);
     });
   }
 
@@ -204,12 +213,8 @@
     if (!sa) return;
     clearInterval(poll);
 
-    // Show always-visible annotations with stagger
-    ANNS.filter(a => a.threshold === 0).forEach(({ id, delay }) => {
-      setTimeout(() => els[id].classList.add('visible'), delay);
-    });
-
-    sa.addEventListener('scroll', () => applyScroll(sa.scrollTop), { passive: true });
+    updateAnnotations();
+    sa.addEventListener('scroll', updateAnnotations, { passive: true });
   }, 80);
 </script>
 </body>

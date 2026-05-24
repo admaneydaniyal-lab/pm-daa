@@ -435,7 +435,7 @@ function PlayerProfile() {
 
         {/* ── Hero card ── */}
         <div style={{ padding: "106px 16px 0" }}>
-          <div style={{
+          <div id="ann-target-1" style={{
             background: "#131313", border: "1px solid #242424",
             borderRadius: 16, padding: "16px",
             display: "flex", alignItems: "flex-start", gap: 12,
@@ -475,7 +475,7 @@ function PlayerProfile() {
         </div>
 
         {/* ── Player Comparison ── */}
-        <div style={{ padding: "10px 16px 0" }}>
+        <div id="ann-target-2" style={{ padding: "10px 16px 0" }}>
           <button style={{
             width: "100%",
             background: "#131313", border: "1px solid #242424",
@@ -566,7 +566,7 @@ function PlayerProfile() {
             </div>
 
             {/* ── Market Value ── */}
-            <div style={{ marginTop: 22 }}>
+            <div id="ann-target-3" style={{ marginTop: 22 }}>
               <div style={{
                 fontSize: 11, fontWeight: 800, color: "#fff",
                 letterSpacing: "0.14em", textTransform: "uppercase",
@@ -630,7 +630,7 @@ function PlayerProfile() {
             </div>
 
             {/* ── Performance section ── */}
-            <div style={{ marginTop: 22 }}>
+            <div id="ann-target-4" style={{ marginTop: 22 }}>
               {/* Section header + toggle */}
               <div style={{
                 display: "flex", alignItems: "flex-start",
@@ -760,7 +760,7 @@ function PlayerProfile() {
             </div>
 
             {/* ── Percentages section ── */}
-            <div style={{ marginTop: 22 }}>
+            <div id="ann-target-5" style={{ marginTop: 22 }}>
               <div style={{
                 display: "flex", alignItems: "flex-start",
                 justifyContent: "space-between",
