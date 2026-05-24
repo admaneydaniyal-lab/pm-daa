@@ -440,17 +440,12 @@ function PlayerProfile() {
                 }}>LEWIS<br/>BILBIE</div>
                 <HexCheck size={20}/>
               </div>
-              <div style={{
-                marginTop: 6,
-                fontSize: 12, fontWeight: 500, color: "#555",
-                letterSpacing: "0.03em",
-              }}>ST · #9 · Ravenshead FC</div>
               <div style={{ display: "flex", gap: 6, marginTop: 10, flexWrap: "wrap" }}>
                 <span style={{
                   background: "#c8f135", color: "#0d0d0d",
                   fontSize: 10, fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase",
                   borderRadius: 6, padding: "4px 9px",
-                }}>Player</span>
+                }}>Striker</span>
                 <span style={{
                   background: "transparent", border: "1px solid #272727", color: "#666",
                   fontSize: 10, fontWeight: 700, letterSpacing: "0.05em",
@@ -459,8 +454,13 @@ function PlayerProfile() {
                 }}>Ravenshead FC <Ic.arrowUR size={10} sw={2}/></span>
               </div>
             </div>
-            {/* Jersey */}
-            <Jersey number={9}/>
+            {/* Number */}
+            <div style={{
+              fontSize: 64, fontWeight: 900, color: "#fff",
+              letterSpacing: "-0.04em", lineHeight: 1,
+              fontVariantNumeric: "tabular-nums",
+              paddingTop: 4, opacity: 0.15,
+            }}>#9</div>
           </div>
         </div>
 
@@ -479,7 +479,6 @@ function PlayerProfile() {
               <path d="M8 21H3v-5"/><path d="M3 21l7-7"/>
             </svg>
             <span style={{ fontSize: 13, fontWeight: 600, color: "#666", letterSpacing: "-0.01em" }}>Player Comparison</span>
-            <Pic.arrowRight size={12} style={{ color: "#555" }}/>
           </button>
         </div>
 
