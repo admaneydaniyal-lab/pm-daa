@@ -553,7 +553,7 @@ function CardStanding() {
           display: "inline-flex", alignItems: "center", gap: 3,
         }}>
           <i className="ph ph-arrow-up" style={{ color: "var(--accent)", fontSize: 13 }}/>
-          +3 places
+          <span style={{ color: "var(--accent)" }}>+3 places</span>
         </span>
       </div>
 
@@ -576,12 +576,15 @@ function CardStanding() {
           }}>goals<br/>this season</div>
         </div>
         <button style={{
-          background: "transparent", color: "var(--accent)",
-          border: "1px solid var(--accent)", borderRadius: 999, padding: "5px 11px",
-          fontFamily: "inherit", fontWeight: 700, fontSize: 11,
-          letterSpacing: "-0.01em", cursor: "pointer",
-          whiteSpace: "nowrap",
-        }}>View All Stats</button>
+          background: "none", border: "none", cursor: "pointer",
+          fontFamily: "inherit", padding: 0,
+          display: "inline-flex", alignItems: "center", gap: 5,
+          fontSize: 13, fontWeight: 700, color: "var(--fg-muted)",
+          letterSpacing: "-0.01em",
+        }}>
+          View All Stats
+          <i className="ph ph-arrow-right" style={{ fontSize: 14 }}/>
+        </button>
       </div>
     </CardShell>
   );
