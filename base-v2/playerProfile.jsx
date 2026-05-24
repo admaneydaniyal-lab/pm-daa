@@ -197,12 +197,15 @@ function PctRow({ value, label, rankChip, animDelay = 300 }) {
           letterSpacing: "-0.03em", lineHeight: 1,
           fontVariantNumeric: "tabular-nums",
         }}>{value}%</div>
-        {rankChip && (
-          <div style={{
-            fontSize: 9, fontWeight: 800, color: "#c8f135",
-            letterSpacing: "0.12em", textTransform: "uppercase",
-          }}>{rankChip}</div>
-        )}
+        {rankChip && (() => {
+          const [rank, ...rest] = rankChip.split(" ");
+          return (
+            <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+              <span style={{ color: "#c8f135" }}>{rank}</span>
+              {rest.length > 0 && <span style={{ color: "#fff" }}> {rest.join(" ")}</span>}
+            </div>
+          );
+        })()}
       </div>
       <div style={{
         fontSize: 10, fontWeight: 700, color: "#555",
@@ -782,9 +785,9 @@ function PlayerProfile() {
                   }}>Season 2025/26</div>
 
                   {[
-                    { value: 89, label: "Starting XI", teamChip: "#2 SQUAD",   leagueChip: "#11 LEAGUE", delay: 300 },
-                    { value: 56, label: "Win %",        teamChip: "#6 SQUAD",   leagueChip: "#14 LEAGUE", delay: 420 },
-                    { value: 45, label: "Goalscorer",   teamChip: "#1 SQUAD ↑", leagueChip: "#8 LEAGUE",  delay: 540 },
+                    { value: 89, label: "Starting XI", teamChip: "#2 in Squad",   leagueChip: "#11 in League", delay: 300 },
+                    { value: 56, label: "Win %",        teamChip: "#6 in Squad",   leagueChip: "#14 in League", delay: 420 },
+                    { value: 45, label: "Goalscorer",   teamChip: "#1 in Squad ↑", leagueChip: "#8 in League",  delay: 540 },
                   ].map(({ value, label, teamChip, leagueChip, delay }, i) => (
                     <div key={label} style={{
                       marginTop: i === 0 ? 0 : 18,
