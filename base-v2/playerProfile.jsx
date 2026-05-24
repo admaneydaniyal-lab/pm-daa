@@ -288,6 +288,22 @@ function TabBar() {
 // Averages are forward/striker-position-filtered, not whole-squad
 const PERF_STATS = [
   {
+    key: "games",
+    label: "Games",
+    unit: "played",
+    value: 20,
+    teamAvg: 17, leagueAvg: 15, max: 22,
+    teamCompare:   "+3 vs fwds",
+    leagueCompare: "Top 8% STs",
+    chip: { value: "1,740", label: "Mins Played" },
+    icon: (
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <rect x="3" y="4" width="18" height="16" rx="2"/>
+        <path d="M3 10h18"/>
+      </svg>
+    ),
+  },
+  {
     key: "goals",
     label: "Goals",
     unit: "scored",
@@ -317,22 +333,6 @@ const PERF_STATS = [
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
         <path d="M22 4L12 14.01l-3-3"/>
-      </svg>
-    ),
-  },
-  {
-    key: "games",
-    label: "Games",
-    unit: "played",
-    value: 20,
-    teamAvg: 17, leagueAvg: 15, max: 22,
-    teamCompare:   "+3 vs fwds",
-    leagueCompare: "Top 8% STs",
-    chip: { value: "1,740", label: "Mins Played" },
-    icon: (
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-        <rect x="3" y="4" width="18" height="16" rx="2"/>
-        <path d="M3 10h18"/>
       </svg>
     ),
   },
@@ -368,10 +368,11 @@ const TABS = ["Overview", "Stats", "Matches", "Career"];
 
 // ─── Main screen ──────────────────────────────────────────────
 function PlayerProfile() {
-  const [activeTab,   setActiveTab]   = React.useState("Overview");
-  const [scrolled,    setScrolled]    = React.useState(false);
-  const [compareMode, setCompareMode] = React.useState("team");
-  const [barsReady,   setBarsReady]   = React.useState(false);
+  const [activeTab,      setActiveTab]      = React.useState("Overview");
+  const [scrolled,       setScrolled]       = React.useState(false);
+  const [compareMode,    setCompareMode]    = React.useState("team");
+  const [pctCompareMode, setPctCompareMode] = React.useState("team");
+  const [barsReady,      setBarsReady]      = React.useState(false);
   const scrollRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -729,10 +730,11 @@ function PlayerProfile() {
                     })}
                   </div>
 
-                  {/* View all rankings */}
+                  {/* View all rankings + Share */}
                   <div style={{
                     padding: "12px 16px 14px",
                     borderTop: "1px solid #1c1c1c",
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
                   }}>
                     <button style={{
                       background: "none", border: "none", cursor: "pointer",
@@ -743,6 +745,16 @@ function PlayerProfile() {
                     }}>
                       View all rankings
                       <i className="ph ph-arrow-right" style={{ fontSize: 14 }}/>
+                    </button>
+                    <button style={{
+                      background: "none", border: "none", cursor: "pointer",
+                      fontFamily: "inherit", padding: 0,
+                      display: "inline-flex", alignItems: "center", gap: 5,
+                      fontSize: 12, fontWeight: 700, color: "#fff",
+                      letterSpacing: "-0.01em",
+                    }}>
+                      <i className="ph ph-share-network" style={{ fontSize: 15 }}/>
+                      Share
                     </button>
                   </div>
                 </div>
@@ -761,26 +773,56 @@ function PlayerProfile() {
               <div style={{ padding: "0 16px" }}>
                 <div style={{
                   background: "#131313", border: "1px solid #242424",
-                  borderRadius: 16, padding: "16px 16px 18px",
+                  borderRadius: 16, padding: "16px 16px 0",
                 }}>
+                  {/* Header row */}
                   <div style={{
-                    fontSize: 10, fontWeight: 700, color: "#3e3e3e",
-                    letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 18,
-                  }}>Season 2025/26</div>
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                    marginBottom: 18,
+                  }}>
+                    <div style={{
+                      fontSize: 10, fontWeight: 700, color: "#fff",
+                      letterSpacing: "0.14em", textTransform: "uppercase",
+                    }}>Season 2025/26</div>
+                    <CompareToggle value={pctCompareMode} onChange={setPctCompareMode}/>
+                  </div>
 
                   {[
-                    { value: 89, label: "Starting XI",  rankChip: "#2 SQUAD",   delay: 300 },
-                    { value: 56, label: "Win %",         rankChip: null,          delay: 420 },
-                    { value: 45, label: "Goalscorer",    rankChip: "#1 SQUAD ↑", delay: 540 },
-                  ].map(({ value, label, rankChip, delay }, i) => (
+                    { value: 89, label: "Starting XI", teamChip: "#2 SQUAD",   leagueChip: "#11 LEAGUE", delay: 300 },
+                    { value: 56, label: "Win %",        teamChip: "#6 SQUAD",   leagueChip: "#14 LEAGUE", delay: 420 },
+                    { value: 45, label: "Goalscorer",   teamChip: "#1 SQUAD ↑", leagueChip: "#8 LEAGUE",  delay: 540 },
+                  ].map(({ value, label, teamChip, leagueChip, delay }, i) => (
                     <div key={label} style={{
                       marginTop: i === 0 ? 0 : 18,
                       paddingTop: i === 0 ? 0 : 18,
                       borderTop: i === 0 ? "none" : "1px solid #1a1a1a",
                     }}>
-                      <PctRow value={value} label={label} rankChip={rankChip} animDelay={delay}/>
+                      <PctRow
+                        value={value}
+                        label={label}
+                        rankChip={pctCompareMode === "team" ? teamChip : leagueChip}
+                        animDelay={delay}
+                      />
                     </div>
                   ))}
+
+                  {/* Share button */}
+                  <div style={{
+                    marginTop: 18, padding: "12px 0 14px",
+                    borderTop: "1px solid #1a1a1a",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                  }}>
+                    <button style={{
+                      width: "100%", background: "none", border: "none", cursor: "pointer",
+                      fontFamily: "inherit",
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                      fontSize: 13, fontWeight: 700, color: "#fff",
+                      letterSpacing: "-0.01em",
+                    }}>
+                      <i className="ph ph-share-network" style={{ fontSize: 15 }}/>
+                      Share
+                    </button>
+                  </div>
 
                 </div>
               </div>
