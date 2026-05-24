@@ -683,7 +683,6 @@ function CardMarket() {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
-  // Target ~18d 3h 23m 24s from "now"
   const targetRef = React.useRef(Date.now() + ((18*24 + 3)*3600 + 23*60 + 24) * 1000);
   const remaining = Math.max(0, targetRef.current - now);
   const days = Math.floor(remaining / 86400000);
@@ -693,7 +692,21 @@ function CardMarket() {
   const pad = n => String(n).padStart(2, "0");
   const countdown = `${pad(days)}:${pad(hrs)}:${pad(min)}:${pad(sec)}`;
 
-  const animatedValue = useCountUp(24300, 1400);
+  // Only start count-up when the card scrolls into view
+  const [visible, setVisible] = React.useState(false);
+  const cardRef = React.useRef(null);
+  React.useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.4 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const animatedValue = useCountUp(visible ? 24300 : 0, 1600);
   const formatted = Math.round(animatedValue).toLocaleString("en-GB");
 
   return (
@@ -709,7 +722,7 @@ function CardMarket() {
         marginTop: 10,
         display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap",
       }}>
-        <div style={{
+        <div ref={cardRef} style={{
           fontWeight: 900, fontSize: 32, color: "var(--fg)",
           letterSpacing: "-0.03em", lineHeight: 1,
           fontVariantNumeric: "tabular-nums",
