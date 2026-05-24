@@ -5,35 +5,31 @@
 // ─────────────────────────────────────────────────────────────
 // Icons (inline SVG, Lucide-style, 1.6px stroke)
 // ─────────────────────────────────────────────────────────────
-const Sicon = ({ children, size = 22, sw = 1.6, stroke = "currentColor", fill = "none", style }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke={stroke}
-       strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" style={style}>
-    {children}
-  </svg>
+const mkPh = (cls) => ({ size = 22, stroke, style } = {}) => (
+  <i className={`ph-duotone ${cls}`} style={{ fontSize: size, color: stroke, lineHeight: 1, ...style }}/>
 );
 const Ic = {
-  search:   (p) => <Sicon {...p}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></Sicon>,
-  bell:     (p) => <Sicon {...p}><path d="M18 16H6a2 2 0 01-2-2l1.5-1.5V9a6.5 6.5 0 0113 0v3.5L20 14a2 2 0 01-2 2z"/><path d="M10 19a2 2 0 004 0"/></Sicon>,
-  arrowUR:  (p) => <Sicon {...p}><path d="M7 17L17 7"/><path d="M9 7h8v8"/></Sicon>,
-  arrowR:   (p) => <Sicon {...p}><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></Sicon>,
-  bookmark: (p) => <Sicon {...p}><path d="M7 4h10v17l-5-3.5L7 21V4z"/></Sicon>,
-  table:    (p) => <Sicon {...p}><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 16h18M9 4v16"/></Sicon>,
-  refer:    (p) => <Sicon {...p}><circle cx="9" cy="9" r="3.5"/><path d="M3 20a6 6 0 0112 0"/><path d="M17 11v6M14 14h6"/></Sicon>,
-  team:     (p) => <Sicon {...p}><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M2 19a6 6 0 0112 0"/><path d="M14 13a6 6 0 018 6"/></Sicon>,
-  trophy:   (p) => <Sicon {...p}><path d="M8 4h8v5a4 4 0 01-8 0V4z"/><path d="M5 5H3v2a3 3 0 003 3M19 5h2v2a3 3 0 01-3 3"/><path d="M10 14v4h4v-4M8 21h8"/></Sicon>,
-  share:    (p) => <Sicon {...p}><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8 11l8-4"/><path d="M8 13l8 4"/></Sicon>,
-  thumb:    (p) => <Sicon {...p}><path d="M7 22V11l5-8a2.5 2.5 0 012.5 4.5L13 11h5.5a2.5 2.5 0 012.4 3l-1.5 6.5a2.5 2.5 0 01-2.4 1.5H7z"/></Sicon>,
-  cursor:   (p) => <Sicon {...p}><path d="M4 3l6 17 2.5-7L19 11z"/></Sicon>,
-  minus:    (p) => <Sicon {...p}><circle cx="12" cy="12" r="8"/><path d="M8 12h8"/></Sicon>,
-  // bottom tab
-  ic_base:  (p) => <Sicon {...p}><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></Sicon>,
-  ic_match: (p) => <Sicon {...p}><path d="M4 7h16v10H4z"/><path d="M4 11h16M4 13h16M9 7v10M15 7v10"/></Sicon>,
-  ic_team:  (p) => <Sicon {...p}><path d="M3 6.5L12 3l9 3.5v3a9 9 0 01-9 9 9 9 0 01-9-9v-3z"/></Sicon>,
-  ic_league:(p) => <Sicon {...p}><path d="M8 4h8v5a4 4 0 01-8 0V4z"/><path d="M5 5H3v2a3 3 0 003 3M19 5h2v2a3 3 0 01-3 3"/><path d="M10 14v4h4v-4M8 21h8"/></Sicon>,
-  ic_prof:  (p) => <Sicon {...p}><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></Sicon>,
-  ball:     (p) => <Sicon {...p} sw={1.4}><circle cx="12" cy="12" r="9"/><path d="M12 3l3 4-1 5-4 0-1-5z"/><path d="M15 7l5 1M9 7L4 8M14 12l3 6M10 12l-3 6"/></Sicon>,
-  shield:   (p) => <Sicon {...p}><path d="M12 3l8 3v6c0 4.5-3.4 8.4-8 9-4.6-.6-8-4.5-8-9V6l8-3z"/></Sicon>,
-  money:    (p) => <Sicon {...p}><path d="M15 6h-4a3 3 0 000 6h2a3 3 0 010 6H8"/><path d="M12 4v3M12 17v3"/></Sicon>,
+  search:    mkPh("ph-magnifying-glass"),
+  bell:      mkPh("ph-bell"),
+  arrowUR:   mkPh("ph-arrow-up-right"),
+  arrowR:    mkPh("ph-arrow-right"),
+  bookmark:  mkPh("ph-bookmark"),
+  table:     mkPh("ph-table"),
+  refer:     mkPh("ph-user-plus"),
+  team:      mkPh("ph-users"),
+  trophy:    mkPh("ph-trophy"),
+  share:     mkPh("ph-share-network"),
+  thumb:     mkPh("ph-thumbs-up"),
+  cursor:    mkPh("ph-cursor"),
+  minus:     mkPh("ph-minus-circle"),
+  ball:      mkPh("ph-soccer-ball"),
+  shield:    mkPh("ph-shield"),
+  money:     mkPh("ph-currency-dollar"),
+  ic_base:   mkPh("ph-house"),
+  ic_match:  mkPh("ph-calendar-dots"),
+  ic_team:   mkPh("ph-shield"),
+  ic_league: mkPh("ph-trophy"),
+  ic_prof:   mkPh("ph-user"),
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -255,38 +251,12 @@ function useCountUp(target, duration = 1400, deps = []) {
   return val;
 }
 
-// Phosphor-style filled brand icons (passed in via narrativeIcon slot)
 const Pic = {
-  ball:   (p) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width={p?.size || 16} height={p?.size || 16}
-         viewBox="0 0 256 256" fill="currentColor" style={p?.style}>
-      <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm76.52,147.42H170.9l-9.26-12.76,12.63-36.78,15-4.89,26.24,20.13A87.38,87.38,0,0,1,204.52,171.42Zm-164-34.3L66.71,117l15,4.89,12.63,36.78L85.1,171.42H51.48A87.38,87.38,0,0,1,40.47,137.12Zm10-50.64,5.51,18.6L40.71,116.77A87.33,87.33,0,0,1,50.43,86.48ZM109,152,97.54,118.65,128,97.71l30.46,20.94L147,152Zm91.07-46.92,5.51-18.6a87.33,87.33,0,0,1,9.72,30.29Zm-6.2-35.38-9.51,32.08-15.07,4.89L136,83.79V68.21l29.09-20A88.58,88.58,0,0,1,193.86,69.7ZM146.07,41.87,128,54.29,109.93,41.87a88.24,88.24,0,0,1,36.14,0ZM90.91,48.21l29.09,20V83.79L86.72,106.67l-15.07-4.89L62.14,69.7A88.58,88.58,0,0,1,90.91,48.21ZM63.15,187.42H83.52l7.17,20.27A88.4,88.4,0,0,1,63.15,187.42ZM110,214.13,98.12,180.71,107.35,168h41.3l9.23,12.71-11.83,33.42a88,88,0,0,1-36.1,0Zm55.36-6.44,7.17-20.27h20.37A88.4,88.4,0,0,1,165.31,207.69Z"/>
-    </svg>
-  ),
-  shield: (p) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width={p?.size || 16} height={p?.size || 16}
-         viewBox="0 0 256 256" fill="currentColor" style={p?.style}>
-      <path d="M80.57,117A8,8,0,0,1,91,112.57l29,11.61V96a8,8,0,0,1,16,0v28.18l29-11.61A8,8,0,1,1,171,127.43l-30.31,12.12L158.4,163.2a8,8,0,1,1-12.8,9.6L128,149.33,110.4,172.8a8,8,0,1,1-12.8-9.6l17.74-23.65L85,127.43A8,8,0,0,1,80.57,117ZM224,56v56c0,52.72-25.52,84.67-46.93,102.19-23.06,18.86-46,25.27-47,25.53a8,8,0,0,1-4.2,0c-1-.26-23.91-6.67-47-25.53C57.52,196.67,32,164.72,32,112V56A16,16,0,0,1,48,40H208A16,16,0,0,1,224,56Zm-16,0L48,56l0,56c0,37.3,13.82,67.51,41.07,89.81A128.25,128.25,0,0,0,128,223.62a129.3,129.3,0,0,0,39.41-22.2C194.34,179.16,208,149.07,208,112Z"/>
-    </svg>
-  ),
-  trophy: (p) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width={p?.size || 16} height={p?.size || 16}
-         viewBox="0 0 256 256" fill="currentColor" style={p?.style}>
-      <path d="M232,64H208V48a8,8,0,0,0-8-8H56a8,8,0,0,0-8,8V64H24A16,16,0,0,0,8,80V96a40,40,0,0,0,40,40h3.65A80.13,80.13,0,0,0,120,191.61V216H96a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16H136V191.58c31.94-3.23,58.44-25.64,68.08-55.58H208a40,40,0,0,0,40-40V80A16,16,0,0,0,232,64ZM48,120A24,24,0,0,1,24,96V80H48v32q0,4,.39,8Zm144-8.9c0,35.52-29,64.64-64,64.9a64,64,0,0,1-64-64V56H192ZM232,96a24,24,0,0,1-24,24h-.5a81.81,81.81,0,0,0,.5-8.9V80h24Z"/>
-    </svg>
-  ),
-  dollar: (p) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width={p?.size || 16} height={p?.size || 16}
-         viewBox="0 0 256 256" fill="currentColor" style={p?.style}>
-      <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm40-68a28,28,0,0,1-28,28h-4v8a8,8,0,0,1-16,0v-8H104a8,8,0,0,1,0-16h36a12,12,0,0,0,0-24H116a28,28,0,0,1,0-56h4V72a8,8,0,0,1,16,0v8h16a8,8,0,0,1,0,16H116a12,12,0,0,0,0,24h24A28,28,0,0,1,168,148Z"/>
-    </svg>
-  ),
-  arrowRight: (p) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width={p?.size || 14} height={p?.size || 14}
-         viewBox="0 0 256 256" fill="currentColor" style={p?.style}>
-      <path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/>
-    </svg>
-  ),
+  ball:       ({ size = 16, style } = {}) => <i className="ph-duotone ph-soccer-ball"      style={{ fontSize: size, lineHeight: 1, ...style }}/>,
+  shield:     ({ size = 16, style } = {}) => <i className="ph-duotone ph-shield"            style={{ fontSize: size, lineHeight: 1, ...style }}/>,
+  trophy:     ({ size = 16, style } = {}) => <i className="ph-duotone ph-trophy"            style={{ fontSize: size, lineHeight: 1, ...style }}/>,
+  dollar:     ({ size = 16, style } = {}) => <i className="ph-duotone ph-currency-dollar"   style={{ fontSize: size, lineHeight: 1, ...style }}/>,
+  arrowRight: ({ size = 14, style } = {}) => <i className="ph-duotone ph-arrow-right"       style={{ fontSize: size, lineHeight: 1, ...style }}/>,
   sub: (p) => (
     <svg xmlns="http://www.w3.org/2000/svg" width={p?.size || 16} height={p?.size || 16}
          viewBox="0 0 256 256" fill="currentColor" style={p?.style}>
@@ -949,7 +919,7 @@ function NewsCard({ org, time, title, body, imgKind, reactionCount, fullTime }) 
           display: "flex", alignItems: "center", justifyContent: "center",
           fontWeight: 900, fontSize: 11,
         }}>
-          <Sicon size={14} stroke="#c4a5ff" sw={1.8}><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0114 0"/></Sicon>
+          <i className="ph-duotone ph-user" style={{ fontSize: 14, color: "#c4a5ff" }}/>
         </div>
         <div style={{ fontSize: 13, fontWeight: 700, color: "var(--fg)" }}>{org}</div>
       </div>
@@ -1054,7 +1024,7 @@ function NewsCard({ org, time, title, body, imgKind, reactionCount, fullTime }) 
               display: "flex", alignItems: "center", gap: 6,
               fontSize: 13, fontWeight: 500, color: "var(--fg)",
             }}>
-              <Sicon size={16} stroke="var(--fg)" sw={1.8}><circle cx="6" cy="12" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 11l8-4M8 13l8 4"/></Sicon>
+              <i className="ph-duotone ph-share-network" style={{ fontSize: 16 }}/>
               Share
             </div>
           </div>
