@@ -542,20 +542,24 @@ function CardStanding() {
       cta="View full rankings"
       narrativeAlign="center"
     >
-      <div style={{ marginTop: 14, display: "flex", alignItems: "flex-end", gap: 12 }}>
+      <div style={{ marginTop: 14, display: "flex", alignItems: "flex-end", gap: 8 }}>
         <LimeHero value="T-1st" fontSize={64} underlineWidth="86%"/>
-        <div style={{
-          paddingBottom: 10,
-          fontSize: 12, fontWeight: 800, color: "var(--accent)",
-          letterSpacing: "-0.01em",
-          display: "inline-flex", alignItems: "baseline", gap: 3,
-        }}>↑ +3 places <span style={{ color: "var(--fg-muted)", fontWeight: 600 }}>this week</span></div>
       </div>
       <div style={{
         marginTop: 10,
         fontSize: 14, fontWeight: 500, color: "var(--fg)",
         letterSpacing: "-0.01em",
       }}>top scorer in NSL Division One</div>
+
+      <div style={{
+        marginTop: 5,
+        fontSize: 12, fontWeight: 700, color: "var(--fg-muted)",
+        letterSpacing: "-0.01em",
+        display: "inline-flex", alignItems: "baseline", gap: 3,
+      }}>
+        <span style={{ color: "var(--accent)" }}>↑</span>
+        +3 places this week
+      </div>
 
       <div style={{
         marginTop: 12, marginBottom: 10,
