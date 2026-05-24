@@ -791,9 +791,9 @@ function PlayerProfile() {
                   }}>Season 2025/26</div>
 
                   {[
-                    { value: 89, label: "Starting XI", teamChip: "#2 in Squad",   leagueChip: "#11 in League", delay: 300 },
-                    { value: 56, label: "Win %",        teamChip: "#6 in Squad",   leagueChip: "#14 in League", delay: 420 },
-                    { value: 45, label: "Goalscorer",   teamChip: "#1 in Squad ↑", leagueChip: "#8 in League",  delay: 540 },
+                    { value: 89, label: "Starting XI", teamChip: "#2 in Team",   leagueChip: "#11 in League", delay: 300 },
+                    { value: 56, label: "Win %",        teamChip: "#6 in Team",   leagueChip: "#14 in League", delay: 420 },
+                    { value: 45, label: "Goalscorer",   teamChip: "#1 in Team ↑", leagueChip: "#8 in League",  delay: 540 },
                   ].map(({ value, label, teamChip, leagueChip, delay }, i) => (
                     <div key={label} style={{
                       marginTop: i === 0 ? 0 : 18,
