@@ -863,17 +863,15 @@ function PlayerProfile() {
                         }}>{value}</span>
                         <span style={{
                           width: 44, textAlign: "center",
-                          fontSize: 13,
+                          fontSize: 13, fontVariantNumeric: "tabular-nums",
                           fontWeight: teamRank === 1 ? 800 : 500,
-                          color: teamRank === 1 ? "#c8f135" : "#3e3e3e",
-                          fontVariantNumeric: "tabular-nums",
+                          color: teamRank === 1 ? "#c8f135" : "rgba(255,255,255,0.3)",
                         }}>{teamRank}</span>
                         <span style={{
                           width: 44, textAlign: "center",
-                          fontSize: 13,
-                          fontWeight: leagueRank <= 3 ? 700 : 500,
-                          color: leagueRank <= 3 ? "#fff" : "#3e3e3e",
-                          fontVariantNumeric: "tabular-nums",
+                          fontSize: 13, fontVariantNumeric: "tabular-nums",
+                          fontWeight: leagueRank === 1 ? 800 : leagueRank <= 3 ? 700 : 500,
+                          color: leagueRank === 1 ? "#c8f135" : leagueRank <= 3 ? "#fff" : "rgba(255,255,255,0.3)",
                         }}>{leagueRank}</span>
                       </div>
                     ))}
@@ -1012,13 +1010,15 @@ function PlayerProfile() {
                     }}>{value}</span>
                     <span style={{
                       width: 46, textAlign: "center",
-                      fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.55)",
-                      fontVariantNumeric: "tabular-nums",
+                      fontSize: 13, fontVariantNumeric: "tabular-nums",
+                      fontWeight: teamRank === 1 ? 800 : 500,
+                      color: teamRank === 1 ? "#c8f135" : "rgba(255,255,255,0.3)",
                     }}>{teamRank}</span>
                     <span style={{
                       width: 46, textAlign: "center",
-                      fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.55)",
-                      fontVariantNumeric: "tabular-nums",
+                      fontSize: 13, fontVariantNumeric: "tabular-nums",
+                      fontWeight: leagueRank === 1 ? 800 : leagueRank <= 3 ? 700 : 500,
+                      color: leagueRank === 1 ? "#c8f135" : leagueRank <= 3 ? "#fff" : "rgba(255,255,255,0.3)",
                     }}>{leagueRank}</span>
                   </div>
                 ))}
