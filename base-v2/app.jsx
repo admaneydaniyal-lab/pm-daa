@@ -704,7 +704,7 @@ function CardMarket() {
 
       {/* Sparkline */}
       <div style={{ marginTop: 8, marginRight: -2, marginLeft: -2 }}>
-        <Sparkline width={290} height={80}/>
+        <Sparkline width={290} height={62}/>
       </div>
 
       {/* Countdown pill */}
