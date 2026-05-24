@@ -2,19 +2,18 @@
 
 const TABS = ["Overview", "Stats", "Matches", "Career"];
 
-// Stats consistent with base screen: 9 goals for the year, 1 goal per 147 mins,
-// hat trick vs Riverside, assists from form card, Ravenshead FC
+// teamRank = rank within Ravenshead FC squad; leagueRank = rank across all players in the league
 const STAT_ROWS = [
-  { label: "Matches Played",   value: "18",   pro: false },
-  { label: "Minutes played",   value: "1521", pro: true  },
-  { label: "Starting XI",      value: "89%",  pro: false },
-  { label: "Goals",            value: "9",    pro: false },
-  { label: "Minutes per Goal", value: "147",  pro: true  },
-  { label: "Assists",          value: "4",    pro: false },
-  { label: "Shots on Target",  value: "23",   pro: false },
-  { label: "Shot Accuracy",    value: "61%",  pro: false },
-  { label: "Win",              value: "56%",  pro: false },
-  { label: "Top XI",           value: "3",    pro: true  },
+  { label: "Matches Played",   value: "18",   pro: false, teamRank: 4,  leagueRank: 23  },
+  { label: "Minutes played",   value: "1521", pro: true,  teamRank: 3,  leagueRank: 19  },
+  { label: "Starting XI",      value: "89%",  pro: false, teamRank: 2,  leagueRank: 11  },
+  { label: "Goals",            value: "9",    pro: false, teamRank: 1,  leagueRank: 1   },
+  { label: "Minutes per Goal", value: "147",  pro: true,  teamRank: 1,  leagueRank: 3   },
+  { label: "Assists",          value: "4",    pro: false, teamRank: 1,  leagueRank: 7   },
+  { label: "Shots on Target",  value: "23",   pro: false, teamRank: 1,  leagueRank: 4   },
+  { label: "Shot Accuracy",    value: "61%",  pro: false, teamRank: 2,  leagueRank: 9   },
+  { label: "Win",              value: "56%",  pro: false, teamRank: 6,  leagueRank: 14  },
+  { label: "Top XI",           value: "3",    pro: true,  teamRank: 1,  leagueRank: 5   },
 ];
 
 function ProBadge() {
@@ -227,29 +226,65 @@ function PlayerStats() {
             }}>Summary</button>
           </div>
 
-          {/* Section heading */}
-          <div style={{ marginTop: 20 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>All competitions</div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.42)", marginTop: 3, fontWeight: 500 }}>
-              2025/2026
+          {/* Section heading + column headers */}
+          <div style={{ marginTop: 20, display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>All competitions</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.42)", marginTop: 3, fontWeight: 500 }}>
+                2025/2026
+              </div>
+            </div>
+            {/* Rank column headers */}
+            <div style={{ display: "flex", gap: 0, paddingBottom: 2 }}>
+              <div style={{
+                width: 44, textAlign: "center",
+                fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.35)",
+                letterSpacing: "0.02em", lineHeight: 1.25,
+              }}>Team<br/>Rank</div>
+              <div style={{
+                width: 52, textAlign: "center",
+                fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.35)",
+                letterSpacing: "0.02em", lineHeight: 1.25,
+              }}>League<br/>Rank</div>
             </div>
           </div>
 
           {/* Stat rows */}
-          <div style={{ marginTop: 12 }}>
-            {STAT_ROWS.map(({ label, value, pro }, i) => (
+          <div style={{ marginTop: 8 }}>
+            {STAT_ROWS.map(({ label, value, pro, teamRank, leagueRank }, i) => (
               <div key={label} style={{
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-                padding: "13px 0",
+                display: "flex", alignItems: "center",
+                padding: "12px 0",
                 borderTop: i > 0 ? "1px solid rgba(255,255,255,0.07)" : "none",
               }}>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <span style={{
-                    fontSize: 14, color: "rgba(255,255,255,0.52)", fontWeight: 400,
-                  }}>{label}</span>
+                {/* Label */}
+                <div style={{ flex: 1, display: "flex", alignItems: "center", minWidth: 0 }}>
+                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.52)", fontWeight: 400 }}>{label}</span>
                   {pro && <ProBadge/>}
                 </div>
-                <span style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>{value}</span>
+                {/* Player value */}
+                <span style={{
+                  fontSize: 14, fontWeight: 700, color: "#fff",
+                  minWidth: 36, textAlign: "right",
+                }}>{value}</span>
+                {/* Vertical divider */}
+                <div style={{
+                  width: 1, alignSelf: "stretch",
+                  background: "rgba(255,255,255,0.1)",
+                  margin: "0 12px",
+                }}/>
+                {/* Team rank */}
+                <span style={{
+                  width: 32, textAlign: "center",
+                  fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.55)",
+                  fontVariantNumeric: "tabular-nums",
+                }}>{teamRank}</span>
+                {/* League rank */}
+                <span style={{
+                  width: 40, textAlign: "center",
+                  fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.55)",
+                  fontVariantNumeric: "tabular-nums",
+                }}>{leagueRank}</span>
               </div>
             ))}
           </div>
