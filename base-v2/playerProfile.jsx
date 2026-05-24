@@ -514,7 +514,6 @@ function PlayerProfile() {
           paddingLeft: 4, marginTop: 14,
           position: "sticky", top: 90, zIndex: 10,
           background: "#0d0d0d",
-          overflowX: "auto",
         }}>
           {TABS.map((tab) => {
             const active = tab === activeTab;
