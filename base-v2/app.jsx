@@ -556,17 +556,26 @@ function CardStanding() {
         height: 1, background: "var(--border)",
       }}/>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <div style={{
-          fontWeight: 900, fontSize: 24, color: "var(--fg)",
-          letterSpacing: "-0.03em",
-          fontVariantNumeric: "tabular-nums",
-        }}>8</div>
-        <div style={{
-          fontSize: 10, fontWeight: 700, color: "var(--fg-muted)",
-          letterSpacing: "0.16em", textTransform: "uppercase",
-          lineHeight: 1.3,
-        }}>goals<br/>this season</div>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{
+            fontWeight: 900, fontSize: 24, color: "var(--fg)",
+            letterSpacing: "-0.03em",
+            fontVariantNumeric: "tabular-nums",
+          }}>8</div>
+          <div style={{
+            fontSize: 10, fontWeight: 700, color: "var(--fg-muted)",
+            letterSpacing: "0.16em", textTransform: "uppercase",
+            lineHeight: 1.3,
+          }}>goals<br/>this season</div>
+        </div>
+        <button style={{
+          background: "var(--accent)", color: "#0d0d0d",
+          border: 0, borderRadius: 8, padding: "7px 12px",
+          fontFamily: "inherit", fontWeight: 800, fontSize: 12,
+          letterSpacing: "-0.01em", cursor: "pointer",
+          whiteSpace: "nowrap",
+        }}>View All Stats</button>
       </div>
     </CardShell>
   );
