@@ -1,0 +1,1352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prematch — Personal Stats Redesign · Daniyal Admaney</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── reset ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;-webkit-font-smoothing:antialiased}
+
+/* ── tokens ── */
+:root{
+  --bg:#0d0d0d;--surface:#1a1a1a;--surface2:#141414;--border:#2a2a2a;
+  --fg:#fff;--fg-muted:#666;--fg-dim:#404040;
+  --accent:#c8f135;--accent-ink:#0d0d0d;
+  --red:#ef4444;--green:#22c55e;--amber:#f5b53b;
+  --font:'Archivo',system-ui,sans-serif;
+  --ease:cubic-bezier(0.2,0.7,0.2,1);
+}
+
+/* ── deck ── */
+#deck{position:fixed;inset:0;font-family:var(--font);color:var(--fg);overflow:hidden}
+#track{display:flex;height:100%;transition:transform 550ms var(--ease)}
+.slide{
+  flex:0 0 100vw;height:100vh;background:var(--bg);
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+  padding:56px 80px 52px;
+}
+
+/* ── chrome ── */
+.eyebrow{
+  font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--fg-muted);display:flex;align-items:center;gap:8px;
+  flex-shrink:0;margin-bottom:36px;
+}
+.eyebrow .n{color:var(--accent)}
+.counter{
+  position:absolute;bottom:36px;right:80px;
+  font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--fg-dim);
+  text-transform:uppercase;
+}
+.counter .n{color:var(--accent)}
+
+/* ── type ── */
+.t-hero{font-size:clamp(40px,5.5vw,88px);font-weight:900;letter-spacing:-.03em;line-height:.93;text-transform:uppercase}
+.t-title{font-size:clamp(28px,3.5vw,56px);font-weight:900;letter-spacing:-.02em;line-height:1;text-transform:uppercase}
+.t-sub{font-size:clamp(16px,1.8vw,28px);font-weight:900;letter-spacing:-.015em;line-height:1.1;text-transform:uppercase}
+.t-body{font-size:clamp(13px,1.3vw,20px);font-weight:400;line-height:1.55;color:var(--fg-muted)}
+.t-label{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-muted)}
+.lime{color:var(--accent)}
+.muted{color:var(--fg-muted)}
+.dim{color:var(--fg-dim)}
+.red-c{color:var(--red)}
+.green-c{color:var(--green)}
+
+/* ── animations ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes lineGrow{from{stroke-dashoffset:var(--ll,200)}to{stroke-dashoffset:0}}
+
+.a{opacity:0;animation:fadeUp 480ms var(--ease) both;animation-play-state:paused}
+.a-fade{animation-name:fadeIn}
+.slide.active .a{animation-play-state:running}
+.d0{animation-delay:0ms}.d1{animation-delay:100ms}.d2{animation-delay:200ms}
+.d3{animation-delay:320ms}.d4{animation-delay:440ms}.d5{animation-delay:560ms}
+.d6{animation-delay:680ms}.d7{animation-delay:800ms}.d8{animation-delay:920ms}
+
+/* ── annotations ── */
+.ann-wrap{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:40}
+.ann-line{
+  fill:none;stroke:var(--accent);stroke-width:1.5;stroke-dasharray:var(--ll,160);
+  stroke-dashoffset:var(--ll,160);
+  transition:stroke-dashoffset 500ms var(--ease);
+}
+.ann-dot{
+  position:absolute;width:10px;height:10px;border-radius:50%;
+  border:2px solid var(--accent);background:var(--bg);
+  transform:translate(-50%,-50%);
+  opacity:0;transition:opacity 300ms;
+}
+.ann-tag{
+  position:absolute;
+  background:var(--accent);color:var(--accent-ink);
+  font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  border-radius:5px;padding:5px 10px;white-space:nowrap;
+  opacity:0;transform:translateY(6px);
+  transition:opacity 350ms,transform 350ms;
+}
+/* trigger on active */
+.slide.active .ann-line{stroke-dashoffset:0}
+.slide.active .ann-dot{opacity:1}
+.slide.active .ann-tag{opacity:1;transform:translateY(0)}
+/* stagger groups */
+.ag1 .ann-line{transition-delay:350ms}.ag1 .ann-dot{transition-delay:350ms}.ag1 .ann-tag{transition-delay:580ms}
+.ag2 .ann-line{transition-delay:650ms}.ag2 .ann-dot{transition-delay:650ms}.ag2 .ann-tag{transition-delay:880ms}
+.ag3 .ann-line{transition-delay:950ms}.ag3 .ann-dot{transition-delay:950ms}.ag3 .ann-tag{transition-delay:1180ms}
+
+/* ── progress dots ── */
+#dots{
+  position:fixed;bottom:36px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:7px;z-index:100;
+}
+.dot{
+  height:5px;border-radius:5px;border:0;padding:0;cursor:pointer;
+  background:rgba(255,255,255,.18);transition:all 280ms var(--ease);width:6px;
+}
+.dot.active{background:var(--accent);width:20px}
+
+/* ── nav arrows ── */
+.nav{
+  position:fixed;top:50%;z-index:100;transform:translateY(-50%);
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  color:var(--fg);cursor:pointer;width:42px;height:42px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 180ms;font-size:17px;
+}
+.nav:hover{background:rgba(255,255,255,.1)}
+#prev{left:20px}#next{right:20px}
+
+/* ── phone frame ── */
+.phone{
+  width:var(--pw,290px);height:var(--ph,630px);
+  border-radius:36px;background:var(--bg);
+  position:relative;overflow:hidden;flex-shrink:0;
+  box-shadow:0 28px 56px rgba(0,0,0,.7),0 0 0 7px #111,0 0 0 8px #222;
+}
+.phone-island{
+  position:absolute;top:8px;left:50%;transform:translateX(-50%);
+  width:72px;height:20px;border-radius:14px;background:#000;z-index:30;
+}
+.phone-sb{
+  position:absolute;top:0;left:0;right:0;height:34px;z-index:20;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0 16px;font-size:9px;font-weight:700;color:#fff;
+}
+.phone-bar{
+  position:absolute;bottom:5px;left:50%;transform:translateX(-50%);
+  width:80px;height:3px;border-radius:3px;background:rgba(255,255,255,.55);z-index:30;
+}
+.phone-screen{
+  position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden;
+  font-family:var(--font);font-size:10px;color:var(--fg);
+}
+.phone-tabbar{
+  position:absolute;left:0;right:0;bottom:0;height:46px;
+  background:var(--bg);border-top:1px solid var(--border);
+  display:flex;align-items:center;z-index:10;
+}
+.ptab{
+  flex:1;height:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px;
+  font-size:8px;font-weight:700;color:var(--fg-muted);
+}
+.ptab.on{color:var(--fg)}
+
+/* ── layouts ── */
+.two-col{display:grid;grid-template-columns:1fr auto;gap:56px;flex:1;align-items:center;min-height:0}
+.left-col{display:flex;flex-direction:column;gap:18px;min-width:0}
+.two-phone{display:flex;gap:40px;align-items:flex-start;justify-content:center;flex:1;margin-top:16px}
+.phone-group{display:flex;flex-direction:column;align-items:center;gap:12px}
+.ph-label{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-muted)}
+
+/* ── slide-specific ── */
+
+/* S02 */
+.three-rows{display:flex;flex-direction:column;gap:32px;flex:1;margin-top:8px}
+.three-row{display:grid;grid-template-columns:52px 1fr;gap:20px;align-items:flex-start;padding:24px 0;border-top:1px solid var(--border)}
+.three-num{font-size:12px;font-weight:700;color:var(--fg-dim);letter-spacing:.08em;padding-top:2px}
+.three-lbl{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-muted);margin-bottom:8px}
+.three-stmt{font-size:clamp(16px,1.8vw,26px);font-weight:700;color:var(--fg);letter-spacing:-.01em;line-height:1.2}
+.three-row.hi .three-num,.three-row.hi .three-lbl{color:var(--accent)}
+.three-row.hi .three-stmt{color:var(--accent)}
+
+/* S05 */
+.pov-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;flex:1;margin-top:16px}
+.pov-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 24px;display:flex;flex-direction:column;gap:12px}
+.pov-tag{display:inline-block;background:var(--accent);color:var(--accent-ink);font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border-radius:5px;padding:4px 9px;margin-bottom:4px;align-self:flex-start}
+.pov-head{font-size:clamp(18px,2vw,30px);font-weight:900;letter-spacing:-.02em}
+.pov-body{font-size:clamp(12px,1.2vw,16px);color:var(--fg-muted);line-height:1.5}
+
+/* S07 */
+.four-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;flex:1;margin-top:8px}
+.tcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;gap:10px}
+.tcard-day{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.tcard-title{font-size:clamp(14px,1.5vw,20px);font-weight:900;letter-spacing:-.01em}
+.tcard-body{font-size:clamp(11px,1.1vw,14px);color:var(--fg-muted);line-height:1.5;flex:1}
+.tcard-mock{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;flex:1}
+.tcard-foot{font-size:11px;font-weight:700;color:var(--accent)}
+
+/* S08 */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;flex:1;margin-top:8px}
+.compare-col{display:flex;flex-direction:column;gap:14px}
+.compare-head{font-size:clamp(16px,1.8vw,26px);font-weight:900;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.compare-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;flex:1;display:flex;flex-direction:column;gap:10px}
+
+/* S12 */
+.player-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;flex:1;margin-top:8px}
+.pcard{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px;position:relative}
+.pcard.designed{border-color:var(--accent)}
+.pstatus{position:absolute;top:14px;right:14px;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border-radius:4px;padding:3px 8px}
+.pstatus.d{background:var(--accent);color:var(--accent-ink)}
+.pstatus.s{background:rgba(255,255,255,.08);color:var(--fg-muted)}
+.pname{font-size:clamp(16px,1.8vw,24px);font-weight:900;letter-spacing:-.01em}
+.prole{font-size:10px;font-weight:600;color:var(--fg-muted);letter-spacing:.08em;text-transform:uppercase}
+.pstats{display:flex;flex-direction:column}
+.pstat{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--border)}
+.pstat-lbl{font-size:11px;color:var(--fg-muted)}
+.pstat-val{font-size:clamp(14px,1.5vw,18px);font-weight:900;font-variant-numeric:tabular-nums}
+.pquote{font-size:12px;color:var(--accent);line-height:1.4;border-left:2px solid var(--accent);padding-left:10px}
+
+/* S13 */
+.rej-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;flex:1;margin-top:8px}
+.rej-col{display:flex;flex-direction:column;gap:12px}
+.rej-badge{display:inline-block;background:var(--red);color:#fff;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border-radius:4px;padding:3px 8px;align-self:flex-start}
+.rej-head{font-size:clamp(18px,2vw,28px);font-weight:900;letter-spacing:-.01em}
+.rej-sub{font-size:11px;font-weight:600;color:var(--fg-muted);letter-spacing:.06em;text-transform:uppercase}
+.rej-body{font-size:clamp(12px,1.2vw,15px);color:var(--fg-muted);line-height:1.5}
+.rej-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;flex:1;position:relative;overflow:hidden}
+.rej-x{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:120px;font-weight:900;color:rgba(239,68,68,.06);pointer-events:none}
+
+/* S14 */
+.q-list{display:flex;flex-direction:column;flex:1;margin-top:8px}
+.q-row{display:grid;grid-template-columns:48px 1fr;gap:18px;padding:20px 0;border-top:1px solid var(--border)}
+.q-num{font-size:12px;font-weight:700;color:var(--fg-dim);letter-spacing:.08em;padding-top:2px}
+.q-text{font-size:clamp(14px,1.5vw,21px);font-weight:600;color:var(--fg);line-height:1.35}
+.q-sub{font-size:clamp(11px,1.1vw,14px);color:var(--fg-muted);margin-top:5px;line-height:1.4}
+
+/* ── callout boxes (used in slides 10/11) ── */
+.callout-list{display:flex;flex-direction:column;gap:14px}
+.callout{display:grid;grid-template-columns:24px 1fr;gap:12px;align-items:flex-start}
+.callout-letter{width:24px;height:24px;border-radius:5px;background:var(--accent);color:var(--accent-ink);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.callout-text{font-size:clamp(12px,1.2vw,16px);color:var(--fg-muted);line-height:1.45}
+.callout-text strong{color:var(--fg);font-weight:700}
+
+/* ── phone-screen overlay highlights triggered on slide active ── */
+.slide.active .phone-screen .ag1,
+.slide.active .phone-screen .ag2,
+.slide.active .phone-screen .ag3 { opacity: 1; }
+/* confetti decoration in s09 */
+.slide.active .phone-group .ag1 { opacity: 1; }
+
+/* ── phone screen content ── */
+/* used inside .phone-screen */
+.ps{font-family:var(--font)}
+.ps-header{display:flex;align-items:center;justify-content:space-between;padding:6px 12px 0;height:38px}
+.ps-greeting{padding:14px 12px 10px;font-size:17px;font-weight:900;letter-spacing:-.02em;text-transform:uppercase}
+.ps-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin:0 12px}
+.ps-card-eyebrow{font-size:8px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--fg-muted);margin-bottom:6px}
+.ps-card-result{font-size:16px;font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.ps-divider{height:1px;background:var(--border);margin:10px 0}
+.ps-hero-num{font-size:52px;font-weight:900;letter-spacing:-.04em;line-height:.9;font-variant-numeric:tabular-nums;position:relative;display:inline-block}
+.ps-hero-bar{position:absolute;left:0;bottom:-3px;height:5px;border-radius:2px;background:var(--accent)}
+.ps-narrative{font-size:10px;font-weight:400;line-height:1.45;color:var(--fg);margin-top:10px}
+.ps-cta{font-size:10px;font-weight:700;color:var(--accent);margin-top:8px}
+.ps-section-head{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-muted)}
+
+/* old-app style (slide 3) */
+.old-stats{display:flex;gap:0}
+.old-stat{flex:1;padding:10px 8px;text-align:center;border-right:1px solid var(--border)}
+.old-stat:last-child{border-right:none}
+.old-stat-n{font-size:22px;font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.old-stat-l{font-size:9px;font-weight:600;color:var(--fg-muted);margin-top:2px}
+
+/* profile screen (slides 10/11) */
+.prof-header{padding:38px 12px 8px}
+.prof-name{font-size:28px;font-weight:900;letter-spacing:-.02em;text-transform:uppercase;line-height:1}
+.prof-pills{display:flex;gap:6px;margin-top:10px}
+.prof-pill{border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:3px 10px;font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.prof-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.09);padding-left:4px}
+.prof-tab{padding:9px 10px 7px;font-size:11px;font-weight:400;color:rgba(255,255,255,.35);border-bottom:2px solid transparent;margin-bottom:-1px;cursor:default}
+.prof-tab.on{font-weight:700;color:#fff;border-bottom-color:#fff}
+.prof-body{padding:10px 12px}
+.stat-row{display:flex;align-items:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.07);gap:6px}
+.stat-row-lbl{flex:1;font-size:10px;color:rgba(255,255,255,.5)}
+.stat-row-val{font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;width:36px;text-align:right;padding-right:10px}
+.stat-row-rank{width:34px;text-align:center;font-size:10px;font-weight:500;color:rgba(255,255,255,.5)}
+.stat-row-rank.lime{color:var(--accent);font-weight:700}
+
+/* bar comparison */
+.bar-row{display:flex;align-items:center;gap:6px;margin-bottom:7px}
+.bar-lbl{font-size:9px;color:var(--fg-muted);width:28px;text-align:right}
+.bar-track{flex:1;height:4px;background:var(--border);border-radius:2px;position:relative}
+.bar-you{height:100%;border-radius:2px;background:var(--accent)}
+.bar-avg{position:absolute;top:0;height:100%;border-radius:2px;background:rgba(255,255,255,.2)}
+.bar-val{font-size:9px;font-weight:700;width:20px}
+
+/* hex check */
+.hex-check{display:inline-block;vertical-align:middle}
+</style>
+</head>
+<body>
+<div id="deck">
+<div id="track">
+
+<!-- ══════════════════════════════════════════════════════════
+     S01 — TITLE
+══════════════════════════════════════════════════════════ -->
+<section class="slide" id="s01">
+  <div class="eyebrow a d0"><span class="n">01</span>&nbsp;·&nbsp;Prematch · Senior Product Designer Submission</div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;max-width:860px">
+    <p class="t-label a d1" style="margin-bottom:18px">Design walkthrough · Feature showcase</p>
+    <h1 class="t-hero a d2" style="margin-bottom:20px">
+      Every stat<br>is a story<span class="lime">.</span>
+    </h1>
+    <h2 class="t-hero a d3" style="font-size:clamp(26px,3.2vw,52px);color:var(--fg-muted)">
+      Every story is a<br>reason to come back<span class="lime">.</span>
+    </h2>
+    <p class="t-body a d4" style="margin-top:28px;max-width:560px">
+      Redesigning the personal stats experience for Prematch — and designing for the weekly return.
+    </p>
+  </div>
+  <div class="a d5" style="font-size:13px;color:var(--fg-muted);display:flex;gap:14px;align-items:center">
+    <span style="color:var(--fg);font-weight:700">Daniyal Admaney</span>
+    <span class="dim">·</span><span>Product Designer</span>
+    <span class="dim">·</span><span>May 2026</span>
+    <span class="dim">·</span><span>For Niklas Brackmann, CPO</span>
+  </div>
+  <!-- pitch mark -->
+  <svg class="a a-fade d2" viewBox="0 0 360 360" fill="none" aria-hidden="true"
+       style="position:absolute;right:80px;top:50%;transform:translateY(-50%);width:300px;height:300px;opacity:.06">
+    <circle cx="180" cy="180" r="170" stroke="#fff" stroke-width="1"/>
+    <circle cx="180" cy="180" r="80" stroke="#fff" stroke-width="1"/>
+    <line x1="180" y1="10" x2="180" y2="350" stroke="#fff" stroke-width="1"/>
+    <circle cx="180" cy="180" r="4" fill="#c8f135"/>
+  </svg>
+  <div class="counter"><span class="n">01</span>&nbsp;/&nbsp;15</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     S02 — FRAMING
+══════════════════════════════════════════════════════════ -->
+<section class="slide" id="s02">
+  <div class="eyebrow a d0"><span class="n">02</span>&nbsp;·&nbsp;Framing</div>
+  <div class="a d1">
+    <p class="t-label" style="margin-bottom:10px">What I was asked vs. what I'm answering</p>
+    <h2 class="t-title">Brief · Constraint · <span class="lime">Metric</span></h2>
+  </div>
+  <div class="three-rows" style="flex:1">
+    <div class="three-row a d2">
+      <div class="three-num">01</div>
+      <div>
+        <div class="three-lbl">The brief</div>
+        <div class="three-stmt">Redesign Personal Season Performance Stats <span class="muted">and</span> Personal Season Percentages.</div>
+      </div>
+    </div>
+    <div class="three-row a d3">
+      <div class="three-num">02</div>
+      <div>
+        <div class="three-lbl">The constraint</div>
+        <div class="three-stmt">11 stats, some PRO-gated. <span class="muted">Designed within what Prematch actually has.</span></div>
+      </div>
+    </div>
+    <div class="three-row hi a d4">
+      <div class="three-num">03</div>
+      <div>
+        <div class="three-lbl">The metric</div>
+        <div class="three-stmt">Weekly sessions <span class="muted" style="color:var(--fg-dim)">×</span> session length.</div>
+      </div>
+    </div>
+  </div>
+  <p class="a d5" style="font-size:clamp(14px,1.4vw,20px);color:var(--fg-muted);border-top:1px solid var(--border);padding-top:20px">
+    The third line is what this submission actually answers.
+  </p>
+  <div class="counter"><span class="n">02</span>&nbsp;/&nbsp;15</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     S03 — AUDIT (What I Saw)
+══════════════════════════════════════════════════════════ -->
+<section class="slide" id="s03">
+  <div class="eyebrow a d0"><span class="n">03</span>&nbsp;·&nbsp;Audit</div>
+  <div class="a d1" style="margin-bottom:24px">
+    <p class="t-label" style="margin-bottom:8px">The live app, today</p>
+    <h2 class="t-title">What I saw<span class="lime">.</span></h2>
+  </div>
+  <div class="two-col" style="align-items:flex-start">
+    <!-- left: observation cards -->
+    <div class="left-col a d2" style="gap:20px">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0"></span>
+          <span class="t-label" style="font-size:10px">Section 1 of 2 · Mandatory redesign</span>
+        </div>
+        <div style="font-size:clamp(14px,1.5vw,20px);font-weight:700;margin-bottom:12px">Personal Season Performance Stats</div>
+        <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px">
+          <div class="old-stat"><div class="old-stat-n">20</div><div class="old-stat-l">Games</div></div>
+          <div class="old-stat"><div class="old-stat-n">3</div><div class="old-stat-l">Goals</div></div>
+          <div class="old-stat"><div class="old-stat-n">1</div><div class="old-stat-l">Assists</div></div>
+        </div>
+        <p style="font-size:13px;color:var(--red)">Three numbers. No comparison. No context. No story.</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0"></span>
+          <span class="t-label" style="font-size:10px">Section 2 of 2 · Mandatory redesign</span>
+        </div>
+        <div style="font-size:clamp(14px,1.5vw,20px);font-weight:700;margin-bottom:12px">Personal Season Percentages</div>
+        <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px">
+          <div class="old-stat"><div class="old-stat-n">30%</div><div class="old-stat-l">Win</div></div>
+          <div class="old-stat"><div class="old-stat-n">100%</div><div class="old-stat-l">Starting XI</div></div>
+          <div class="old-stat"><div class="old-stat-n">5%</div><div class="old-stat-l">Goalscorer</div></div>
+        </div>
+        <p style="font-size:13px;color:var(--red)">Three percentages. No squad reference. No rank.</p>
+      </div>
+      <p class="a d4" style="font-size:clamp(14px,1.4vw,20px);color:var(--fg-muted);border-top:1px solid var(--border);padding-top:18px">
+        Stats without story are just receipts. <span class="dim">The data exists. The meaning doesn't.</span>
+      </p>
+    </div>
+    <!-- right: phone mockup — old app -->
+    <div style="position:relative;flex-shrink:0" class="a d3">
+      <div class="phone" style="--pw:270px;--ph:584px">
+        <div class="phone-island"></div>
+        <div class="phone-sb"><span>9:41</span><span>●●● ⬛</span></div>
+        <div class="phone-bar"></div>
+        <div class="phone-screen ps" style="overflow:hidden">
+          <!-- old profile screen -->
+          <div style="padding-top:38px">
+            <div style="padding:10px 12px 6px;display:flex;align-items:center;gap:8px">
+              <div style="width:40px;height:40px;border-radius:50%;background:#2a2a2a;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900">D</div>
+              <div>
+                <div style="font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:-.01em">David Greaves</div>
+                <div style="font-size:9px;color:var(--fg-muted);margin-top:1px">Defender · Ravenshead FC</div>
+              </div>
+            </div>
+            <!-- old stats sections — highlighted by annotations -->
+            <div style="margin:10px 10px 0;border:1px solid var(--border);border-radius:12px;overflow:hidden;position:relative" id="s3-sec1">
+              <div style="background:rgba(255,255,255,.03);padding:10px 12px">
+                <div class="ps-section-head" style="margin-bottom:8px">Personal Season Performance</div>
+                <div class="old-stats">
+                  <div class="old-stat" style="flex:1"><div class="old-stat-n">20</div><div class="old-stat-l">Games</div></div>
+                  <div class="old-stat" style="flex:1"><div class="old-stat-n">3</div><div class="old-stat-l">Goals</div></div>
+                  <div class="old-stat" style="flex:1;border-right:none"><div class="old-stat-n">1</div><div class="old-stat-l">Assists</div></div>
+                </div>
+              </div>
+            </div>
+            <div style="margin:8px 10px 0;border:1px solid var(--border);border-radius:12px;overflow:hidden" id="s3-sec2">
+              <div style="background:rgba(255,255,255,.03);padding:10px 12px">
+                <div class="ps-section-head" style="margin-bottom:8px">Personal Season Percentages</div>
+                <div class="old-stats">
+                  <div class="old-stat" style="flex:1"><div class="old-stat-n">30%</div><div class="old-stat-l">Win %</div></div>
+                  <div class="old-stat" style="flex:1"><div class="old-stat-n">100%</div><div class="old-stat-l">Start XI</div></div>
+                  <div class="old-stat" style="flex:1;border-right:none"><div class="old-stat-n">5%</div><div class="old-stat-l">Scorer %</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- highlight overlays -->
+          <div class="ag1" style="position:absolute;top:98px;left:8px;right:8px;height:76px;border:2px solid rgba(239,68,68,.6);border-radius:12px;pointer-events:none;opacity:0;transition:opacity 400ms 350ms"></div>
+          <div class="ag2" style="position:absolute;top:182px;left:8px;right:8px;height:76px;border:2px solid rgba(239,68,68,.6);border-radius:12px;pointer-events:none;opacity:0;transition:opacity 400ms 650ms"></div>
+        </div>
+      </div>
+      <!-- annotation: section 1 -->
+      <div class="ann-wrap ag1">
+        <svg style="position:absolute;inset:0;overflow:visible;width:100%;height:100%">
+          <line class="ann-line" style="--ll:90" x1="270" y1="136" x2="310" y2="136"/>
+        </svg>
+        <div class="ann-dot" style="left:270px;top:136px"></div>
+        <div class="ann-tag" style="left:314px;top:124px">No context · no rank</div>
+      </div>
+      <!-- annotation: section 2 -->
+      <div class="ann-wrap ag2">
+        <svg style="position:absolute;inset:0;overflow:visible;width:100%;height:100%">
+          <line class="ann-line" style="--ll:90" x1="270" y1="220" x2="310" y2="220"/>
+        </svg>
+        <div class="ann-dot" style="left:270px;top:220px"></div>
+        <div class="ann-tag" style="left:314px;top:208px">No squad reference</div>
+      </div>
+    </div>
+  </div>
+  <div class="counter"><span class="n">03</span>&nbsp;/&nbsp;15</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     S04 — REFRAMING
+══════════════════════════════════════════════════════════ -->
+<section class="slide" id="s04">
+  <div class="eyebrow a d0"><span class="n">04</span>&nbsp;·&nbsp;Reframing</div>
+  <p class="t-label a d1" style="margin-bottom:16px">One question reframed the whole brief</p>
+  <div class="a d2" style="flex:1;display:flex;flex-direction:column;justify-content:center;max-width:900px">
+    <div style="font-size:clamp(28px,4vw,64px);font-weight:900;letter-spacing:-.025em;line-height:1.05;margin-bottom:40px">
+      Why would a grassroots player<br>open Prematch on a <span class="lime" style="text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:6px">Wednesday</span>?
+    </div>
+    <div class="a d3" style="display:flex;flex-direction:column;gap:14px;padding-left:28px;border-left:3px solid var(--border)">
+      <div style="font-size:clamp(14px,1.5vw,22px);color:var(--fg-muted)">→&ensp;The brief asked for <span style="color:var(--fg);font-weight:600">stats redesign.</span></div>
+      <div style="font-size:clamp(14px,1.5vw,22px);color:var(--fg-muted)">→&ensp;The metric asked for <span style="color:var(--fg);font-weight:600">return visits.</span></div>
+      <div style="font-size:clamp(14px,1.5vw,22px);color:var(--fg-muted)">→&ensp;<span style="color:var(--accent);font-weight:700">Those aren't the same job.</span></div>
+    </div>
+  </div>
+  <p class="a d4" style="font-size:clamp(14px,1.4vw,20px);color:var(--fg-muted);border-top:1px solid var(--border);padding-top:18px">
+    I redesigned the stats. <strong style="color:var(--fg)">And I designed for the weekly return.</strong>
+  </p>
+  <div class="counter"><span class="n">04</span>&nbsp;/&nbsp;15</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     S05 — POV
+══════════════════════════════════════════════════════════ -->
+<section class="slide" id="s05">
+  <div class="eyebrow a d0"><span class="n">05</span>&nbsp;·&nbsp;POV</div>
+  <div class="a d1" style="margin-bottom:8px">
+    <p class="t-label" style="margin-bottom:8px">The spine of every decision</p>
+    <h2 class="t-title">Engagement · Narrative · <span class="lime">Return</span></h2>
+  </div>
+  <div class="pov-grid">
+    <div class="pov-card a d2">
+      <div class="pov-tag">Engagement</div>
+      <div class="pov-head">Every screen invites the user somewhere next.</div>
+      <div class="pov-body">CTAs on every card lead to deeper screens. No surface is terminal. The user always has a next step.</div>
+    </div>
+    <div class="pov-card a d3">
+      <div class="pov-tag">Narrative</div>
+      <div class="pov-head">Every stat tells a story.</div>
+      <div class="pov-body">Position-aware stats wrapped in human-language context. Numbers earn meaning. "Joint top scorer" beats "9 goals".</div>
+    </div>
+    <div class="pov-card a d4" style="border-color:var(--accent)">
+      <div class="pov-tag" style="background:var(--accent)">Return</div>
+      <div class="pov-head">Every story is a reason to come back<span class="lime">.</span></div>
+      <div class="pov-body">The home screen surfaces something new every visit — mid-week and match-week alike.</div>
+    </div>
+  </div>
+  <p class="a d5" style="font-size:clamp(13px,1.3vw,18px);color:var(--fg-muted);border-top:1px solid var(--border);padding-top:18px;margin-top:18px">
+    This is the spine of every design decision in this submission. The rest of the deck is evidence.
+  </p>
+  <div class="counter"><span class="n">05</span>&nbsp;/&nbsp;15</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     S06 — HOME SCREEN
+══════════════════════════════════════════════════════════ -->
+<section class="slide" id="s06">
+  <div class="eyebrow a d0"><span class="n">06</span>&nbsp;·&nbsp;Home</div>
+  <div class="two-col">
+    <div class="left-col">
+      <div class="a d1">
+        <p class="t-label" style="margin-bottom:8px">Going beyond the brief — toward the metric</p>
+        <h2 class="t-title">The home screen as a personal <span class="lime">narrative surface.</span></h2>
+      </div>
+      <p class="t-body a d2">The brief didn't ask for this. The metric did.</p>
+      <div class="a d3" style="display:flex;flex-direction:column;gap:0;margin-top:8px">
+        <div style="padding:14px 0;border-top:1px solid var(--border)">
+          <div class="t-label" style="margin-bottom:6px">Why home</div>
+          <div style="font-size:clamp(13px,1.3vw,17px);color:var(--fg);line-height:1.45">Weekly return is driven by what's new on entry — not what's buried two taps deep.</div>
+        </div>
+        <div style="padding:14px 0;border-top:1px solid var(--border)">
+          <div class="t-label" style="margin-bottom:6px">What changed</div>
+          <div style="font-size:clamp(13px,1.3vw,17px);color:var(--fg);line-height:1.45">A 4-card carousel of return triggers. Quick actions. League table footer.</div>
+        </div>
+        <div style="padding:14px 0;border-top:1px solid var(--border)">
+          <div class="t-label" style="margin-bottom:6px">Player shown</div>
+          <div style="font-size:clamp(13px,1.3vw,17px);color:var(--fg)">Lewis Bilbie · Striker · Ravenshead FC</div>
+        </div>
+      </div>
+    </div>
+    <!-- phone: home screen -->
+    <div style="position:relative;flex-shrink:0" class="a d2">
+      <div class="phone" style="--pw:290px;--ph:628px">
+        <div class="phone-island"></div>
+        <div class="phone-sb"><span>9:41</span><span style="display:flex;align-items:center;gap:4px;font-size:8px">●●● ⬛</span></div>
+        <div class="phone-bar"></div>
+        <div class="phone-screen ps">
+          <!-- topbar -->
+          <div class="ps-header" style="padding-top:36px">
+            <div style="width:28px;height:28px;border:1.5px solid #fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900">P</div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <div style="background:#a78bfa;border-radius:6px;padding:4px 8px;font-size:10px;font-weight:800;color:#0d0d0d">Get PRO</div>
+              <div style="font-size:14px;opacity:.7">🔔</div>
+            </div>
+          </div>
+          <div class="ps-greeting">Hi, Lewis Bilbie</div>
+          <!-- carousel card: post-match briefing WON -->
+          <div class="ps-card">
+            <div class="ps-card-eyebrow">Post-Match Briefing · vs Riverside · Sat 18 May</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div class="ps-card-result green-c">WON 3–1</div>
+              <div style="font-size:8px;font-weight:700;color:var(--fg-muted);text-align:right;line-height:1.3;text-transform:uppercase;letter-spacing:.1em">Starting XI<br>90 minutes</div>
+            </div>
+            <div class="ps-divider"></div>
+            <div style="display:flex;align-items:flex-end;gap:10px">
+              <div class="ps-hero-num">3<div class="ps-hero-bar" style="width:72%"></div></div>
+              <div style="font-size:12px;font-weight:500;padding-bottom:7px">goals</div>
+            </div>
+            <div class="ps-narrative">Your first hat trick of the season! That's 9 goals for the year, joint top in your league.</div>
+            <div class="ps-cta">View match details →</div>
+          </div>
+          <!-- carousel dots -->
+          <div style="display:flex;justify-content:center;gap:6px;margin:8px 0">
+            <div style="width:16px;height:4px;border-radius:4px;background:var(--accent)"></div>
+            <div style="width:5px;height:4px;border-radius:4px;background:rgba(255,255,255,.22)"></div>
+            <div style="width:5px;height:4px;border-radius:4px;background:rgba(255,255,255,.22)"></div>
+            <div style="width:5px;height:4px;border-radius:4px;background:rgba(255,255,255,.22)"></div>
+          </div>
+          <!-- quick access -->
+          <div style="display:flex;gap:6px;padding:0 10px;overflow:hidden">
+            <div style="flex:0 0 68px;height:68px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px;display:flex;flex-direction:column;justify-content:space-between">
+              <div style="font-size:12px">📋</div>
+              <div style="font-size:9px;font-weight:700;line-height:1.2">League<br>Table</div>
+            </div>
+            <div style="flex:0 0 68px;height:68px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px;display:flex;flex-direction:column;justify-content:space-between">
+              <div style="font-size:12px">👥</div>
+              <div style="font-size:9px;font-weight:700;line-height:1.2">Team<br>Area</div>
+            </div>
+            <div style="flex:0 0 68px;height:68px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px;display:flex;flex-direction:column;justify-content:space-between">
+              <div style="font-size:12px">🏆</div>
+              <div style="font-size:9px;font-weight:700;line-height:1.2">League<br>Rankings</div>
+            </div>
+          </div>
+          <div class="phone-tabbar">
+            <div class="ptab on">🏠<div>Base</div></div>
+            <div class="ptab">⚽<div>Matches</div></div>
+            <div class="ptab">🛡<div>Team</div></div>
+            <div class="ptab">🏆<div>League</div></div>
+            <div class="ptab">👤<div>Profile</div></div>
+          </div>
+        </div>
+      </div>
+      <!-- annotations -->
+      <div class="ann-wrap ag1">
+        <svg style="position:absolute;inset:0;overflow:visible;width:100%;height:100%">
+          <line class="ann-line" style="--ll:100" x1="290" y1="170" x2="350" y2="150"/>
+        </svg>
+        <div class="ann-dot" style="left:290px;top:170px"></div>
+        <div class="ann-tag" style="left:354px;top:138px">4-card carousel</div>
+      </div>
+      <div class="ann-wrap ag2">
+        <svg style="position:absolute;inset:0;overflow:visible;width:100%;height:100%">
+          <line class="ann-line" style="--ll:100" x1="290" y1="430" x2="350" y2="430"/>
+        </svg>
+        <div class="ann-dot" style="left:290px;top:430px"></div>
+        <div class="ann-tag" style="left:354px;top:418px">Quick access</div>
+      </div>
+    </div>
+  </div>
+  <div class="counter"><span class="n">06</span>&nbsp;/&nbsp;15</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     S07 — FOUR RETURN TRIGGERS
+══════════════════════════════════════════════════════════ -->
+<section class="slide" id="s07">
+  <div class="eyebrow a d0"><span class="n">07</span>&nbsp;·&nbsp;Return triggers</div>
+  <div class="a d1" style="margin-bottom:8px">
+    <p class="t-label" style="margin-bottom:8px">One carousel · Four reasons to come back</p>
+    <h2 class="t-title">Four return triggers<span class="lime">.</span> One carousel<span class="lime">.</span></h2>
+  </div>
+  <div class="four-grid">
+    <div class="tcard a d2">
+      <div class="tcard-day">Mon · Match+1</div>
+      <div class="tcard-title">Post-Match Briefing</div>
+      <div class="tcard-mock">
+        <div style="font-size:13px;font-weight:900;color:var(--green);margin-bottom:6px">WON 4–1</div>
+        <div style="font-size:9px;font-weight:700;color:var(--fg-muted);margin-bottom:4px">vs FC Mansfield Reserves</div>
+        <div style="font-size:24px;font-weight:900;letter-spacing:-.03em;line-height:.9;color:var(--accent);margin-bottom:4px">3</div>
+        <div style="font-size:9px;font-weight:500;color:var(--fg-muted)">goals · hat trick</div>
+        <div style="font-size:10px;margin-top:8px;color:var(--fg);line-height:1.4">Your first hat trick of the season.</div>
+      </div>
+      <div class="tcard-body">Pulls users back the day after a match. Match recap with narrative.</div>
+    </div>
+    <div class="tcard a d3">
+      <div class="tcard-day">Wed · Mid-week</div>
+      <div class="tcard-title">Recent Form</div>
+      <div class="tcard-mock">
+        <div style="display:flex;gap:5px;margin-bottom:8px">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#0d0d0d">W</div>
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#0d0d0d">W</div>
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff">L</div>
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#0d0d0d">W</div>
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#0d0d0d">D</div>
+        </div>
+        <div style="font-size:9px;color:var(--fg-muted)">3 goals · 1 assist · 440 min</div>
+        <div style="font-size:10px;margin-top:6px;color:var(--fg)">Top 20% in the league.</div>
+      </div>
+      <div class="tcard-body">Pulls users back mid-week. Team form + your contribution.</div>
+    </div>
+    <div class="tcard a d4">
+      <div class="tcard-day">Thu · Identity</div>
+      <div class="tcard-title">Where You Stand</div>
+      <div class="tcard-mock">
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div style="display:flex;align-items:center;gap:6px;font-size:10px"><span style="width:16px;color:var(--fg-muted)">7</span><span style="color:var(--fg-muted)">T. Walker</span><span style="margin-left:auto;color:var(--fg-muted)">11g</span></div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:10px"><span style="width:16px;color:var(--fg-muted)">8</span><span style="color:var(--fg-muted)">M. Hadley</span><span style="margin-left:auto;color:var(--fg-muted)">10g</span></div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:10px;border-left:2px solid var(--accent);padding-left:4px"><span style="width:16px;color:var(--accent);font-weight:700">=9</span><span style="color:var(--fg);font-weight:700">L. Bilbie · YOU</span><span style="margin-left:auto;color:var(--accent);font-weight:700">9g</span></div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:10px"><span style="width:16px;color:var(--fg-muted)">=9</span><span style="color:var(--fg-muted)">J. Pryce</span><span style="margin-left:auto;color:var(--fg-muted)">9g</span></div>
+        </div>
+      </div>
+      <div class="tcard-body">Pulls users back on identity days. League ranking with named rivals.</div>
+    </div>
+    <div class="tcard a d5">
+      <div class="tcard-day">Sun · Schedule</div>
+      <div class="tcard-title">Market Value</div>
+      <div class="tcard-mock">
+        <div style="font-size:18px;font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-bottom:4px">£21,840</div>
+        <div style="font-size:10px;font-weight:700;color:var(--accent);margin-bottom:8px">↗ +5.23%</div>
+        <div style="display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.04);border-radius:999px;padding:3px 8px;display:inline-flex">
+          <span style="width:4px;height:4px;border-radius:50%;background:var(--accent)"></span>
+          <span style="font-size:8px;font-weight:700;color:var(--fg-muted);text-transform:uppercase;letter-spacing:.1em">Updates in</span>
+          <span style="font-size:10px;font-weight:800;font-variant-numeric:tabular-nums">18:03:24</span>
+        </div>
+      </div>
+      <div class="tcard-body">Pulls users back on a schedule. Countdown until next update.</div>
+    </div>
+  </div>
+  <p class="a d6" style="font-size:clamp(12px,1.2vw,16px);color:var(--fg-muted);border-top:1px solid var(--border);padding-top:16px;margin-top:16px">
+    Different return triggers for different days of the week.
+  </p>
+  <div class="counter"><span class="n">07</span>&nbsp;/&nbsp;15</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     S08 — NARRATIVE vs PILLS
+══════════════════════════════════════════════════════════ -->
+<section class="slide" id="s08">
+  <div class="eyebrow a d0"><span class="n">08</span>&nbsp;·&nbsp;Treatment choice</div>
+  <div class="a d1" style="margin-bottom:8px">
+    <p class="t-label" style="margin-bottom:8px">Why I rejected the obvious treatment</p>
+    <h2 class="t-title">Why narrative<span class="lime">,</span> not pills<span class="lime">.</span></h2>
+  </div>
+  <div class="compare-grid">
+    <div class="compare-col a d2">
+      <div class="compare-head"><span class="red-c" style="font-size:22px">✕</span> The easy path</div>
+      <div class="compare-box">
+        <div style="font-size:11px;font-weight:700;color:var(--fg-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Stats + pills + achievement badges</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+          <div style="background:rgba(255,255,255,.08);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600">+3 Goals</div>
+          <div style="background:rgba(255,255,255,.08);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600">1 Assist</div>
+          <div style="background:rgba(255,255,255,.08);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600">90 Mins</div>
+        </div>
+        <div style="display:flex;gap:10px;font-size:26px;margin-bottom:12px">⭐ 🔥 ⚡ ▲</div>
+        <div style="font-size:13px;color:var(--fg-muted);line-height:1.45">Tells you what happened. Feels like data entry. No emotional weight.</div>
+      </div>
+    </div>
+    <div class="compare-col a d3">
+      <div class="compare-head"><span class="lime" style="font-size:22px">●</span> The chosen path</div>
+      <div class="compare-box" style="border-color:var(--accent)">
+        <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Post-Match Briefing · narrative card</div>
+        <div style="background:rgba(200,241,53,.06);border-radius:10px;padding:14px;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:700;margin-bottom:6px">Post-Match Briefing · Sun 21 May</div>
+          <div style="font-size:13px;line-height:1.5;color:var(--fg)">Your first hat trick of the season. That's 9 goals for the year, <strong style="color:var(--accent)">joint top scorer in your league</strong>. You'd need 2 more this week to break the squad record.</div>
+        </div>
+        <div style="font-size:13px;color:var(--fg-muted);line-height:1.45">Tells you what it <em>means</em>. Emotional weight. Reason to share. Reason to come back.</div>
+      </div>
+    </div>
+  </div>
+  <p class="a d4" style="font-size:clamp(14px,1.5vw,22px);font-weight:700;color:var(--fg);border-top:1px solid var(--border);padding-top:18px;margin-top:8px">
+    Pills tell you what happened. <span class="lime">Narrative tells you what it means.</span>
+  </p>
+  <div class="counter"><span class="n">08</span>&nbsp;/&nbsp;15</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     S09 — SYSTEM RESILIENCE (WON / LOST)
+══════════════════════════════════════════════════════════ -->
+<section class="slide" id="s09">
+  <div class="eyebrow a d0"><span class="n">09</span>&nbsp;·&nbsp;Resilience of the system</div>
+  <div class="a d1" style="margin-bottom:8px">
+    <p class="t-label" style="margin-bottom:8px">The system handles every match outcome</p>
+    <h2 class="t-title">Same card structure<span class="lime">.</span> Different stories<span class="lime">.</span></h2>
+  </div>
+  <div class="two-phone">
+    <!-- WON phone -->
+    <div class="phone-group a d2">
+      <div class="ph-label" style="color:var(--green)">Won · Card 1 variant A</div>
+      <div style="position:relative">
+        <div class="phone" style="--pw:250px;--ph:390px;border-radius:28px">
+          <div class="phone-island" style="width:60px;height:16px;top:6px"></div>
+          <div class="phone-sb" style="font-size:8px"><span>9:41</span><span>●●</span></div>
+          <div class="phone-bar" style="width:70px;height:3px;bottom:4px"></div>
+          <div class="phone-screen ps">
+            <div style="padding:34px 12px 12px">
+              <div class="ps-card-eyebrow">Post-Match Briefing · vs FC Mansfield</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                <div style="font-size:18px;font-weight:900;color:var(--green);letter-spacing:-.02em">WON 4–1</div>
+                <div style="font-size:8px;color:var(--fg-muted);text-align:right;text-transform:uppercase;letter-spacing:.1em;line-height:1.3">Starting XI<br>90 min</div>
+              </div>
+              <div style="height:1px;background:var(--border);margin:8px 0"></div>
+              <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:6px">
+                <div style="font-size:48px;font-weight:900;letter-spacing:-.04em;line-height:.9;color:var(--fg);position:relative">
+                  3
+                  <div style="position:absolute;left:0;bottom:-3px;width:70%;height:4px;border-radius:2px;background:var(--accent)"></div>
+                </div>
+                <div style="font-size:13px;font-weight:500;padding-bottom:6px">goals</div>
+              </div>
+              <div style="font-size:10px;line-height:1.4;margin-top:10px;color:var(--fg)">Your first hat trick of the season! That's 9 goals — joint top scorer.</div>
+              <div style="margin-top:8px;font-size:10px;font-weight:700;color:var(--green)">WON: Hat trick celebration 🎉</div>
+              <div style="margin-top:10px;font-size:10px;font-weight:700;color:var(--accent)">View match details →</div>
+            </div>
+          </div>
+        </div>
+        <!-- confetti dots decoration -->
+        <div class="ag1" style="position:absolute;top:40px;left:0;right:0;height:60px;pointer-events:none;overflow:hidden;opacity:0;transition:opacity 400ms 350ms">
+          <div style="position:absolute;left:20%;top:10px;width:5px;height:8px;background:var(--accent);border-radius:2px;transform:rotate(30deg)"></div>
+          <div style="position:absolute;left:60%;top:5px;width:5px;height:8px;background:#22c55e;border-radius:2px;transform:rotate(-20deg)"></div>
+          <div style="position:absolute;left:40%;top:15px;width:4px;height:4px;background:#fff;border-radius:50%"></div>
+          <div style="position:absolute;left:75%;top:12px;width:5px;height:8px;background:var(--accent);border-radius:2px;transform:rotate(45deg)"></div>
+          <div style="position:absolute;left:15%;top:20px;width:4px;height:4px;background:#22c55e;border-radius:50%"></div>
+        </div>
+      </div>
+    </div>
+    <!-- LOST phone -->
+    <div class="phone-group a d3">
+      <div class="ph-label" style="color:var(--red)">Lost · Card 1 variant B</div>
+      <div style="position:relative">
+        <div class="phone" style="--pw:250px;--ph:390px;border-radius:28px">
+          <div class="phone-island" style="width:60px;height:16px;top:6px"></div>
+          <div class="phone-sb" style="font-size:8px"><span>9:41</span><span>●●</span></div>
+          <div class="phone-bar" style="width:70px;height:3px;bottom:4px"></div>
+          <div class="phone-screen ps">
+            <div style="padding:34px 12px 12px">
+              <div class="ps-card-eyebrow">Post-Match Briefing · vs Sherwood Athletic</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                <div style="font-size:18px;font-weight:900;color:var(--red);letter-spacing:-.02em">LOST 2–4</div>
+                <div style="font-size:8px;color:var(--fg-muted);text-align:right;text-transform:uppercase;letter-spacing:.1em;line-height:1.3">Subbed on<br>50' · 40 min</div>
+              </div>
+              <div style="height:1px;background:var(--border);margin:8px 0"></div>
+              <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:6px">
+                <div style="font-size:48px;font-weight:900;letter-spacing:-.04em;line-height:.9;color:var(--fg);position:relative">
+                  2
+                  <div style="position:absolute;left:0;bottom:-3px;width:70%;height:4px;border-radius:2px;background:var(--accent)"></div>
+                </div>
+                <div style="font-size:13px;font-weight:500;padding-bottom:6px">contributions</div>
+              </div>
+              <div style="font-size:10px;line-height:1.4;margin-top:10px;color:var(--fg)">1 goal, 1 assist off the bench. Your most impactful sub appearance of the season.</div>
+              <div style="margin-top:8px;font-size:10px;font-weight:700;color:var(--accent)">Best impact-per-minute · squad</div>
+              <div style="margin-top:10px;font-size:10px;font-weight:700;color:var(--accent)">View match details →</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="a d4" style="font-size:clamp(13px,1.3vw,18px);color:var(--fg-muted);border-top:1px solid var(--border);padding-top:16px;margin-top:16px">
+    WON: hat trick celebration. LOST: impactful sub appearance found in defeat. <strong style="color:var(--fg)">The system finds positive truth without lying.</strong>
+  </p>
+  <div class="counter"><span class="n">09</span>&nbsp;/&nbsp;15</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     S10 — PROFILE OVERVIEW
+══════════════════════════════════════════════════════════ -->
+<section class="slide" id="s10">
+  <div class="eyebrow a d0"><span class="n">10</span>&nbsp;·&nbsp;Profile · Overview</div>
+  <div class="two-col">
+    <div class="left-col">
+      <div class="a d1">
+        <p class="t-label" style="margin-bottom:8px">The brief's mandatory sections — redesigned in context</p>
+        <h2 class="t-title">Overview: the story.<br>Stats: the data.</h2>
+      </div>
+      <p class="t-body a d2">Two depths. Two audiences. The casual player wants 30 seconds of meaning. The obsessive wants every number.</p>
+      <div class="callout-list a d3">
+        <div class="callout">
+          <div class="callout-letter">A</div>
+          <div class="callout-text"><strong>Synthesized narrative</strong> — "Joint top scorer in the league." One sentence of context before any numbers.</div>
+        </div>
+        <div class="callout">
+          <div class="callout-letter">B</div>
+          <div class="callout-text"><strong>Market value in context</strong> — £21,840 +5.23% with squad rank. Not a raw number — a story of progress.</div>
+        </div>
+        <div class="callout">
+          <div class="callout-letter">C</div>
+          <div class="callout-text"><strong>YOU vs TEAM bars</strong> — Percentages with squad rank. 100% Starting XI means more when you see the bar.</div>
+        </div>
+      </div>
+    </div>
+    <!-- phone: profile overview -->
+    <div style="position:relative;flex-shrink:0" class="a d2">
+      <div class="phone" style="--pw:280px;--ph:608px">
+        <div class="phone-island"></div>
+        <div class="phone-sb"><span>9:41</span><span>●●● ⬛</span></div>
+        <div class="phone-bar"></div>
+        <div class="phone-screen ps">
+          <div style="overflow:hidden;height:100%">
+            <div class="prof-header" style="padding-top:44px">
+              <div style="display:flex;align-items:flex-start;gap:7px">
+                <div class="prof-name">LEWIS<br>BILBIE</div>
+                <svg class="hex-check" width="20" height="20" viewBox="0 0 26 26" fill="none" style="margin-top:4px">
+                  <path d="M13 1 L24 7 L24 19 L13 25 L2 19 L2 7 Z" fill="#c8f135"/>
+                  <path d="M8.5 13 L11.5 16 L17.5 10" stroke="#0d0d0d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="prof-pills" style="margin-top:8px">
+                <div class="prof-pill">STRIKER</div>
+                <div class="prof-pill">RAVENSHEAD FC</div>
+              </div>
+            </div>
+            <div class="prof-tabs">
+              <div class="prof-tab on">Overview</div>
+              <div class="prof-tab">Stats</div>
+              <div class="prof-tab">Matches</div>
+              <div class="prof-tab">Career</div>
+            </div>
+            <div class="prof-body">
+              <!-- A: narrative -->
+              <div id="s10-a" style="background:rgba(200,241,53,.06);border-radius:10px;padding:10px;margin-bottom:8px">
+                <div style="font-size:9px;font-weight:700;color:var(--fg-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">Season so far</div>
+                <div style="font-size:12px;line-height:1.45;color:var(--fg)">Joint top scorer in the league. Starting every game available this season.</div>
+              </div>
+              <!-- B: market value -->
+              <div id="s10-b" style="background:var(--surface2);border-radius:10px;padding:10px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+                <div>
+                  <div style="font-size:9px;font-weight:700;color:var(--fg-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px">Market Value</div>
+                  <div style="font-size:18px;font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums">£21,840</div>
+                  <div style="font-size:10px;font-weight:700;color:var(--accent)">+5.23% · 5th in squad</div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-size:9px;color:var(--fg-muted)">Updates in</div>
+                  <div style="font-size:13px;font-weight:800;font-variant-numeric:tabular-nums">18:03:24</div>
+                </div>
+              </div>
+              <!-- C: bars -->
+              <div id="s10-c" style="background:rgba(255,255,255,.03);border-radius:10px;padding:10px">
+                <div style="font-size:9px;font-weight:700;color:var(--fg-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Personal Season Percentages</div>
+                <div style="margin-bottom:6px">
+                  <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--fg-muted);margin-bottom:3px"><span>Win %</span><span style="color:var(--accent);font-weight:700">#2 Squad</span></div>
+                  <div style="height:4px;background:var(--border);border-radius:2px;position:relative"><div style="width:71%;height:100%;border-radius:2px;background:var(--accent)"></div></div>
+                </div>
+                <div style="margin-bottom:6px">
+                  <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--fg-muted);margin-bottom:3px"><span>Starting XI</span><span style="color:var(--accent);font-weight:700">#1 Squad</span></div>
+                  <div style="height:4px;background:var(--border);border-radius:2px"><div style="width:100%;height:100%;border-radius:2px;background:var(--accent)"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--fg-muted);margin-bottom:3px"><span>Goalscorer %</span><span style="color:var(--accent);font-weight:700">#1 Squad</span></div>
+                  <div style="height:4px;background:var(--border);border-radius:2px"><div style="width:64%;height:100%;border-radius:2px;background:var(--accent)"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- annotations -->
+      <div class="ann-wrap ag1">
+        <svg style="position:absolute;inset:0;overflow:visible;width:100%;height:100%">
+          <line class="ann-line" style="--ll:90" x1="-10" y1="280" x2="-70" y2="280"/>
+        </svg>
+        <div class="ann-dot" style="left:-10px;top:280px"></div>
+        <div class="ann-tag" style="right:294px;top:268px">A — narrative</div>
+      </div>
+      <div class="ann-wrap ag2">
+        <svg style="position:absolute;inset:0;overflow:visible;width:100%;height:100%">
+          <line class="ann-line" style="--ll:90" x1="-10" y1="340" x2="-70" y2="340"/>
+        </svg>
+        <div class="ann-dot" style="left:-10px;top:340px"></div>
+        <div class="ann-tag" style="right:294px;top:328px">B — market value</div>
+      </div>
+      <div class="ann-wrap ag3">
+        <svg style="position:absolute;inset:0;overflow:visible;width:100%;height:100%">
+          <line class="ann-line" style="--ll:90" x1="-10" y1="430" x2="-70" y2="430"/>
+        </svg>
+        <div class="ann-dot" style="left:-10px;top:430px"></div>
+        <div class="ann-tag" style="right:294px;top:418px">C — YOU vs TEAM</div>
+      </div>
+    </div>
+  </div>
+  <div class="counter"><span class="n">10</span>&nbsp;/&nbsp;15</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     S11 — PROFILE STATS
+══════════════════════════════════════════════════════════ -->
+<section class="slide" id="s11">
+  <div class="eyebrow a d0"><span class="n">11</span>&nbsp;·&nbsp;Profile · Stats</div>
+  <div class="two-col">
+    <div class="left-col">
+      <div class="a d1">
+        <p class="t-label" style="margin-bottom:8px">For the player who wants every number</p>
+        <h2 class="t-title">Power users want depth<span class="lime">.</span></h2>
+      </div>
+      <p class="t-body a d2">The Statistical Breakdown table shows every stat with Team Rank and League Rank context the original didn't have.</p>
+      <div class="callout-list a d3">
+        <div class="callout">
+          <div class="callout-letter">A</div>
+          <div class="callout-text"><strong>All 11 stats. Two rank columns.</strong> Team Rank and League Rank live alongside every value. The number you see is never alone.</div>
+        </div>
+        <div class="callout">
+          <div class="callout-letter">B</div>
+          <div class="callout-text"><strong>Lime treatment on #1 rankings.</strong> Goals: rank 1 in team, rank 1 in league. The lime cells earn attention by being rare.</div>
+        </div>
+        <div class="callout">
+          <div class="callout-letter">C</div>
+          <div class="callout-text"><strong>PRO-gated stats remain PRO-gated.</strong> Designed within what Prematch actually has. No new data sources required.</div>
+        </div>
+      </div>
+      <p class="t-body a d4" style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
+        The story is on Overview. The receipts are here — enriched with rank context the original didn't have.
+      </p>
+    </div>
+    <!-- phone: stats tab -->
+    <div style="position:relative;flex-shrink:0" class="a d2">
+      <div class="phone" style="--pw:280px;--ph:608px">
+        <div class="phone-island"></div>
+        <div class="phone-sb"><span>9:41</span><span>●●● ⬛</span></div>
+        <div class="phone-bar"></div>
+        <div class="phone-screen ps">
+          <div style="overflow:hidden;height:100%">
+            <div class="prof-header" style="padding-top:44px">
+              <div style="display:flex;align-items:flex-start;gap:7px">
+                <div class="prof-name" style="font-size:22px">LEWIS BILBIE</div>
+                <svg class="hex-check" width="16" height="16" viewBox="0 0 26 26" fill="none" style="margin-top:3px">
+                  <path d="M13 1 L24 7 L24 19 L13 25 L2 19 L2 7 Z" fill="#c8f135"/>
+                  <path d="M8.5 13 L11.5 16 L17.5 10" stroke="#0d0d0d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+            <div class="prof-tabs">
+              <div class="prof-tab">Overview</div>
+              <div class="prof-tab on">Stats</div>
+              <div class="prof-tab">Matches</div>
+              <div class="prof-tab">Career</div>
+            </div>
+            <div class="prof-body" style="padding-top:6px">
+              <!-- column headers -->
+              <div style="display:flex;align-items:flex-end;justify-content:flex-end;gap:0;margin-bottom:2px;padding-right:0">
+                <div style="width:36px"></div>
+                <div style="width:34px;text-align:center;font-size:8px;font-weight:700;color:rgba(255,255,255,.35);line-height:1.2">Team<br>Rank</div>
+                <div style="width:34px;text-align:center;font-size:8px;font-weight:700;color:rgba(255,255,255,.35);line-height:1.2">Lg<br>Rank</div>
+              </div>
+              <!-- stat rows -->
+              <div style="position:relative">
+                <div style="position:absolute;top:0;bottom:0;right:34px;width:1px;background:rgba(255,255,255,.1)"></div>
+                <!-- Goals — #1 lime -->
+                <div class="stat-row" id="s11-b">
+                  <div class="stat-row-lbl">Goals</div>
+                  <div class="stat-row-val">9</div>
+                  <div class="stat-row-rank lime">#1</div>
+                  <div class="stat-row-rank lime">#1</div>
+                </div>
+                <div class="stat-row">
+                  <div class="stat-row-lbl">Assists</div>
+                  <div class="stat-row-val">4</div>
+                  <div class="stat-row-rank">#1</div>
+                  <div class="stat-row-rank">#7</div>
+                </div>
+                <div class="stat-row">
+                  <div class="stat-row-lbl">Matches Played</div>
+                  <div class="stat-row-val">18</div>
+                  <div class="stat-row-rank">#4</div>
+                  <div class="stat-row-rank">#23</div>
+                </div>
+                <div class="stat-row">
+                  <div class="stat-row-lbl" style="display:flex;align-items:center;gap:4px">
+                    Mins Played
+                    <span style="background:#6d28d9;color:#fff;font-size:7px;font-weight:800;letter-spacing:.04em;border-radius:3px;padding:1px 4px">PRO</span>
+                  </div>
+                  <div class="stat-row-val">1521</div>
+                  <div class="stat-row-rank">#3</div>
+                  <div class="stat-row-rank">#19</div>
+                </div>
+                <div class="stat-row">
+                  <div class="stat-row-lbl">Starting XI</div>
+                  <div class="stat-row-val">89%</div>
+                  <div class="stat-row-rank">#2</div>
+                  <div class="stat-row-rank">#11</div>
+                </div>
+                <div class="stat-row">
+                  <div class="stat-row-lbl" style="display:flex;align-items:center;gap:4px">
+                    Mins per Goal
+                    <span style="background:#6d28d9;color:#fff;font-size:7px;font-weight:800;letter-spacing:.04em;border-radius:3px;padding:1px 4px">PRO</span>
+                  </div>
+                  <div class="stat-row-val">147</div>
+                  <div class="stat-row-rank lime">#1</div>
+                  <div class="stat-row-rank">#3</div>
+                </div>
+                <div class="stat-row">
+                  <div class="stat-row-lbl">Win %</div>
+                  <div class="stat-row-val">56%</div>
+                  <div class="stat-row-rank">#6</div>
+                  <div class="stat-row-rank">#14</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- annotations -->
+      <div class="ann-wrap ag1">
+        <svg style="position:absolute;inset:0;overflow:visible;width:100%;height:100%">
+          <line class="ann-line" style="--ll:90" x1="280" y1="320" x2="340" y2="300"/>
+        </svg>
+        <div class="ann-dot" style="left:280px;top:320px"></div>
+        <div class="ann-tag" style="left:344px;top:288px">A — rank columns</div>
+      </div>
+      <div class="ann-wrap ag2">
+        <svg style="position:absolute;inset:0;overflow:visible;width:100%;height:100%">
+          <line class="ann-line" style="--ll:90" x1="280" y1="360" x2="340" y2="380"/>
+        </svg>
+        <div class="ann-dot" style="left:280px;top:360px"></div>
+        <div class="ann-tag" style="left:344px;top:368px">B — lime for #1</div>
+      </div>
+      <div class="ann-wrap ag3">
+        <svg style="position:absolute;inset:0;overflow:visible;width:100%;height:100%">
+          <line class="ann-line" style="--ll:90" x1="280" y1="440" x2="340" y2="460"/>
+        </svg>
+        <div class="ann-dot" style="left:280px;top:440px"></div>
+        <div class="ann-tag" style="left:344px;top:448px">C — PRO gating</div>
+      </div>
+    </div>
+  </div>
+  <div class="counter"><span class="n">11</span>&nbsp;/&nbsp;15</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     S12 — POSITION-AWARE LOGIC
+══════════════════════════════════════════════════════════ -->
+<section class="slide" id="s12">
+  <div class="eyebrow a d0"><span class="n">12</span>&nbsp;·&nbsp;Position-aware logic</div>
+  <div class="a d1" style="margin-bottom:8px">
+    <p class="t-label" style="margin-bottom:8px">The same system, three player types</p>
+    <h2 class="t-title">The system adapts to every player type<span class="lime">.</span></h2>
+  </div>
+  <div class="player-grid">
+    <div class="pcard designed a d2">
+      <div class="pstatus d">Designed ●</div>
+      <div class="pname">Lewis Bilbie</div>
+      <div class="prole">#9 · Striker</div>
+      <div class="pstats">
+        <div class="pstat"><div class="pstat-lbl">Goals</div><div class="pstat-val lime">9</div></div>
+        <div class="pstat"><div class="pstat-lbl">Assists</div><div class="pstat-val">4</div></div>
+        <div class="pstat"><div class="pstat-lbl">Scorer %</div><div class="pstat-val">64%</div></div>
+      </div>
+      <div class="pquote">"Joint top scorer in your league."</div>
+      <div style="font-size:11px;color:var(--fg-muted);line-height:1.4">Hero stats &amp; comparison framing optimized for goal-scoring impact.</div>
+    </div>
+    <div class="pcard a d3">
+      <div class="pstatus s">Described</div>
+      <div class="pname">David Greaves</div>
+      <div class="prole">#3 · Center Back</div>
+      <div class="pstats">
+        <div class="pstat"><div class="pstat-lbl">Clean Sheets</div><div class="pstat-val">8</div></div>
+        <div class="pstat"><div class="pstat-lbl">CS %</div><div class="pstat-val">53%</div></div>
+        <div class="pstat"><div class="pstat-lbl">Starting XI</div><div class="pstat-val">100%</div></div>
+      </div>
+      <div class="pquote">"Top defensive record on your team."</div>
+      <div style="font-size:11px;color:var(--fg-muted);line-height:1.4">Different stats. Different framing. Same return loop.</div>
+    </div>
+    <div class="pcard a d4">
+      <div class="pstatus s">Described</div>
+      <div class="pname">Jordan Warriner</div>
+      <div class="prole">#16 · Reserve · 0 goals</div>
+      <div class="pstats">
+        <div class="pstat"><div class="pstat-lbl">Starting Streak</div><div class="pstat-val lime">12</div></div>
+        <div class="pstat"><div class="pstat-lbl">Minutes</div><div class="pstat-val">1,080</div></div>
+        <div class="pstat"><div class="pstat-lbl">Selected</div><div class="pstat-val">100%</div></div>
+      </div>
+      <div class="pquote">"The manager's first choice. 12 matches in a row."</div>
+      <div style="font-size:11px;color:var(--fg-muted);line-height:1.4">The system finds positive truth even at zero goals.</div>
+    </div>
+  </div>
+  <div class="counter"><span class="n">12</span>&nbsp;/&nbsp;15</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     S13 — REJECTED PATHS
+══════════════════════════════════════════════════════════ -->
+<section class="slide" id="s13">
+  <div class="eyebrow a d0"><span class="n">13</span>&nbsp;·&nbsp;Rejected paths</div>
+  <div class="a d1" style="margin-bottom:8px">
+    <p class="t-label" style="margin-bottom:8px">What I chose not to ship</p>
+    <h2 class="t-title">Senior design is what you say <span class="lime">no</span> to<span class="lime">.</span></h2>
+  </div>
+  <div class="rej-grid">
+    <div class="rej-col a d2">
+      <div class="rej-badge">Rejected</div>
+      <div class="rej-head">Exploration A — ORBIT View</div>
+      <div class="rej-sub">Kinetic, jersey-centered layout</div>
+      <div class="rej-box">
+        <div class="rej-x">○</div>
+        <div style="position:relative;z-index:1">
+          <div style="display:flex;gap:16px;justify-content:center;margin-bottom:12px">
+            <div style="text-align:center"><div style="font-size:20px;font-weight:900;color:var(--accent)">9</div><div style="font-size:9px;color:var(--fg-muted)">Goals</div></div>
+            <div style="text-align:center"><div style="font-size:20px;font-weight:900">4</div><div style="font-size:9px;color:var(--fg-muted)">Assists</div></div>
+            <div style="text-align:center"><div style="font-size:20px;font-weight:900">14</div><div style="font-size:9px;color:var(--fg-muted)">Games</div></div>
+          </div>
+          <div style="text-align:center;font-size:11px;color:var(--fg-muted);letter-spacing:.1em;text-transform:uppercase">· · · · ORBIT · · · ·</div>
+        </div>
+      </div>
+      <div class="rej-body">Beautiful but loses narrative context. Stats become labels without stories. Could work as a year-end recap or share card. <strong style="color:var(--fg)">Wrong fit for the weekly metric.</strong></div>
+    </div>
+    <div class="rej-col a d3">
+      <div class="rej-badge">Rejected</div>
+      <div class="rej-head">Exploration B — Badges &amp; Achievements</div>
+      <div class="rej-sub">Achievement badge system on profile</div>
+      <div class="rej-box">
+        <div class="rej-x">◻</div>
+        <div style="position:relative;z-index:1">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:12px">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;width:72px">
+              <div style="font-size:20px;margin-bottom:4px">⭐</div>
+              <div style="font-size:8px;font-weight:700;color:var(--fg-muted)">Hat Trick</div>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;width:72px">
+              <div style="font-size:20px;margin-bottom:4px">🔥</div>
+              <div style="font-size:8px;font-weight:700;color:var(--fg-muted)">Hot Streak</div>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;width:72px">
+              <div style="font-size:20px;margin-bottom:4px">🎯</div>
+              <div style="font-size:8px;font-weight:700;color:var(--fg-muted)">Top Scorer</div>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:11px;color:var(--fg-muted)">Prematch Facts compete with badges</div>
+        </div>
+      </div>
+      <div class="rej-body">Badges compete with Prematch Facts. Two identity systems on one screen dilute both. <strong style="color:var(--fg)">Senior design is what you say no to.</strong></div>
+    </div>
+  </div>
+  <div class="counter"><span class="n">13</span>&nbsp;/&nbsp;15</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     S14 — OPEN QUESTIONS
+══════════════════════════════════════════════════════════ -->
+<section class="slide" id="s14">
+  <div class="eyebrow a d0"><span class="n">14</span>&nbsp;·&nbsp;Open questions</div>
+  <div class="a d1" style="margin-bottom:4px">
+    <p class="t-label" style="margin-bottom:8px">What I assumed · what I'd validate</p>
+    <h2 class="t-title">Things I assumed<span class="lime">.</span> Things I'd validate<span class="lime">.</span></h2>
+  </div>
+  <div class="q-list" style="flex:1">
+    <div class="q-row a d2">
+      <div class="q-num">01</div>
+      <div>
+        <div class="q-text">League-wide comparisons require querying across teams.</div>
+        <div class="q-sub">Is this in the current data model, or would it need to be built?</div>
+      </div>
+    </div>
+    <div class="q-row a d3">
+      <div class="q-num">02</div>
+      <div>
+        <div class="q-text">Match-by-match data is assumed available.</div>
+        <div class="q-sub">Confirms with current backend infrastructure.</div>
+      </div>
+    </div>
+    <div class="q-row a d4">
+      <div class="q-num">03</div>
+      <div>
+        <div class="q-text">Fact generation logic — rule-based, LLM-assisted, or hybrid?</div>
+        <div class="q-sub">Affects how narratives scale across players and weeks.</div>
+      </div>
+    </div>
+    <div class="q-row a d5">
+      <div class="q-num">04</div>
+      <div>
+        <div class="q-text">PRO gating: hero narratives stay free, deep stats stay gated?</div>
+        <div class="q-sub">Or does the narrative layer become its own paid tier?</div>
+      </div>
+    </div>
+  </div>
+  <p class="a d6" style="font-size:clamp(13px,1.3vw,18px);color:var(--fg-muted);border-top:1px solid var(--border);padding-top:16px">
+    I made these assumptions to keep moving. Each one is a real conversation.
+  </p>
+  <div class="counter"><span class="n">14</span>&nbsp;/&nbsp;15</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     S15 — CLOSING
+══════════════════════════════════════════════════════════ -->
+<section class="slide" id="s15">
+  <div class="eyebrow a d0"><span class="n">15</span>&nbsp;·&nbsp;Bringing it back</div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;max-width:900px">
+    <p class="t-label a d1" style="margin-bottom:18px">The answer</p>
+    <h1 class="t-hero a d2" style="margin-bottom:20px">
+      Every stat<br>is a story<span class="lime">.</span>
+    </h1>
+    <h2 class="t-hero a d3" style="font-size:clamp(26px,3.2vw,52px);color:var(--fg-muted)">
+      Every story is a<br>reason to come back<span class="lime">.</span>
+    </h2>
+    <p class="t-body a d4" style="margin-top:28px;font-size:clamp(15px,1.5vw,22px);color:var(--fg-muted)">
+      Stats redesign was the brief. <strong style="color:var(--fg)">Designing for return was the answer.</strong>
+    </p>
+  </div>
+  <div class="a d5" style="font-size:13px;color:var(--fg-dim);border-top:1px solid var(--border);padding-top:18px">
+    — END — &nbsp;·&nbsp; Daniyal Admaney &nbsp;·&nbsp; For Prematch
+  </div>
+  <!-- pitch mark -->
+  <svg class="a a-fade d2" viewBox="0 0 360 360" fill="none" aria-hidden="true"
+       style="position:absolute;right:80px;top:50%;transform:translateY(-50%);width:300px;height:300px;opacity:.06">
+    <circle cx="180" cy="180" r="170" stroke="#fff" stroke-width="1"/>
+    <circle cx="180" cy="180" r="80" stroke="#fff" stroke-width="1"/>
+    <line x1="180" y1="10" x2="180" y2="350" stroke="#fff" stroke-width="1"/>
+    <circle cx="180" cy="180" r="4" fill="#c8f135"/>
+  </svg>
+  <div class="counter"><span class="n">15</span>&nbsp;/&nbsp;15</div>
+</section>
+
+</div><!-- /track -->
+
+<div id="dots"></div>
+<button class="nav" id="prev">&#8592;</button>
+<button class="nav" id="next">&#8594;</button>
+</div><!-- /deck -->
+
+<script>
+(function(){
+  const TOTAL = 15;
+  let cur = 0;
+  const track = document.getElementById('track');
+  const dotsEl = document.getElementById('dots');
+  const slides = Array.from(track.querySelectorAll('.slide'));
+
+  // build dots
+  slides.forEach((_, i) => {
+    const b = document.createElement('button');
+    b.className = 'dot';
+    b.setAttribute('aria-label', 'Slide ' + (i+1));
+    b.onclick = () => goTo(i);
+    dotsEl.appendChild(b);
+  });
+
+  function goTo(i) {
+    slides[cur].classList.remove('active');
+    cur = Math.max(0, Math.min(TOTAL - 1, i));
+    track.style.transform = 'translateX(' + (-cur * 100) + 'vw)';
+    slides[cur].classList.add('active');
+    // update dots
+    dotsEl.querySelectorAll('.dot').forEach((d, j) => d.classList.toggle('active', j === cur));
+    // update counters
+    slides[cur].querySelectorAll('.counter .n').forEach(el => el.textContent = String(cur + 1).padStart(2,'0'));
+    // update annotation overlays (reveal highlights)
+    slides[cur].querySelectorAll('.ag1,.ag2,.ag3').forEach(el => {
+      if (el.classList.contains('ann-wrap')) return;
+      // non-ann-wrap elements with ag classes get opacity triggered via CSS
+    });
+    document.getElementById('prev').style.opacity = cur === 0 ? '0.3' : '1';
+    document.getElementById('next').style.opacity = cur === TOTAL-1 ? '0.3' : '1';
+  }
+
+  document.getElementById('prev').onclick = () => goTo(cur - 1);
+  document.getElementById('next').onclick = () => goTo(cur + 1);
+
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight','ArrowDown',' '].includes(e.key)) { e.preventDefault(); goTo(cur+1); }
+    if (['ArrowLeft','ArrowUp'].includes(e.key)) { e.preventDefault(); goTo(cur-1); }
+  });
+
+  // click half-screen to nav
+  document.getElementById('deck').addEventListener('click', e => {
+    if (e.target.closest('.nav,.dot')) return;
+    goTo(e.clientX > window.innerWidth * 0.5 ? cur+1 : cur-1);
+  });
+
+  // phone screen annotation highlights need active class on slide
+  // The CSS handles .slide.active .ag1 etc via transition-delay
+  // But for non-ann-wrap .ag elements inside phone-screen, we use inline transitions
+  // They will animate when .slide.active is added since the parent gets the class
+
+  goTo(0);
+})();
+</script>
+</body>
+</html>
