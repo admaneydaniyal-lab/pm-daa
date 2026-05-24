@@ -110,10 +110,13 @@ function Greeting({ name }) {
   );
 }
 
+const TraceContext = React.createContext(false);
+
 // ─────────────────────────────────────────────────────────────
 // Carousel card shell
 // ─────────────────────────────────────────────────────────────
 function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, traceDelay = "0ms", children }) {
+  const showTrace = React.useContext(TraceContext);
   return (
     <div className={pulse ? "pm-card-pulse" : undefined} style={{
       position: "relative",
@@ -128,7 +131,7 @@ function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, tr
       cursor: "pointer",
     }}>
       {/* Animated border trace — extends outside the card edge */}
-      <svg style={{
+      {showTrace && <svg style={{
         position: "absolute", inset: -4,
         width: "calc(100% + 8px)", height: "calc(100% + 8px)",
         pointerEvents: "none", overflow: "visible",
@@ -144,7 +147,7 @@ function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, tr
             animationDelay: traceDelay,
           }}
         />
-      </svg>
+      </svg>}
 
       {/* Top row: header + share icon */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
@@ -1158,13 +1161,14 @@ function TraceDefs() {
 }
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-  "briefingVariant": "won"
+  "briefingVariant": "won",
+  "traceOutline": false
 }/*EDITMODE-END*/;
 
 function App() {
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
   return (
-    <>
+    <TraceContext.Provider value={t.traceOutline}>
       <TraceDefs/>
       <div className="scroll-area" style={{ paddingTop: 44, paddingBottom: 96 }}
            data-screen-label="Base · Home">
@@ -1191,6 +1195,13 @@ function App() {
       <TabBar/>
 
       <TweaksPanel title="Tweaks">
+        <TweakSection label="Cards">
+          <TweakToggle
+            label="Trace outline"
+            value={t.traceOutline}
+            onChange={(v) => setTweak("traceOutline", v)}
+          />
+        </TweakSection>
         <TweakSection label="Card 1 — Post-Match Briefing">
           <TweakRadio
             label="Result variant"
@@ -1203,7 +1214,7 @@ function App() {
           />
         </TweakSection>
       </TweaksPanel>
-    </>
+    </TraceContext.Provider>
   );
 }
 
