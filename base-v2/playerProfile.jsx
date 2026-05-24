@@ -199,10 +199,16 @@ function PctRow({ value, label, rankChip, animDelay = 300 }) {
         }}>{value}%</div>
         {rankChip && (() => {
           const [rank, ...rest] = rankChip.split(" ");
+          const hasArrow = rankChip.includes("↑");
+          const restText = rest.join(" ").replace("↑", "").trim();
           return (
-            <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+            <div style={{
+              fontSize: 9, fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase",
+              display: "inline-flex", alignItems: "center", gap: 2,
+            }}>
               <span style={{ color: "#c8f135" }}>{rank}</span>
-              {rest.length > 0 && <span style={{ color: "#fff" }}> {rest.join(" ")}</span>}
+              {restText && <span style={{ color: "#fff" }}> {restText}</span>}
+              {hasArrow && <i className="ph ph-arrow-up" style={{ color: "#c8f135", fontSize: 10 }}/>}
             </div>
           );
         })()}
