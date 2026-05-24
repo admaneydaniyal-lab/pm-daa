@@ -730,11 +730,10 @@ function PlayerProfile() {
                     })}
                   </div>
 
-                  {/* View all rankings + Share */}
+                  {/* View all rankings */}
                   <div style={{
                     padding: "12px 16px 14px",
                     borderTop: "1px solid #1c1c1c",
-                    display: "flex", alignItems: "center", justifyContent: "space-between",
                   }}>
                     <button style={{
                       background: "none", border: "none", cursor: "pointer",
@@ -745,16 +744,6 @@ function PlayerProfile() {
                     }}>
                       View all rankings
                       <i className="ph ph-arrow-right" style={{ fontSize: 14 }}/>
-                    </button>
-                    <button style={{
-                      background: "none", border: "none", cursor: "pointer",
-                      fontFamily: "inherit", padding: 0,
-                      display: "inline-flex", alignItems: "center", gap: 5,
-                      fontSize: 12, fontWeight: 700, color: "#fff",
-                      letterSpacing: "-0.01em",
-                    }}>
-                      <i className="ph ph-share-network" style={{ fontSize: 15 }}/>
-                      Share
                     </button>
                   </div>
                 </div>
@@ -806,26 +795,24 @@ function PlayerProfile() {
                     </div>
                   ))}
 
-                  {/* Share button */}
-                  <div style={{
-                    marginTop: 18, padding: "12px 0 14px",
-                    borderTop: "1px solid #1a1a1a",
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                  }}>
-                    <button style={{
-                      width: "100%", background: "none", border: "none", cursor: "pointer",
-                      fontFamily: "inherit",
-                      display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                      fontSize: 13, fontWeight: 700, color: "#fff",
-                      letterSpacing: "-0.01em",
-                    }}>
-                      <i className="ph ph-share-network" style={{ fontSize: 15 }}/>
-                      Share
-                    </button>
-                  </div>
-
                 </div>
               </div>
+            </div>
+
+            {/* ── Share image button ── */}
+            <div style={{ marginTop: 10, padding: "0 16px" }}>
+              <button style={{
+                width: "100%",
+                background: "#131313", border: "1px solid #242424",
+                borderRadius: 12, padding: "11px 16px",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                cursor: "pointer", fontFamily: "inherit",
+              }}>
+                <i className="ph ph-share-network" style={{ fontSize: 15, color: "#fff" }}/>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>
+                  Share image
+                </span>
+              </button>
             </div>
 
             {/* ── Learn & Correct CTA ── */}
