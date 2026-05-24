@@ -557,7 +557,7 @@ function CardStanding() {
         letterSpacing: "-0.01em",
         display: "inline-flex", alignItems: "baseline", gap: 3,
       }}>
-        <span style={{ color: "var(--accent)" }}>↑</span>
+        <i className="ph ph-arrow-up" style={{ color: "var(--accent)", fontSize: 13 }}/>
         +3 places this week
       </div>
 
