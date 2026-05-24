@@ -2,17 +2,19 @@
 
 const TABS = ["Overview", "Stats", "Matches", "Career"];
 
+// Stats consistent with base screen: 9 goals for the year, 1 goal per 147 mins,
+// hat trick vs Riverside, assists from form card, Ravenshead FC
 const STAT_ROWS = [
-  { label: "Matches Played",   value: "20",   pro: false },
-  { label: "Minutes played",   value: "1783", pro: true  },
-  { label: "Starting XI",      value: "100%", pro: false },
-  { label: "Goals",            value: "29",   pro: false },
-  { label: "Minutes per Goal", value: "61",   pro: true  },
-  { label: "Assists",          value: "2",    pro: false },
-  { label: "Clean sheets",     value: "3",    pro: false },
-  { label: "Clean Sheet",      value: "0%",   pro: false },
-  { label: "Win",              value: "85%",  pro: false },
-  { label: "Top XI",           value: "6",    pro: true  },
+  { label: "Matches Played",   value: "18",   pro: false },
+  { label: "Minutes played",   value: "1521", pro: true  },
+  { label: "Starting XI",      value: "89%",  pro: false },
+  { label: "Goals",            value: "9",    pro: false },
+  { label: "Minutes per Goal", value: "147",  pro: true  },
+  { label: "Assists",          value: "4",    pro: false },
+  { label: "Shots on Target",  value: "23",   pro: false },
+  { label: "Shot Accuracy",    value: "61%",  pro: false },
+  { label: "Win",              value: "56%",  pro: false },
+  { label: "Top XI",           value: "3",    pro: true  },
 ];
 
 function ProBadge() {
@@ -33,22 +35,6 @@ function HexCheck({ size = 26 }) {
       <path d="M13 1 L24 7 L24 19 L13 25 L2 19 L2 7 Z" fill="#c8f135"/>
       <path d="M8.5 13 L11.5 16 L17.5 10"
             stroke="#0d0d0d" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-}
-
-function JerseyBack() {
-  return (
-    <svg width="190" height="220" viewBox="0 0 190 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Collar */}
-      <path d="M75 18 Q95 36 115 18" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" fill="none"/>
-      {/* Left sleeve */}
-      <path d="M75 18 L20 55 L38 72 L62 48 L62 185 L128 185 L128 48 L152 72 L170 55 L115 18 Q95 36 75 18 Z"
-            fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.08)" strokeWidth="1"/>
-      {/* Number 9 */}
-      <text x="95" y="145" textAnchor="middle"
-            fontSize="86" fontWeight="900" letterSpacing="-0.04em"
-            fill="rgba(255,255,255,0.88)" fontFamily="Archivo,sans-serif">9</text>
     </svg>
   );
 }
@@ -96,7 +82,7 @@ function PlayerStats() {
             letterSpacing: "0.06em", textTransform: "uppercase",
             opacity: scrolled ? 1 : 0,
             transition: "opacity 200ms",
-          }}>Rhynell Gordon-Messam</span>
+          }}>Lewis Bilbie</span>
 
           <button style={{
             background: "none", border: "none", color: "#fff", cursor: "pointer",
@@ -114,35 +100,24 @@ function PlayerStats() {
       <div ref={scrollRef} className="scroll-area"
            style={{ position: "absolute", inset: 0, overflowY: "auto" }}>
 
-        {/* Hero */}
-        <div style={{ position: "relative", paddingTop: 106, paddingBottom: 24, overflow: "hidden" }}>
-          {/* Jersey — positioned top-right */}
-          <div style={{
-            position: "absolute", right: -14, top: 14,
-            opacity: 0.9, pointerEvents: "none",
-          }}>
-            <JerseyBack/>
-          </div>
-
-          {/* Name + badge */}
-          <div style={{ paddingLeft: 20, paddingRight: 140, position: "relative" }}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-              <h1 style={{
-                margin: 0,
-                fontWeight: 900, fontSize: 38, color: "#fff",
-                letterSpacing: "-0.02em", lineHeight: 1.05,
-                textTransform: "uppercase",
-              }}>
-                RHYNELL<br/>GORDON-<br/>MESSAM
-              </h1>
-              <div style={{ paddingTop: 52 }}>
-                <HexCheck size={26}/>
-              </div>
+        {/* Hero — no jersey */}
+        <div style={{ paddingTop: 106, paddingBottom: 24, paddingLeft: 20, paddingRight: 20 }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+            <h1 style={{
+              margin: 0,
+              fontWeight: 900, fontSize: 38, color: "#fff",
+              letterSpacing: "-0.02em", lineHeight: 1.05,
+              textTransform: "uppercase",
+            }}>
+              LEWIS<br/>BILBIE
+            </h1>
+            <div style={{ paddingTop: 10 }}>
+              <HexCheck size={26}/>
             </div>
           </div>
 
           {/* Position + club pills */}
-          <div style={{ display: "flex", gap: 8, marginTop: 18, paddingLeft: 20 }}>
+          <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
             <span style={{
               border: "1.5px solid rgba(255,255,255,0.28)",
               borderRadius: 999, padding: "5px 13px",
@@ -156,7 +131,7 @@ function PlayerStats() {
               letterSpacing: "0.05em",
               display: "inline-flex", alignItems: "center", gap: 5,
             }}>
-              AC UNITED FC
+              RAVENSHEAD FC
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
                    stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M7 17L17 7"/><path d="M9 7h8v8"/>
@@ -203,7 +178,7 @@ function PlayerStats() {
           }}>2025/2026 · All competitions</div>
 
           <div style={{ display: "flex", gap: 36, marginTop: 22 }}>
-            {[{ v: "20", l: "Games" }, { v: "29", l: "Goals" }, { v: "2", l: "Assists" }].map(({ v, l }) => (
+            {[{ v: "18", l: "Games" }, { v: "9", l: "Goals" }, { v: "4", l: "Assists" }].map(({ v, l }) => (
               <div key={l}>
                 <div style={{
                   fontSize: 48, fontWeight: 900, color: "#fff",
