@@ -449,21 +449,12 @@ function CardBriefing({ variant = "won" }) {
       }}/>
 
       {/* Hero number */}
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 12, justifyContent: "space-between" }}>
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 12 }}>
-          <LimeHero value={data.heroValue} fontSize={72} underlineWidth="82%"/>
-          <div style={{
-            fontSize: 16, fontWeight: 500, color: "var(--fg)",
-            paddingBottom: 10, lineHeight: 1,
-          }}>{data.heroLabel}</div>
-        </div>
-        <button style={{
-          background: "transparent", color: "var(--accent)",
-          border: "1px solid var(--accent)", borderRadius: 999, padding: "5px 11px",
-          fontFamily: "inherit", fontWeight: 700, fontSize: 11,
-          letterSpacing: "-0.01em", cursor: "pointer",
-          whiteSpace: "nowrap", alignSelf: "center",
-        }}>View Season Stats</button>
+      <div style={{ display: "flex", alignItems: "flex-end", gap: 12 }}>
+        <LimeHero value={data.heroValue} fontSize={72} underlineWidth="82%"/>
+        <div style={{
+          fontSize: 16, fontWeight: 500, color: "var(--fg)",
+          paddingBottom: 10, lineHeight: 1,
+        }}>{data.heroLabel}</div>
       </div>
     </CardShell>
   );
