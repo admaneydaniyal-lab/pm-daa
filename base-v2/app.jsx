@@ -584,37 +584,76 @@ function CardStanding() {
 // ─────────────────────────────────────────────────────────────
 // CARD 4 — Market Value
 // ─────────────────────────────────────────────────────────────
-function Sparkline({ width = 290, height = 56 }) {
-  // 12 data points showing a generally upward trend with subtle dips
-  const pts = [38, 36, 40, 35, 42, 44, 41, 47, 50, 49, 54, 58];
-  const max = Math.max(...pts), min = Math.min(...pts);
-  const norm = pts.map(p => (p - min) / (max - min));
-  const step = width / (pts.length - 1);
-  const y = v => height - 6 - v * (height - 12);
+function Sparkline({ width = 290, height = 80 }) {
+  const rawPts = [38, 36, 40, 35, 42, 44, 41, 47, 50, 49, 54, 58];
+  const currentVal = 24300;
+  const scale = currentVal / Math.max(...rawPts);
+  const pts = rawPts.map(p => Math.round(p * scale));
 
-  // Smooth path
-  let d = `M 0 ${y(norm[0])}`;
+  const PL = 4, PR = 38, PT = 10, PB = 18;
+  const cW = width - PL - PR;
+  const cH = height - PT - PB;
+  const maxVal = Math.max(...pts);
+  const norm = pts.map(p => p / maxVal);
+  const step = cW / (rawPts.length - 1);
+  const xAt = i => PL + i * step;
+  const yAt = v => PT + cH * (1 - v);
+
+  let d = `M ${xAt(0)} ${yAt(norm[0])}`;
   for (let i = 1; i < norm.length; i++) {
-    const x0 = (i - 1) * step, x1 = i * step;
-    const cx = (x0 + x1) / 2;
-    d += ` C ${cx} ${y(norm[i-1])}, ${cx} ${y(norm[i])}, ${x1} ${y(norm[i])}`;
+    const cx = (xAt(i - 1) + xAt(i)) / 2;
+    d += ` C ${cx} ${yAt(norm[i-1])}, ${cx} ${yAt(norm[i])}, ${xAt(i)} ${yAt(norm[i])}`;
   }
-  // Area fill path
-  const dArea = d + ` L ${width} ${height} L 0 ${height} Z`;
+  const dArea = d + ` L ${xAt(pts.length-1)} ${PT+cH} L ${PL} ${PT+cH} Z`;
+
+  const lastX = xAt(pts.length - 1);
+  const lastY = yAt(norm[pts.length - 1]);
+  const rightEdge = width - PR;
+
+  const xLabels = [
+    { label: "29 APR", idx: 0 },
+    { label: "6 MAY",  idx: 3 },
+    { label: "15 MAY", idx: 7 },
+    { label: "22 MAY", idx: 11 },
+  ];
 
   return (
-    <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none"
+    <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`}
          style={{ display: "block" }}>
       <defs>
         <linearGradient id="spark-fill" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%"  stopColor="#c8f135" stopOpacity="0.35"/>
+          <stop offset="0%"   stopColor="#c8f135" stopOpacity="0.3"/>
           <stop offset="100%" stopColor="#c8f135" stopOpacity="0"/>
         </linearGradient>
       </defs>
+
       <path d={dArea} fill="url(#spark-fill)"/>
-      <path d={d} fill="none" stroke="#c8f135" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-      {/* Last point dot */}
-      <circle cx={width} cy={y(norm[norm.length-1])} r="3.5" fill="#c8f135"/>
+      <path d={d} fill="none" stroke="#c8f135" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx={lastX} cy={lastY} r="3.5" fill="#c8f135"/>
+
+      {/* Dashed line from last point to Y-axis */}
+      <line x1={lastX} y1={lastY} x2={rightEdge} y2={lastY}
+            stroke="rgba(200,241,53,0.35)" strokeWidth="1" strokeDasharray="3 3"/>
+
+      {/* Y-axis labels */}
+      <text x={width - 2} y={lastY - 5}
+            fill="rgba(255,255,255,0.45)" fontSize="9" textAnchor="end"
+            fontFamily="'Archivo',sans-serif" fontWeight="600">
+        {(maxVal / 1000).toFixed(1)}K
+      </text>
+      <text x={width - 2} y={PT + cH - 2}
+            fill="rgba(255,255,255,0.25)" fontSize="9" textAnchor="end"
+            fontFamily="'Archivo',sans-serif" fontWeight="600">0</text>
+
+      {/* X-axis date labels */}
+      {xLabels.map(({ label, idx }, i) => (
+        <text key={i} x={xAt(idx)} y={height - 2}
+              fill="rgba(255,255,255,0.3)" fontSize="9"
+              textAnchor={i === 0 ? "start" : i === xLabels.length - 1 ? "end" : "middle"}
+              fontFamily="'Archivo',sans-serif" fontWeight="600" letterSpacing="0.04em">
+          {label}
+        </text>
+      ))}
     </svg>
   );
 }
@@ -644,7 +683,7 @@ function CardMarket() {
       header="Market Value"
       subheader="Updated weekly"
       narrativeIcon={<Pic.dollar size={20}/>}
-      narrative={<>Up 4 weeks in a row. Highest of your career.<br/>2nd most valuable on your squad.</>}
+      narrative={<>Up 4 weeks in a row. Highest of your career.<br/><span style={{ fontWeight: 700 }}>2nd most valuable</span> on your squad.</>}
       cta="See full trend"
     >
       <div style={{
@@ -665,7 +704,7 @@ function CardMarket() {
 
       {/* Sparkline */}
       <div style={{ marginTop: 8, marginRight: -2, marginLeft: -2 }}>
-        <Sparkline width={290} height={40}/>
+        <Sparkline width={290} height={80}/>
       </div>
 
       {/* Countdown pill */}
