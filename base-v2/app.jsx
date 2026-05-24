@@ -575,16 +575,6 @@ function CardStanding() {
             lineHeight: 1.3,
           }}>goals<br/>this season</div>
         </div>
-        <button style={{
-          background: "none", border: "none", cursor: "pointer",
-          fontFamily: "inherit", padding: 0,
-          display: "inline-flex", alignItems: "center", gap: 5,
-          fontSize: 13, fontWeight: 700, color: "var(--fg-muted)",
-          letterSpacing: "-0.01em",
-        }}>
-          View All Stats
-          <i className="ph ph-arrow-right" style={{ fontSize: 14 }}/>
-        </button>
       </div>
     </CardShell>
   );
