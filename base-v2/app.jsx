@@ -127,6 +127,22 @@ function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, ch
       display: "flex", flexDirection: "column",
       cursor: "pointer",
     }}>
+      {/* Animated border trace */}
+      <svg style={{
+        position: "absolute", inset: 0, width: "100%", height: "100%",
+        pointerEvents: "none", borderRadius: 18,
+      }} aria-hidden="true">
+        <rect x="1" y="1" rx="17" fill="none"
+          style={{
+            width: "calc(100% - 2px)", height: "calc(100% - 2px)",
+            stroke: "rgba(200,241,53,0.2)",
+            strokeWidth: "1.5",
+            strokeDasharray: "60 1200",
+            animation: "pm-card-trace 8s linear infinite",
+          }}
+        />
+      </svg>
+
       {/* Top row: header only */}
       <div style={{ minWidth: 0 }}>
         <div style={{
