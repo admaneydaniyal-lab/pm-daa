@@ -17,6 +17,15 @@
     display: flex; align-items: center; justify-content: center;
     padding: 24px; box-sizing: border-box;
   }
+
+  /* ── Annotation wrapper ── */
+  .ann-wrap {
+    position: relative;
+    width: 390px;
+    height: 844px;
+    flex-shrink: 0;
+  }
+
   .device {
     width: 390px;
     height: 844px;
@@ -59,24 +68,109 @@
     background: rgba(255,255,255,0.7);
     z-index: 100;
   }
+
+  /* ── Annotations ── */
+  .ann {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 360ms ease, transform 360ms ease;
+  }
+  .ann-r {
+    left: 404px;
+    flex-direction: row;
+    transform: translateY(-50%) translateX(-8px);
+  }
+  .ann-l {
+    right: 404px;
+    flex-direction: row-reverse;
+    transform: translateY(-50%) translateX(8px);
+  }
+  .ann.visible {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+  .ann-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1.5px solid #c8f135;
+    background: transparent;
+    flex-shrink: 0;
+  }
+  .ann-line {
+    width: 40px;
+    height: 1px;
+    background: #c8f135;
+    flex-shrink: 0;
+  }
+  .ann-pill {
+    background: #c8f135;
+    color: #0d0d0d;
+    font-family: var(--font-sans);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    padding: 4px 11px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
 </style>
 </head>
 <body>
 
-<div class="device">
-  <div class="island"></div>
-  <div class="statusbar">
-    <span>9:41</span>
-    <span style="display:inline-flex;align-items:center;gap:5px;">
-      <svg width="17" height="11" viewBox="0 0 17 11"><rect x="0" y="6" width="3" height="5" rx="0.7" fill="#fff"/><rect x="4.5" y="4" width="3" height="7" rx="0.7" fill="#fff"/><rect x="9" y="2" width="3" height="9" rx="0.7" fill="#fff"/><rect x="13.5" y="0" width="3" height="11" rx="0.7" fill="#fff"/></svg>
-      <svg width="14" height="11" viewBox="0 0 14 11"><path d="M7 2.5C8.9 2.5 10.7 3.2 12 4.4l1-1C11.4 1.9 9.3 1 7 1S2.6 1.9 1 3.4l1 1C3.3 3.2 5.1 2.5 7 2.5z" fill="#fff"/><path d="M7 5.5c1.1 0 2.1.4 2.9 1.1l1-1C9.8 4.6 8.5 4 7 4S4.2 4.6 3.1 5.6l1 1C4.9 5.9 5.9 5.5 7 5.5z" fill="#fff"/><circle cx="7" cy="9" r="1.2" fill="#fff"/></svg>
-      <svg width="24" height="11" viewBox="0 0 24 11"><rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="#fff" fill="none"/><rect x="2" y="2" width="17" height="7" rx="1" fill="#fff"/></svg>
-    </span>
+<div class="ann-wrap">
+
+  <div class="device">
+    <div class="island"></div>
+    <div class="statusbar">
+      <span>9:41</span>
+      <span style="display:inline-flex;align-items:center;gap:5px;">
+        <svg width="17" height="11" viewBox="0 0 17 11"><rect x="0" y="6" width="3" height="5" rx="0.7" fill="#fff"/><rect x="4.5" y="4" width="3" height="7" rx="0.7" fill="#fff"/><rect x="9" y="2" width="3" height="9" rx="0.7" fill="#fff"/><rect x="13.5" y="0" width="3" height="11" rx="0.7" fill="#fff"/></svg>
+        <svg width="14" height="11" viewBox="0 0 14 11"><path d="M7 2.5C8.9 2.5 10.7 3.2 12 4.4l1-1C11.4 1.9 9.3 1 7 1S2.6 1.9 1 3.4l1 1C3.3 3.2 5.1 2.5 7 2.5z" fill="#fff"/><path d="M7 5.5c1.1 0 2.1.4 2.9 1.1l1-1C9.8 4.6 8.5 4 7 4S4.2 4.6 3.1 5.6l1 1C4.9 5.9 5.9 5.5 7 5.5z" fill="#fff"/><circle cx="7" cy="9" r="1.2" fill="#fff"/></svg>
+        <svg width="24" height="11" viewBox="0 0 24 11"><rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="#fff" fill="none"/><rect x="2" y="2" width="17" height="7" rx="1" fill="#fff"/></svg>
+      </span>
+    </div>
+
+    <div id="root" class="screen"></div>
+    <div class="indicator"></div>
   </div>
 
-  <div id="root" class="screen"></div>
-  <div class="indicator"></div>
-</div>
+  <!-- 1 · Player Card — right — always visible -->
+  <div class="ann ann-r" id="ann-1" style="top:158px;">
+    <div class="ann-dot"></div><div class="ann-line"></div>
+    <div class="ann-pill">Player Card</div>
+  </div>
+
+  <!-- 2 · Player Comparison — left — always visible -->
+  <div class="ann ann-l" id="ann-2" style="top:268px;">
+    <div class="ann-dot"></div><div class="ann-line"></div>
+    <div class="ann-pill">Player Comparison</div>
+  </div>
+
+  <!-- 3 · Market Value — right — scroll > 180 -->
+  <div class="ann ann-r" id="ann-3" style="top:450px;">
+    <div class="ann-dot"></div><div class="ann-line"></div>
+    <div class="ann-pill">Market Value</div>
+  </div>
+
+  <!-- 4 · Season Performance — left — scroll > 440 -->
+  <div class="ann ann-l" id="ann-4" style="top:590px;">
+    <div class="ann-dot"></div><div class="ann-line"></div>
+    <div class="ann-pill">Season Performance</div>
+  </div>
+
+  <!-- 5 · Percentages — right — scroll > 870 -->
+  <div class="ann ann-r" id="ann-5" style="top:730px;">
+    <div class="ann-dot"></div><div class="ann-line"></div>
+    <div class="ann-pill">Percentages</div>
+  </div>
+
+</div><!-- /.ann-wrap -->
 
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
@@ -84,5 +178,39 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
 <script type="text/babel" src="playerProfile.jsx"></script>
+
+<script>
+  // Wait for React to mount the scroll area, then wire up scroll-triggered annotations
+  const ANNS = [
+    { id: 'ann-1', threshold: 0,   delay: 400 },
+    { id: 'ann-2', threshold: 0,   delay: 620 },
+    { id: 'ann-3', threshold: 180, delay: 0   },
+    { id: 'ann-4', threshold: 440, delay: 0   },
+    { id: 'ann-5', threshold: 870, delay: 0   },
+  ];
+
+  const els = {};
+  ANNS.forEach(a => { els[a.id] = document.getElementById(a.id); });
+
+  function applyScroll(scrollTop) {
+    ANNS.forEach(({ id, threshold }) => {
+      if (threshold === 0) return; // handled on load
+      if (scrollTop >= threshold) els[id].classList.add('visible');
+    });
+  }
+
+  const poll = setInterval(() => {
+    const sa = document.querySelector('.scroll-area');
+    if (!sa) return;
+    clearInterval(poll);
+
+    // Show always-visible annotations with stagger
+    ANNS.filter(a => a.threshold === 0).forEach(({ id, delay }) => {
+      setTimeout(() => els[id].classList.add('visible'), delay);
+    });
+
+    sa.addEventListener('scroll', () => applyScroll(sa.scrollTop), { passive: true });
+  }, 80);
+</script>
 </body>
 </html>
