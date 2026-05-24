@@ -547,18 +547,21 @@ function CardStanding() {
       </div>
       <div style={{
         marginTop: 10,
-        fontSize: 14, fontWeight: 500, color: "var(--fg)",
-        letterSpacing: "-0.01em",
-      }}>top scorer in NSL Division One</div>
-
-      <div style={{
-        marginTop: 5,
-        fontSize: 12, fontWeight: 700, color: "var(--fg-muted)",
-        letterSpacing: "-0.01em",
-        display: "inline-flex", alignItems: "baseline", gap: 3,
+        display: "inline-flex", alignItems: "center", gap: 10,
       }}>
-        <i className="ph ph-arrow-up" style={{ color: "var(--accent)", fontSize: 13 }}/>
-        +3 places this week
+        <span style={{
+          fontSize: 14, fontWeight: 500, color: "var(--fg)",
+          letterSpacing: "-0.01em",
+        }}>top scorer in NSL Division One</span>
+        <span style={{ width: 1, height: 13, background: "var(--border)", display: "inline-block", flexShrink: 0 }}/>
+        <span style={{
+          fontSize: 12, fontWeight: 700, color: "var(--fg-muted)",
+          letterSpacing: "-0.01em",
+          display: "inline-flex", alignItems: "center", gap: 3,
+        }}>
+          <i className="ph ph-arrow-up" style={{ color: "var(--accent)", fontSize: 13 }}/>
+          +3 places this week
+        </span>
       </div>
 
       <div style={{
