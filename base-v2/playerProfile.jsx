@@ -752,11 +752,21 @@ function PlayerProfile() {
 
             {/* ── Percentages section ── */}
             <div style={{ marginTop: 22 }}>
-              <div style={{ padding: "0 16px", marginBottom: 10 }}>
-                <div style={{
-                  fontSize: 11, fontWeight: 800, color: "#fff",
-                  letterSpacing: "0.14em", textTransform: "uppercase",
-                }}>Personal Season · Percentages</div>
+              <div style={{
+                display: "flex", alignItems: "flex-start",
+                justifyContent: "space-between",
+                padding: "0 16px", marginBottom: 10, gap: 12,
+              }}>
+                <div>
+                  <div style={{
+                    fontSize: 11, fontWeight: 800, color: "#fff",
+                    letterSpacing: "0.14em", textTransform: "uppercase",
+                    lineHeight: 1.5,
+                  }}>Personal Season ·<br/>Percentages</div>
+                  <div style={{
+                    fontSize: 10, fontWeight: 500, color: "#555", marginTop: 3,
+                  }}>You versus your {pctCompareMode === "team" ? "squad" : "league"}.</div>
+                </div>
               </div>
 
               <div style={{ padding: "0 16px" }}>
