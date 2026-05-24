@@ -781,24 +781,24 @@ function PlayerProfile() {
                     </div>
                   ))}
 
-                  {/* CTA */}
-                  <div style={{
-                    marginTop: 20, paddingTop: 14,
-                    borderTop: "1px solid #1a1a1a",
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
-                  }}>
-                    <Ic.info size={13} stroke="#555" sw={1.8}/>
-                    <button style={{
-                      background: "none", border: "none", cursor: "pointer",
-                      fontFamily: "inherit", display: "flex", alignItems: "center", gap: 4,
-                      fontSize: 12, fontWeight: 600, color: "#555",
-                    }}>
-                      Learn & Correct your Statistics
-                      <Pic.arrowRight size={11} style={{ color: "#555" }}/>
-                    </button>
-                  </div>
                 </div>
               </div>
+            </div>
+
+            {/* ── Learn & Correct CTA ── */}
+            <div style={{
+              marginTop: 16, padding: "0 16px",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+            }}>
+              <i className="ph ph-info" style={{ fontSize: 14, color: "#555" }}/>
+              <button style={{
+                background: "none", border: "none", cursor: "pointer",
+                fontFamily: "inherit", display: "flex", alignItems: "center", gap: 5,
+                fontSize: 12, fontWeight: 600, color: "#555",
+              }}>
+                Learn & Correct your Statistics
+                <i className="ph ph-arrow-right" style={{ fontSize: 13, color: "#555" }}/>
+              </button>
             </div>
 
           </div>
