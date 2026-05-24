@@ -729,20 +729,21 @@ function PlayerProfile() {
                     })}
                   </div>
 
-                  {/* View all rankings — single outline button */}
+                  {/* View all rankings */}
                   <div style={{
                     padding: "12px 16px 14px",
                     borderTop: "1px solid #1c1c1c",
-                    display: "flex", justifyContent: "center",
                   }}>
                     <button style={{
-                      background: "transparent", color: "#c8f135",
-                      border: "1px solid #c8f135", borderRadius: 999,
-                      padding: "6px 18px",
-                      fontFamily: "inherit", fontWeight: 700, fontSize: 12,
-                      letterSpacing: "-0.01em", cursor: "pointer",
-                      whiteSpace: "nowrap",
-                    }}>View all rankings</button>
+                      background: "none", border: "none", cursor: "pointer",
+                      fontFamily: "inherit", padding: 0,
+                      display: "inline-flex", alignItems: "center", gap: 6,
+                      fontSize: 13, fontWeight: 700, color: "#c8f135",
+                      letterSpacing: "-0.01em",
+                    }}>
+                      View all rankings
+                      <i className="ph ph-arrow-right" style={{ fontSize: 14 }}/>
+                    </button>
                   </div>
                 </div>
               </div>
