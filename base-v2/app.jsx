@@ -629,6 +629,11 @@ function Sparkline({ width = 290, height = 80 }) {
 
       <path d={dArea} fill="url(#spark-fill)"/>
       <path d={d} fill="none" stroke="#c8f135" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      {/* Ripple ring expanding outward from last datapoint */}
+      <circle cx={lastX} cy={lastY} fill="none" stroke="#c8f135" strokeWidth="1.2">
+        <animate attributeName="r" values="3.5;9" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-opacity" values="0.45;0" dur="2s" repeatCount="indefinite"/>
+      </circle>
       <circle cx={lastX} cy={lastY} r="3.5" fill="#c8f135"/>
 
       {/* Dashed line from last point to Y-axis */}
@@ -704,7 +709,7 @@ function CardMarket() {
 
       {/* Sparkline */}
       <div style={{ marginTop: 8, marginRight: -2, marginLeft: -2 }}>
-        <Sparkline width={290} height={80}/>
+        <Sparkline width={290} height={62}/>
       </div>
 
       {/* Countdown pill */}
@@ -718,7 +723,6 @@ function CardMarket() {
       }}>
         <span style={{
           width: 5, height: 5, borderRadius: 999, background: "var(--accent)",
-          boxShadow: "0 0 8px var(--accent)",
         }}/>
         <span style={{
           fontSize: 9, fontWeight: 700, color: "var(--fg-muted)",
