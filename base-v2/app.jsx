@@ -846,9 +846,9 @@ function HeroCarousel({ briefingVariant }) {
 // ─────────────────────────────────────────────────────────────
 function QuickAccess() {
   const items = [
-    { key: "qa",     label: "Set up quick\naccess", Icon: Ic.bookmark, ghost: true },
-    { key: "table",  label: "League\nTable",        Icon: Ic.table },
-    { key: "refer",  label: "Refer a\nFriend",      Icon: Ic.refer },
+    { key: "qa",     label: "Set up quick\naccess", ghost: true,  phIcon: "ph-bookmark-simple" },
+    { key: "table",  label: "League\nTable",        noIcon: true },
+    { key: "refer",  label: "Refer a\nFriend",      noIcon: true },
     { key: "team",   label: "Team\nArea",           Icon: Ic.team },
     { key: "rank",   label: "League\nRankings",     Icon: Ic.trophy },
   ];
@@ -859,25 +859,26 @@ function QuickAccess() {
       padding: "0 16px",
       scrollSnapType: "x mandatory",
     }}>
-      {items.map(({ key, label, Icon, ghost }) => (
+      {items.map(({ key, label, Icon, ghost, noIcon, phIcon }) => (
         <div key={key} style={{
           flex: "0 0 auto",
-          width: 96, height: 96,
+          width: 68, height: 68,
           background: ghost ? "transparent" : "var(--surface)",
           border: ghost ? "1px dashed var(--border)" : "1px solid var(--border)",
-          borderRadius: 12,
-          padding: "10px 12px",
+          borderRadius: 10,
+          padding: "8px 10px",
           display: "flex", flexDirection: "column", justifyContent: "space-between",
           position: "relative",
           scrollSnapAlign: "start",
           cursor: "pointer",
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <Icon size={20} stroke="#ffffff"/>
-            {!ghost && <Ic.arrowUR size={14} stroke="var(--fg-muted)" sw={1.8}/>}
+            {phIcon && <i className={`ph ${phIcon}`} style={{ fontSize: 16, color: "#fff" }}/>}
+            {Icon && !phIcon && <Icon size={16} stroke="#ffffff"/>}
+            {!ghost && <Ic.arrowUR size={12} stroke="var(--fg-muted)" sw={1.8}/>}
           </div>
           <div style={{
-            fontSize: 12, fontWeight: 700, color: "var(--fg)",
+            fontSize: 10, fontWeight: 700, color: "var(--fg)",
             lineHeight: 1.2, whiteSpace: "pre-line",
             letterSpacing: "-0.01em",
           }}>{label}</div>
