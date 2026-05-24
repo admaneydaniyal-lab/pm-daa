@@ -351,11 +351,11 @@ const STAT_ROWS = [
   { label: "Top XI",           value: "3",     pro: true,  teamRank: 1, leagueRank: 5  },
 ];
 
-const TABS = ["Information", "Matches", "Career", "Achievement"];
+const TABS = ["Overview", "Stats", "Matches", "Career"];
 
 // ─── Main screen ──────────────────────────────────────────────
 function PlayerProfile() {
-  const [activeTab,   setActiveTab]   = React.useState("Information");
+  const [activeTab,   setActiveTab]   = React.useState("Overview");
   const [scrolled,    setScrolled]    = React.useState(false);
   const [compareMode, setCompareMode] = React.useState("team");
   const [barsReady,   setBarsReady]   = React.useState(false);
@@ -521,8 +521,8 @@ function PlayerProfile() {
           })}
         </div>
 
-        {/* ── Information tab ── */}
-        {activeTab === "Information" && (
+        {/* ── Overview tab ── */}
+        {activeTab === "Overview" && (
           <div style={{ paddingBottom: 100 }}>
 
             {/* Headline card */}
@@ -890,7 +890,7 @@ function PlayerProfile() {
         )}
 
         {/* ── Other tabs ── */}
-        {activeTab !== "Information" && (
+        {activeTab !== "Overview" && (
           <div style={{
             padding: "60px 16px", textAlign: "center",
             color: "#3e3e3e", fontSize: 14, fontWeight: 500,
