@@ -544,6 +544,70 @@ function PlayerProfile() {
               </div>
             </div>
 
+            {/* ── Market Value ── */}
+            <div style={{ marginTop: 22 }}>
+              <div style={{
+                fontSize: 11, fontWeight: 800, color: "#fff",
+                letterSpacing: "0.14em", textTransform: "uppercase",
+                padding: "0 16px", marginBottom: 10,
+              }}>Market Value</div>
+
+              <div style={{ padding: "0 16px" }}>
+                <div style={{
+                  background: "#131313", border: "1px solid #242424",
+                  borderRadius: 16, padding: "16px",
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <div>
+                      <div style={{
+                        fontSize: 26, fontWeight: 900, color: "#fff",
+                        letterSpacing: "-0.03em", lineHeight: 1,
+                        fontVariantNumeric: "tabular-nums",
+                      }}>£{Math.round(animatedMV).toLocaleString("en-GB")}</div>
+                      <div style={{ marginTop: 5, fontSize: 12, fontWeight: 700, color: "#c8f135" }}>
+                        ↗ +12.4%{" "}
+                        <span style={{ color: "#555", fontWeight: 500 }}>this month</span>
+                      </div>
+                    </div>
+                    <MiniSparkline width={114} height={44}/>
+                  </div>
+
+                  <div style={{
+                    marginTop: 14, paddingTop: 12,
+                    borderTop: "1px solid #1a1a1a",
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                  }}>
+                    <div style={{
+                      display: "inline-flex", alignItems: "center", gap: 6,
+                      background: "rgba(255,255,255,0.03)",
+                      border: "1px solid #1e1e1e", borderRadius: 999,
+                      padding: "4px 10px 4px 8px",
+                    }}>
+                      <div style={{ width: 5, height: 5, borderRadius: 99, background: "#c8f135" }}/>
+                      <span style={{
+                        fontSize: 9, fontWeight: 700, color: "#555",
+                        letterSpacing: "0.14em", textTransform: "uppercase",
+                      }}>Next update</span>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: "#fff" }}>18:03:23</span>
+                    </div>
+                    <button style={{
+                      background: "none", border: "none", cursor: "pointer",
+                      fontFamily: "inherit",
+                      display: "inline-flex", alignItems: "center", gap: 4,
+                      fontSize: 12, fontWeight: 700, color: "#c8f135",
+                    }}>Details <Pic.arrowRight size={11}/></button>
+                  </div>
+
+                  <div style={{
+                    marginTop: 12, fontSize: 13, fontWeight: 400, color: "#fff", lineHeight: 1.45,
+                  }}>
+                    Up 4 weeks in a row.{" "}
+                    <span style={{ fontWeight: 700 }}>2nd most valuable</span> striker on your squad.
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* ── Performance section ── */}
             <div style={{ marginTop: 22 }}>
               {/* Section header + toggle */}
@@ -723,70 +787,6 @@ function PlayerProfile() {
                       Learn & Correct your Statistics
                       <Pic.arrowRight size={11} style={{ color: "#555" }}/>
                     </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ── Market Value ── */}
-            <div style={{ marginTop: 22 }}>
-              <div style={{
-                fontSize: 11, fontWeight: 800, color: "#fff",
-                letterSpacing: "0.14em", textTransform: "uppercase",
-                padding: "0 16px", marginBottom: 10,
-              }}>Market Value</div>
-
-              <div style={{ padding: "0 16px" }}>
-                <div style={{
-                  background: "#131313", border: "1px solid #242424",
-                  borderRadius: 16, padding: "16px",
-                }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                    <div>
-                      <div style={{
-                        fontSize: 26, fontWeight: 900, color: "#fff",
-                        letterSpacing: "-0.03em", lineHeight: 1,
-                        fontVariantNumeric: "tabular-nums",
-                      }}>£{Math.round(animatedMV).toLocaleString("en-GB")}</div>
-                      <div style={{ marginTop: 5, fontSize: 12, fontWeight: 700, color: "#c8f135" }}>
-                        ↗ +12.4%{" "}
-                        <span style={{ color: "#555", fontWeight: 500 }}>this month</span>
-                      </div>
-                    </div>
-                    <MiniSparkline width={114} height={44}/>
-                  </div>
-
-                  <div style={{
-                    marginTop: 14, paddingTop: 12,
-                    borderTop: "1px solid #1a1a1a",
-                    display: "flex", alignItems: "center", justifyContent: "space-between",
-                  }}>
-                    <div style={{
-                      display: "inline-flex", alignItems: "center", gap: 6,
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px solid #1e1e1e", borderRadius: 999,
-                      padding: "4px 10px 4px 8px",
-                    }}>
-                      <div style={{ width: 5, height: 5, borderRadius: 99, background: "#c8f135" }}/>
-                      <span style={{
-                        fontSize: 9, fontWeight: 700, color: "#555",
-                        letterSpacing: "0.14em", textTransform: "uppercase",
-                      }}>Next update</span>
-                      <span style={{ fontSize: 11, fontWeight: 800, color: "#fff" }}>18:03:23</span>
-                    </div>
-                    <button style={{
-                      background: "none", border: "none", cursor: "pointer",
-                      fontFamily: "inherit",
-                      display: "inline-flex", alignItems: "center", gap: 4,
-                      fontSize: 12, fontWeight: 700, color: "#c8f135",
-                    }}>Details <Pic.arrowRight size={11}/></button>
-                  </div>
-
-                  <div style={{
-                    marginTop: 12, fontSize: 13, fontWeight: 400, color: "#fff", lineHeight: 1.45,
-                  }}>
-                    Up 4 weeks in a row.{" "}
-                    <span style={{ fontWeight: 700 }}>2nd most valuable</span> striker on your squad.
                   </div>
                 </div>
               </div>
