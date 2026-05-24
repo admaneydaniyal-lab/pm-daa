@@ -519,7 +519,7 @@ function CardForm() {
             }}>{label}</div>
             <div style={{
               marginTop: 2,
-              fontWeight: 900, fontSize: 20, color: "var(--fg)",
+              fontWeight: 900, fontSize: 28, color: "var(--fg)",
               letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums",
             }}>{value}{sub && <span style={{ fontWeight: 500, color: "var(--fg-muted)", fontSize: 13 }}> {sub}</span>}</div>
           </div>
