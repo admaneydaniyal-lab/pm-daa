@@ -71,13 +71,6 @@ function TopBar() {
       <HexLogo size={38}/>
       <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
         <button style={{
-          background: "#a78bfa", color: "#0d0d0d",
-          border: 0, borderRadius: 8, padding: "7px 12px",
-          fontFamily: "inherit", fontWeight: 800, fontSize: 13,
-          letterSpacing: "-0.01em", cursor: "pointer",
-          marginRight: 6,
-        }}>Get PRO</button>
-        <button style={{
           background: "transparent", border: 0, color: "#fff",
           padding: 8, cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center",
