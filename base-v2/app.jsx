@@ -571,8 +571,8 @@ function CardStanding() {
         </div>
         <button style={{
           background: "var(--accent)", color: "#0d0d0d",
-          border: 0, borderRadius: 8, padding: "7px 12px",
-          fontFamily: "inherit", fontWeight: 800, fontSize: 12,
+          border: 0, borderRadius: 999, padding: "5px 11px",
+          fontFamily: "inherit", fontWeight: 700, fontSize: 11,
           letterSpacing: "-0.01em", cursor: "pointer",
           whiteSpace: "nowrap",
         }}>View All Stats</button>
