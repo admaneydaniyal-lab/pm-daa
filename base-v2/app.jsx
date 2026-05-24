@@ -463,7 +463,7 @@ function CardBriefing({ variant = "won" }) {
           fontFamily: "inherit", fontWeight: 700, fontSize: 11,
           letterSpacing: "-0.01em", cursor: "pointer",
           whiteSpace: "nowrap", alignSelf: "center",
-        }}>Match Stats</button>
+        }}>View Season Stats</button>
       </div>
     </CardShell>
   );
@@ -579,8 +579,8 @@ function CardStanding() {
           }}>goals<br/>this season</div>
         </div>
         <button style={{
-          background: "var(--accent)", color: "#0d0d0d",
-          border: 0, borderRadius: 999, padding: "5px 11px",
+          background: "transparent", color: "var(--accent)",
+          border: "1px solid var(--accent)", borderRadius: 999, padding: "5px 11px",
           fontFamily: "inherit", fontWeight: 700, fontSize: 11,
           letterSpacing: "-0.01em", cursor: "pointer",
           whiteSpace: "nowrap",
