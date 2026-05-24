@@ -167,7 +167,7 @@ function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, tr
           )}
         </div>
         <i className="ph-duotone ph-share-network" style={{
-          fontSize: 18, color: "var(--fg-muted)",
+          fontSize: 18, color: "#fff",
           flexShrink: 0, marginLeft: 8,
         }}/>
       </div>
@@ -537,7 +537,7 @@ function CardStanding() {
     <CardShell
       header="Where You Stand"
       subheader="League scoring chart"
-      narrativeIcon={<i className="ph ph-medal" style={{ fontSize: 20 }}/>}
+      narrativeIcon={<i className="ph-duotone ph-ranking" style={{ fontSize: 20 }}/>}
       narrative={<>Joint top with <span style={{ fontWeight: 700 }}>Marcus Webb</span> of Bramall&nbsp;FC.</>}
       cta="View full rankings"
       narrativeAlign="center"
@@ -562,7 +562,7 @@ function CardStanding() {
             fontWeight: 900, fontSize: 24, color: "var(--fg)",
             letterSpacing: "-0.03em",
             fontVariantNumeric: "tabular-nums",
-          }}>8</div>
+          }}>9</div>
           <div style={{
             fontSize: 10, fontWeight: 700, color: "var(--fg-muted)",
             letterSpacing: "0.16em", textTransform: "uppercase",
