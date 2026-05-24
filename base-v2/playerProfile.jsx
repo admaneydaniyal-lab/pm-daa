@@ -312,7 +312,7 @@ const PERF_STATS = [
     teamAvg: 1.2, leagueAvg: 0.9, max: 6,
     teamCompare:   "+2.8 vs fwds",
     leagueCompare: "#7 in league",
-    chip: { value: "24", label: "Chances Created" },
+    chip: { value: "3×", label: "Top XI" },
     icon: (
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
@@ -328,7 +328,7 @@ const PERF_STATS = [
     teamAvg: 17, leagueAvg: 15, max: 22,
     teamCompare:   "+3 vs fwds",
     leagueCompare: "Top 8% STs",
-    chip: { value: "3×", label: "Top XI" },
+    chip: { value: "1,740", label: "Mins Played" },
     icon: (
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
         <rect x="3" y="4" width="18" height="16" rx="2"/>
