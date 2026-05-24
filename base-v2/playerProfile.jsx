@@ -351,6 +351,19 @@ const STAT_ROWS = [
   { label: "Top XI",           value: "3",     pro: true,  teamRank: 1, leagueRank: 5  },
 ];
 
+const STATS_ROWS = [
+  { label: "Matches Played",  value: "18",   pro: false, teamRank: 4, leagueRank: 23 },
+  { label: "Mins Played",     value: "1521", pro: true,  teamRank: 3, leagueRank: 19 },
+  { label: "Starting XI",     value: "89%",  pro: false, teamRank: 2, leagueRank: 11 },
+  { label: "Goals",           value: "9",    pro: false, teamRank: 1, leagueRank: 1  },
+  { label: "Mins per Goal",   value: "147",  pro: true,  teamRank: 1, leagueRank: 3  },
+  { label: "Assists",         value: "4",    pro: false, teamRank: 1, leagueRank: 7  },
+  { label: "Clean Sheets",    value: "5",    pro: false, teamRank: 3, leagueRank: 14 },
+  { label: "Clean Sheet %",   value: "28%",  pro: false, teamRank: 4, leagueRank: 16 },
+  { label: "Win %",           value: "56%",  pro: false, teamRank: 6, leagueRank: 14 },
+  { label: "Top XI",          value: "3",    pro: true,  teamRank: 1, leagueRank: 5  },
+];
+
 const TABS = ["Overview", "Stats", "Matches", "Career"];
 
 // ─── Main screen ──────────────────────────────────────────────
@@ -889,8 +902,138 @@ function PlayerProfile() {
           </div>
         )}
 
+        {/* ── Stats tab ── */}
+        {activeTab === "Stats" && (
+          <div style={{ paddingBottom: 100 }}>
+
+            {/* Season Performance card */}
+            <div style={{
+              margin: "14px 14px 10px",
+              background: "rgba(255,255,255,0.05)",
+              borderRadius: 16, padding: "18px 20px 22px",
+            }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>
+                Season Performance
+              </div>
+              <div style={{
+                fontSize: 12, fontWeight: 500, color: "rgba(255,255,255,0.42)",
+                marginTop: 4,
+              }}>2025/2026 · All competitions</div>
+
+              <div style={{ display: "flex", gap: 36, marginTop: 22 }}>
+                {[{ v: "18", l: "Games" }, { v: "9", l: "Goals" }, { v: "4", l: "Assists" }].map(({ v, l }) => (
+                  <div key={l}>
+                    <div style={{
+                      fontSize: 48, fontWeight: 900, color: "#fff",
+                      letterSpacing: "-0.04em", lineHeight: 1,
+                      fontVariantNumeric: "tabular-nums",
+                    }}>{v}</div>
+                    <div style={{
+                      fontSize: 13, color: "rgba(255,255,255,0.48)",
+                      marginTop: 7, fontWeight: 400,
+                    }}>{l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Statistical Breakdown card */}
+            <div style={{
+              margin: "0 14px 40px",
+              background: "rgba(255,255,255,0.05)",
+              borderRadius: 16, padding: "18px 20px 8px",
+            }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>
+                Statistical Breakdown
+              </div>
+
+              <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+                <button style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  background: "rgba(255,255,255,0.08)", border: "none", borderRadius: 999,
+                  padding: "8px 16px", color: "#fff", fontSize: 13, fontWeight: 600,
+                  cursor: "pointer", fontFamily: "inherit", letterSpacing: "-0.01em",
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                       stroke="#fff" strokeWidth="2" strokeLinecap="round">
+                    <line x1="3" y1="6"  x2="21" y2="6"/>
+                    <line x1="7" y1="12" x2="17" y2="12"/>
+                    <line x1="10" y1="18" x2="14" y2="18"/>
+                  </svg>
+                  Filter
+                </button>
+                <button style={{
+                  background: "#fff", border: "none", borderRadius: 999,
+                  padding: "8px 18px", color: "#0d0d0d", fontSize: 13, fontWeight: 700,
+                  cursor: "pointer", fontFamily: "inherit", letterSpacing: "-0.01em",
+                }}>Summary</button>
+              </div>
+
+              <div style={{ marginTop: 20, display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>All competitions</div>
+                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.42)", marginTop: 3, fontWeight: 500 }}>
+                    2025/2026
+                  </div>
+                </div>
+                <div style={{ display: "flex", paddingBottom: 2 }}>
+                  <div style={{ width: 46 }}/>
+                  <div style={{
+                    width: 46, textAlign: "center",
+                    fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.35)",
+                    letterSpacing: "0.02em", lineHeight: 1.3,
+                  }}>Team<br/>Rank</div>
+                  <div style={{
+                    width: 46, textAlign: "center",
+                    fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.35)",
+                    letterSpacing: "0.02em", lineHeight: 1.3,
+                  }}>League<br/>Rank</div>
+                </div>
+              </div>
+
+              <div style={{ position: "relative", marginTop: 8 }}>
+                <div style={{
+                  position: "absolute", top: 0, bottom: 0,
+                  right: 92, width: 1,
+                  background: "rgba(255,255,255,0.1)",
+                  pointerEvents: "none",
+                }}/>
+
+                {STATS_ROWS.map(({ label, value, pro, teamRank, leagueRank }, i) => (
+                  <div key={label} style={{
+                    display: "flex", alignItems: "center",
+                    padding: "12px 0",
+                    borderTop: i > 0 ? "1px solid rgba(255,255,255,0.07)" : "none",
+                  }}>
+                    <div style={{ flex: 1, display: "flex", alignItems: "center", minWidth: 0 }}>
+                      <span style={{ fontSize: 13, color: "rgba(255,255,255,0.52)", fontWeight: 400 }}>{label}</span>
+                      {pro && <ProBadge/>}
+                    </div>
+                    <span style={{
+                      fontSize: 14, fontWeight: 700, color: "#fff",
+                      width: 46, textAlign: "right", paddingRight: 14,
+                      fontVariantNumeric: "tabular-nums",
+                    }}>{value}</span>
+                    <span style={{
+                      width: 46, textAlign: "center",
+                      fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.55)",
+                      fontVariantNumeric: "tabular-nums",
+                    }}>{teamRank}</span>
+                    <span style={{
+                      width: 46, textAlign: "center",
+                      fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.55)",
+                      fontVariantNumeric: "tabular-nums",
+                    }}>{leagueRank}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        )}
+
         {/* ── Other tabs ── */}
-        {activeTab !== "Overview" && (
+        {activeTab !== "Overview" && activeTab !== "Stats" && (
           <div style={{
             padding: "60px 16px", textAlign: "center",
             color: "#3e3e3e", fontSize: 14, fontWeight: 500,
