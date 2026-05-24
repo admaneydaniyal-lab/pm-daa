@@ -767,6 +767,7 @@ function PlayerProfile() {
                     fontSize: 10, fontWeight: 500, color: "#555", marginTop: 3,
                   }}>You versus your {pctCompareMode === "team" ? "squad" : "league"}.</div>
                 </div>
+                <CompareToggle value={pctCompareMode} onChange={setPctCompareMode}/>
               </div>
 
               <div style={{ padding: "0 16px" }}>
@@ -774,17 +775,11 @@ function PlayerProfile() {
                   background: "#131313", border: "1px solid #242424",
                   borderRadius: 16, padding: "16px 16px 0",
                 }}>
-                  {/* Header row */}
                   <div style={{
-                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                    fontSize: 10, fontWeight: 700, color: "#fff",
+                    letterSpacing: "0.14em", textTransform: "uppercase",
                     marginBottom: 18,
-                  }}>
-                    <div style={{
-                      fontSize: 10, fontWeight: 700, color: "#fff",
-                      letterSpacing: "0.14em", textTransform: "uppercase",
-                    }}>Season 2025/26</div>
-                    <CompareToggle value={pctCompareMode} onChange={setPctCompareMode}/>
-                  </div>
+                  }}>Season 2025/26</div>
 
                   {[
                     { value: 89, label: "Starting XI", teamChip: "#2 SQUAD",   leagueChip: "#11 LEAGUE", delay: 300 },
