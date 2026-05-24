@@ -4,16 +4,16 @@ const TABS = ["Overview", "Stats", "Matches", "Career"];
 
 // teamRank = rank within Ravenshead FC squad; leagueRank = rank across all players in the league
 const STAT_ROWS = [
-  { label: "Matches Played",   value: "18",   pro: false, teamRank: 4,  leagueRank: 23  },
-  { label: "Minutes played",   value: "1521", pro: true,  teamRank: 3,  leagueRank: 19  },
-  { label: "Starting XI",      value: "89%",  pro: false, teamRank: 2,  leagueRank: 11  },
-  { label: "Goals",            value: "9",    pro: false, teamRank: 1,  leagueRank: 1   },
-  { label: "Minutes per Goal", value: "147",  pro: true,  teamRank: 1,  leagueRank: 3   },
-  { label: "Assists",          value: "4",    pro: false, teamRank: 1,  leagueRank: 7   },
-  { label: "Shots on Target",  value: "23",   pro: false, teamRank: 1,  leagueRank: 4   },
-  { label: "Shot Accuracy",    value: "61%",  pro: false, teamRank: 2,  leagueRank: 9   },
-  { label: "Win",              value: "56%",  pro: false, teamRank: 6,  leagueRank: 14  },
-  { label: "Top XI",           value: "3",    pro: true,  teamRank: 1,  leagueRank: 5   },
+  { label: "Matches Played",    value: "18",   pro: false, teamRank: 4,  leagueRank: 23 },
+  { label: "Mins Played",       value: "1521", pro: true,  teamRank: 3,  leagueRank: 19 },
+  { label: "Starting XI",       value: "89%",  pro: false, teamRank: 2,  leagueRank: 11 },
+  { label: "Goals",             value: "9",    pro: false, teamRank: 1,  leagueRank: 1  },
+  { label: "Mins per Goal",     value: "147",  pro: true,  teamRank: 1,  leagueRank: 3  },
+  { label: "Assists",           value: "4",    pro: false, teamRank: 1,  leagueRank: 7  },
+  { label: "Clean Sheets",      value: "5",    pro: false, teamRank: 3,  leagueRank: 14 },
+  { label: "Clean Sheet %",     value: "28%",  pro: false, teamRank: 4,  leagueRank: 16 },
+  { label: "Win %",             value: "56%",  pro: false, teamRank: 6,  leagueRank: 14 },
+  { label: "Top XI",            value: "3",    pro: true,  teamRank: 1,  leagueRank: 5  },
 ];
 
 function ProBadge() {
@@ -226,7 +226,7 @@ function PlayerStats() {
             }}>Summary</button>
           </div>
 
-          {/* Section heading + column headers */}
+          {/* Section heading + column headers — widths must match data row rank cells */}
           <div style={{ marginTop: 20, display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
             <div>
               <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>All competitions</div>
@@ -234,30 +234,39 @@ function PlayerStats() {
                 2025/2026
               </div>
             </div>
-            {/* Rank column headers */}
-            <div style={{ display: "flex", gap: 0, paddingBottom: 2 }}>
+            <div style={{ display: "flex", paddingBottom: 2 }}>
+              {/* 46px spacer aligns headers over value column gap */}
+              <div style={{ width: 46 }}/>
               <div style={{
-                width: 44, textAlign: "center",
+                width: 46, textAlign: "center",
                 fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.35)",
-                letterSpacing: "0.02em", lineHeight: 1.25,
+                letterSpacing: "0.02em", lineHeight: 1.3,
               }}>Team<br/>Rank</div>
               <div style={{
-                width: 52, textAlign: "center",
+                width: 46, textAlign: "center",
                 fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.35)",
-                letterSpacing: "0.02em", lineHeight: 1.25,
+                letterSpacing: "0.02em", lineHeight: 1.3,
               }}>League<br/>Rank</div>
             </div>
           </div>
 
-          {/* Stat rows */}
-          <div style={{ marginTop: 8 }}>
+          {/* Stat rows — single continuous vertical divider via absolute positioning */}
+          <div style={{ position: "relative", marginTop: 8 }}>
+            {/* Continuous vertical line: sits between value column and rank columns */}
+            <div style={{
+              position: "absolute", top: 0, bottom: 0,
+              right: 92, width: 1,
+              background: "rgba(255,255,255,0.1)",
+              pointerEvents: "none",
+            }}/>
+
             {STAT_ROWS.map(({ label, value, pro, teamRank, leagueRank }, i) => (
               <div key={label} style={{
                 display: "flex", alignItems: "center",
                 padding: "12px 0",
                 borderTop: i > 0 ? "1px solid rgba(255,255,255,0.07)" : "none",
               }}>
-                {/* Label */}
+                {/* Label + PRO badge */}
                 <div style={{ flex: 1, display: "flex", alignItems: "center", minWidth: 0 }}>
                   <span style={{ fontSize: 13, color: "rgba(255,255,255,0.52)", fontWeight: 400 }}>{label}</span>
                   {pro && <ProBadge/>}
@@ -265,23 +274,18 @@ function PlayerStats() {
                 {/* Player value */}
                 <span style={{
                   fontSize: 14, fontWeight: 700, color: "#fff",
-                  minWidth: 36, textAlign: "right",
+                  width: 46, textAlign: "right", paddingRight: 14,
+                  fontVariantNumeric: "tabular-nums",
                 }}>{value}</span>
-                {/* Vertical divider */}
-                <div style={{
-                  width: 1, alignSelf: "stretch",
-                  background: "rgba(255,255,255,0.1)",
-                  margin: "0 12px",
-                }}/>
                 {/* Team rank */}
                 <span style={{
-                  width: 32, textAlign: "center",
+                  width: 46, textAlign: "center",
                   fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.55)",
                   fontVariantNumeric: "tabular-nums",
                 }}>{teamRank}</span>
                 {/* League rank */}
                 <span style={{
-                  width: 40, textAlign: "center",
+                  width: 46, textAlign: "center",
                   fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,0.55)",
                   fontVariantNumeric: "tabular-nums",
                 }}>{leagueRank}</span>
