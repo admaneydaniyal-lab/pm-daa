@@ -145,21 +145,27 @@ function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, ch
         />
       </svg>
 
-      {/* Top row: header only */}
-      <div style={{ minWidth: 0 }}>
-        <div style={{
-          fontSize: 11, fontWeight: 800, color: "var(--fg)",
-          letterSpacing: "0.18em", textTransform: "uppercase",
-          lineHeight: 1.2,
-        }}>{header}</div>
-        {subheader && (
+      {/* Top row: header + share icon */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+        <div style={{ minWidth: 0 }}>
           <div style={{
-            marginTop: 3,
-            fontSize: 10, fontWeight: 600, color: "var(--fg-muted)",
-            letterSpacing: "0.16em", textTransform: "uppercase",
+            fontSize: 11, fontWeight: 800, color: "var(--fg)",
+            letterSpacing: "0.18em", textTransform: "uppercase",
             lineHeight: 1.2,
-          }}>{subheader}</div>
-        )}
+          }}>{header}</div>
+          {subheader && (
+            <div style={{
+              marginTop: 3,
+              fontSize: 10, fontWeight: 600, color: "var(--fg-muted)",
+              letterSpacing: "0.16em", textTransform: "uppercase",
+              lineHeight: 1.2,
+            }}>{subheader}</div>
+          )}
+        </div>
+        <i className="ph-duotone ph-share-network" style={{
+          fontSize: 18, color: "var(--fg-muted)",
+          flexShrink: 0, marginLeft: 8,
+        }}/>
       </div>
 
       {children}
