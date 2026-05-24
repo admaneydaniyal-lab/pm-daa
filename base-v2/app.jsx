@@ -641,7 +641,7 @@ function Sparkline({ width = 290, height = 80 }) {
             stroke="rgba(200,241,53,0.35)" strokeWidth="1" strokeDasharray="3 3"/>
 
       {/* Y-axis labels */}
-      <text x={width - 2} y={lastY - 5}
+      <text x={width - 2} y={lastY + 10}
             fill="rgba(255,255,255,0.45)" fontSize="9" textAnchor="end"
             fontFamily="'Archivo',sans-serif" fontWeight="600">
         {(maxVal / 1000).toFixed(1)}K
