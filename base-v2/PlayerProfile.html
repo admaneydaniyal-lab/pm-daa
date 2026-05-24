@@ -152,20 +152,26 @@
     <div class="ann-pill">Player Comparison</div>
   </div>
 
-  <!-- 3 · Market Value — right — scroll > 180 -->
-  <div class="ann ann-r" id="ann-3" style="top:450px;">
+  <!-- 3 · Synthesized Overview — right -->
+  <div class="ann ann-r" id="ann-overview" style="top:370px;">
+    <div class="ann-dot"></div><div class="ann-line"></div>
+    <div class="ann-pill">Synthesized Overview</div>
+  </div>
+
+  <!-- 4 · Market Value — left -->
+  <div class="ann ann-l" id="ann-3" style="top:450px;">
     <div class="ann-dot"></div><div class="ann-line"></div>
     <div class="ann-pill">Market Value</div>
   </div>
 
-  <!-- 4 · Season Performance — left — scroll > 440 -->
-  <div class="ann ann-l" id="ann-4" style="top:590px;">
+  <!-- 5 · Season Performance — right -->
+  <div class="ann ann-r" id="ann-4" style="top:590px;">
     <div class="ann-dot"></div><div class="ann-line"></div>
     <div class="ann-pill">Season Performance</div>
   </div>
 
-  <!-- 5 · Percentages — right — scroll > 870 -->
-  <div class="ann ann-r" id="ann-5" style="top:730px;">
+  <!-- 6 · Percentages — left -->
+  <div class="ann ann-l" id="ann-5" style="top:730px;">
     <div class="ann-dot"></div><div class="ann-line"></div>
     <div class="ann-pill">Percentages</div>
   </div>
@@ -180,14 +186,16 @@
 <script type="text/babel" src="playerProfile.jsx"></script>
 
 <script>
-  // Track each annotation to its target section via getBoundingClientRect
   const TARGETS = [
-    { annId: 'ann-1', targetId: 'ann-target-1', frac: 0.4 },
-    { annId: 'ann-2', targetId: 'ann-target-2', frac: 0.5 },
-    { annId: 'ann-3', targetId: 'ann-target-3', frac: 0.3 },
-    { annId: 'ann-4', targetId: 'ann-target-4', frac: 0.3 },
-    { annId: 'ann-5', targetId: 'ann-target-5', frac: 0.3 },
+    { annId: 'ann-1',        targetId: 'ann-target-1',        frac: 0.4 },
+    { annId: 'ann-2',        targetId: 'ann-target-2',        frac: 0.5 },
+    { annId: 'ann-overview', targetId: 'ann-target-overview', frac: 0.5 },
+    { annId: 'ann-3',        targetId: 'ann-target-3',        frac: 0.3 },
+    { annId: 'ann-4',        targetId: 'ann-target-4',        frac: 0.3 },
+    { annId: 'ann-5',        targetId: 'ann-target-5',        frac: 0.3 },
   ];
+
+  const revealed = new Set();
 
   function updateAnnotations() {
     const wrap = document.querySelector('.ann-wrap');
@@ -199,8 +207,13 @@
       const ann    = document.getElementById(annId);
       if (!target || !ann) return;
 
-      const rect = target.getBoundingClientRect();
-      const y    = rect.top + rect.height * frac - wrapTop;
+      if (!revealed.has(annId)) {
+        ann.classList.remove('visible');
+        return;
+      }
+
+      const rect   = target.getBoundingClientRect();
+      const y      = rect.top + rect.height * frac - wrapTop;
       const inView = y > 16 && y < 828;
 
       ann.style.top = y + 'px';
@@ -213,7 +226,16 @@
     if (!sa) return;
     clearInterval(poll);
 
-    updateAnnotations();
+    // 1.3s initial delay, then reveal sequentially 200ms apart
+    setTimeout(() => {
+      TARGETS.forEach(({ annId }, i) => {
+        setTimeout(() => {
+          revealed.add(annId);
+          updateAnnotations();
+        }, i * 200);
+      });
+    }, 1300);
+
     sa.addEventListener('scroll', updateAnnotations, { passive: true });
   }, 80);
 </script>

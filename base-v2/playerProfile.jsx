@@ -548,7 +548,7 @@ function PlayerProfile() {
 
             {/* Headline card */}
             <div style={{ padding: "14px 16px 0" }}>
-              <div style={{
+              <div id="ann-target-overview" style={{
                 background: "#0f0f0f",
                 border: "1px solid #1e1e1e",
                 borderLeft: "3px solid #c8f135",
