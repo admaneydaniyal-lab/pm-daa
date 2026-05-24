@@ -455,8 +455,8 @@ function CardForm() {
     <CardShell
       header="Form & You"
       subheader="Last 5 matches"
-      narrativeIcon={<i className="ph ph-fire" style={{ fontSize: 20 }}/>}
-      narrative="You've been scoring an avg of 1 goal per 147 mins recently. That's a hot streak — keep it going!"
+      narrativeIcon={<i className="ph ph-shield-star" style={{ fontSize: 20 }}/>}
+      narrative={<>You've been scoring an avg of <span style={{ fontWeight: 700 }}>1 goal per 147 mins</span> recently. That's a hot streak, keep it going!</>}
       cta="View recent matches"
     >
       {/* Form indicators */}
@@ -505,9 +505,9 @@ function CardStanding() {
     <CardShell
       header="Where You Stand"
       subheader="League scoring chart"
-      narrativeIcon={<Pic.trophy size={20}/>}
+      narrativeIcon={<i className="ph ph-medal" style={{ fontSize: 20 }}/>}
       narrative={<>Joint top with <span style={{ fontWeight: 700 }}>Marcus Webb</span> of Bramall&nbsp;FC.</>}
-      cta="View full statistics"
+      cta="View full rankings"
     >
       <div style={{ marginTop: 14, display: "flex", alignItems: "flex-end", gap: 8 }}>
         <LimeHero value="T-1st" fontSize={64} underlineWidth="86%"/>
