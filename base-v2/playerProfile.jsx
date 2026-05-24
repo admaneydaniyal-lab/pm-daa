@@ -803,6 +803,24 @@ function PlayerProfile() {
                     </div>
                   ))}
 
+                  {/* See statistics breakdown CTA */}
+                  <div style={{
+                    padding: "12px 0 14px",
+                    borderTop: "1px solid #1a1a1a",
+                    marginTop: 18,
+                  }}>
+                    <button style={{
+                      background: "none", border: "none", cursor: "pointer",
+                      fontFamily: "inherit", padding: 0,
+                      display: "inline-flex", alignItems: "center", gap: 6,
+                      fontSize: 13, fontWeight: 700, color: "#c8f135",
+                      letterSpacing: "-0.01em",
+                    }}>
+                      See statistics breakdown
+                      <i className="ph ph-arrow-right" style={{ fontSize: 14 }}/>
+                    </button>
+                  </div>
+
                 </div>
               </div>
             </div>
