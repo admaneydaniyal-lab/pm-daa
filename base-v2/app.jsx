@@ -552,14 +552,12 @@ function CardStanding() {
       }}>top scorer in NSL Division One</div>
 
       <div style={{
-        marginTop: 6,
-        display: "inline-flex", alignItems: "center", gap: 5,
-        background: "rgba(200,241,53,0.08)", borderRadius: 6,
-        padding: "3px 8px",
+        marginTop: 5,
+        display: "inline-flex", alignItems: "center", gap: 4,
       }}>
-        <span style={{ fontSize: 13, color: "var(--accent)" }}>↑</span>
+        <span style={{ fontSize: 12, color: "var(--fg-muted)" }}>↑</span>
         <span style={{
-          fontSize: 12, fontWeight: 700, color: "var(--accent)",
+          fontSize: 12, fontWeight: 500, color: "var(--fg-muted)",
           letterSpacing: "-0.01em",
         }}>up 3 places this week</span>
       </div>
