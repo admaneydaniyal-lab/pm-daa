@@ -655,9 +655,9 @@ function PlayerProfile() {
                       <span style={{
                         fontSize: 10, fontWeight: 600, color: "#4a4a4a",
                         letterSpacing: "0.08em",
-                      }}>STATS · updated 3h ago</span>
+                      }}><span style={{ color: "#fff" }}>STATS</span> · updated 3h ago</span>
                     </div>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: "#4a4a4a" }}>WK 12 / 38</span>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: "#4a4a4a" }}>Week 12 / 38</span>
                   </div>
 
                   {/* 3-column vertical bar grid */}
