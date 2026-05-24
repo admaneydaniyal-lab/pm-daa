@@ -115,7 +115,7 @@ const TraceContext = React.createContext(false);
 // ─────────────────────────────────────────────────────────────
 // Carousel card shell
 // ─────────────────────────────────────────────────────────────
-function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, traceDelay = "0ms", children }) {
+function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, traceDelay = "0ms", narrativeAlign = "flex-start", children }) {
   const showTrace = React.useContext(TraceContext);
   return (
     <div className={pulse ? "pm-card-pulse" : undefined} style={{
@@ -178,7 +178,7 @@ function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, tr
       {narrative && (
         <div style={{
           marginTop: 22,
-          display: "flex", alignItems: "center", gap: 10,
+          display: "flex", alignItems: narrativeAlign, gap: 10,
           paddingRight: 4,
         }}>
           {narrativeIcon && (
@@ -410,7 +410,7 @@ function CardBriefing({ variant = "won" }) {
     roleMins:  "90 minutes",
     heroValue: "3",
     heroLabel: "goals",
-    narrative: "Your first hat trick of the season. That's 9 goals for the year, joint top in your league.",
+    narrative: "Your first hat trick of the season! That's 9 goals for the year, joint top in your league.",
   };
 
   return (
@@ -485,10 +485,10 @@ function CardForm() {
   const form = ["W", "W", "L", "W", "D"];
   return (
     <CardShell
-      header="Form & You"
+      header="Recent Form"
       subheader="Last 5 matches"
       narrativeIcon={<i className="ph ph-shield-star" style={{ fontSize: 20 }}/>}
-      narrative={<>You've been scoring an avg of <span style={{ fontWeight: 700 }}>1 goal per 147 mins</span> recently. That's <span style={{ fontWeight: 700 }}>Top 20%</span> in the league, keep it going!</>}
+      narrative={<>You've been scoring an avg of <span style={{ fontWeight: 700 }}>1 goal per 147 mins</span> recently.<br/>That's <span style={{ fontWeight: 700 }}>Top 20%</span> in the league, keep it going!</>}
       cta="View recent matches"
     >
       {/* Form indicators */}
@@ -540,6 +540,7 @@ function CardStanding() {
       narrativeIcon={<i className="ph ph-medal" style={{ fontSize: 20 }}/>}
       narrative={<>Joint top with <span style={{ fontWeight: 700 }}>Marcus Webb</span> of Bramall&nbsp;FC.</>}
       cta="View full rankings"
+      narrativeAlign="center"
     >
       <div style={{ marginTop: 14, display: "flex", alignItems: "flex-end", gap: 8 }}>
         <LimeHero value="T-1st" fontSize={64} underlineWidth="86%"/>
