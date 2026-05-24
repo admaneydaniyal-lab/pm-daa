@@ -197,12 +197,21 @@ function PctRow({ value, label, rankChip, animDelay = 300 }) {
           letterSpacing: "-0.03em", lineHeight: 1,
           fontVariantNumeric: "tabular-nums",
         }}>{value}%</div>
-        {rankChip && (
-          <div style={{
-            fontSize: 9, fontWeight: 800, color: "#c8f135",
-            letterSpacing: "0.12em", textTransform: "uppercase",
-          }}>{rankChip}</div>
-        )}
+        {rankChip && (() => {
+          const [rank, ...rest] = rankChip.split(" ");
+          const hasArrow = rankChip.includes("↑");
+          const restText = rest.join(" ").replace("↑", "").trim();
+          return (
+            <div style={{
+              fontSize: 9, fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase",
+              display: "inline-flex", alignItems: "center", gap: 2,
+            }}>
+              <span style={{ color: "#c8f135" }}>{rank}</span>
+              {restText && <span style={{ color: "#fff" }}> {restText}</span>}
+              {hasArrow && <i className="ph ph-arrow-up" style={{ color: "#c8f135", fontSize: 10 }}/>}
+            </div>
+          );
+        })()}
       </div>
       <div style={{
         fontSize: 10, fontWeight: 700, color: "#555",
@@ -288,6 +297,22 @@ function TabBar() {
 // Averages are forward/striker-position-filtered, not whole-squad
 const PERF_STATS = [
   {
+    key: "games",
+    label: "Games",
+    unit: "played",
+    value: 20,
+    teamAvg: 17, leagueAvg: 15, max: 22,
+    teamCompare:   "+3 vs fwds",
+    leagueCompare: "Top 8% STs",
+    chip: { value: "1,740", label: "Mins Played" },
+    icon: (
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <rect x="3" y="4" width="18" height="16" rx="2"/>
+        <path d="M3 10h18"/>
+      </svg>
+    ),
+  },
+  {
     key: "goals",
     label: "Goals",
     unit: "scored",
@@ -312,27 +337,11 @@ const PERF_STATS = [
     teamAvg: 1.2, leagueAvg: 0.9, max: 6,
     teamCompare:   "+2.8 vs fwds",
     leagueCompare: "#7 in league",
-    chip: { value: "24", label: "Chances Created" },
+    chip: { value: "3×", label: "Top XI" },
     icon: (
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
         <path d="M22 4L12 14.01l-3-3"/>
-      </svg>
-    ),
-  },
-  {
-    key: "games",
-    label: "Games",
-    unit: "played",
-    value: 20,
-    teamAvg: 17, leagueAvg: 15, max: 22,
-    teamCompare:   "+3 vs fwds",
-    leagueCompare: "Top 8% STs",
-    chip: { value: "3×", label: "Top XI" },
-    icon: (
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-        <rect x="3" y="4" width="18" height="16" rx="2"/>
-        <path d="M3 10h18"/>
       </svg>
     ),
   },
@@ -351,14 +360,28 @@ const STAT_ROWS = [
   { label: "Top XI",           value: "3",     pro: true,  teamRank: 1, leagueRank: 5  },
 ];
 
-const TABS = ["Information", "Matches", "Career", "Achievement"];
+const STATS_ROWS = [
+  { label: "Matches Played",  value: "18",   pro: false, teamRank: 4, leagueRank: 23 },
+  { label: "Mins Played",     value: "1521", pro: true,  teamRank: 3, leagueRank: 19 },
+  { label: "Starting XI",     value: "89%",  pro: false, teamRank: 2, leagueRank: 11 },
+  { label: "Goals",           value: "9",    pro: false, teamRank: 1, leagueRank: 1  },
+  { label: "Mins per Goal",   value: "147",  pro: true,  teamRank: 1, leagueRank: 3  },
+  { label: "Assists",         value: "4",    pro: false, teamRank: 1, leagueRank: 7  },
+  { label: "Clean Sheets",    value: "5",    pro: false, teamRank: 3, leagueRank: 14 },
+  { label: "Clean Sheet %",   value: "28%",  pro: false, teamRank: 4, leagueRank: 16 },
+  { label: "Win %",           value: "56%",  pro: false, teamRank: 6, leagueRank: 14 },
+  { label: "Top XI",          value: "3",    pro: true,  teamRank: 1, leagueRank: 5  },
+];
+
+const TABS = ["Overview", "Stats", "Matches", "Career"];
 
 // ─── Main screen ──────────────────────────────────────────────
 function PlayerProfile() {
-  const [activeTab,   setActiveTab]   = React.useState("Information");
-  const [scrolled,    setScrolled]    = React.useState(false);
-  const [compareMode, setCompareMode] = React.useState("team");
-  const [barsReady,   setBarsReady]   = React.useState(false);
+  const [activeTab,      setActiveTab]      = React.useState("Overview");
+  const [scrolled,       setScrolled]       = React.useState(false);
+  const [compareMode,    setCompareMode]    = React.useState("team");
+  const [pctCompareMode, setPctCompareMode] = React.useState("team");
+  const [barsReady,      setBarsReady]      = React.useState(false);
   const scrollRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -427,17 +450,12 @@ function PlayerProfile() {
                 }}>LEWIS<br/>BILBIE</div>
                 <HexCheck size={20}/>
               </div>
-              <div style={{
-                marginTop: 6,
-                fontSize: 12, fontWeight: 500, color: "#555",
-                letterSpacing: "0.03em",
-              }}>ST · #9 · Ravenshead FC</div>
               <div style={{ display: "flex", gap: 6, marginTop: 10, flexWrap: "wrap" }}>
                 <span style={{
                   background: "#c8f135", color: "#0d0d0d",
                   fontSize: 10, fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase",
                   borderRadius: 6, padding: "4px 9px",
-                }}>Player</span>
+                }}>Striker</span>
                 <span style={{
                   background: "transparent", border: "1px solid #272727", color: "#666",
                   fontSize: 10, fontWeight: 700, letterSpacing: "0.05em",
@@ -446,8 +464,13 @@ function PlayerProfile() {
                 }}>Ravenshead FC <Ic.arrowUR size={10} sw={2}/></span>
               </div>
             </div>
-            {/* Jersey */}
-            <Jersey number={9}/>
+            {/* Number */}
+            <div style={{
+              fontSize: 64, fontWeight: 900, color: "#fff",
+              letterSpacing: "-0.04em", lineHeight: 1,
+              fontVariantNumeric: "tabular-nums",
+              paddingTop: 4, color: "#aaaaaa",
+            }}>#9</div>
           </div>
         </div>
 
@@ -466,7 +489,6 @@ function PlayerProfile() {
               <path d="M8 21H3v-5"/><path d="M3 21l7-7"/>
             </svg>
             <span style={{ fontSize: 13, fontWeight: 600, color: "#666", letterSpacing: "-0.01em" }}>Player Comparison</span>
-            <Pic.arrowRight size={12} style={{ color: "#555" }}/>
           </button>
         </div>
 
@@ -501,7 +523,6 @@ function PlayerProfile() {
           paddingLeft: 4, marginTop: 14,
           position: "sticky", top: 90, zIndex: 10,
           background: "#0d0d0d",
-          overflowX: "auto",
         }}>
           {TABS.map((tab) => {
             const active = tab === activeTab;
@@ -521,8 +542,8 @@ function PlayerProfile() {
           })}
         </div>
 
-        {/* ── Information tab ── */}
-        {activeTab === "Information" && (
+        {/* ── Overview tab ── */}
+        {activeTab === "Overview" && (
           <div style={{ paddingBottom: 100 }}>
 
             {/* Headline card */}
@@ -541,186 +562,6 @@ function PlayerProfile() {
                 <div style={{
                   fontSize: 14, fontWeight: 400, color: "#fff", lineHeight: 1.5,
                 }}>Joint top scorer in the league. Starting every game available this season.</div>
-              </div>
-            </div>
-
-            {/* ── Performance section ── */}
-            <div style={{ marginTop: 22 }}>
-              {/* Section header + toggle */}
-              <div style={{
-                display: "flex", alignItems: "flex-start",
-                justifyContent: "space-between",
-                padding: "0 16px", marginBottom: 10, gap: 12,
-              }}>
-                <div>
-                  <div style={{
-                    fontSize: 11, fontWeight: 800, color: "#fff",
-                    letterSpacing: "0.14em", textTransform: "uppercase",
-                  }}>Personal Season · Performance</div>
-                  <div style={{
-                    fontSize: 10, fontWeight: 500, color: "#555", marginTop: 3,
-                  }}>You vs your {compareMode === "team" ? "squad" : "league"}.</div>
-                </div>
-                <CompareToggle value={compareMode} onChange={setCompareMode}/>
-              </div>
-
-              <div style={{ padding: "0 16px" }}>
-                <div style={{
-                  background: "#131313", border: "1px solid #242424",
-                  borderRadius: 16, overflow: "hidden",
-                }}>
-                  {/* Status row */}
-                  <div style={{
-                    padding: "9px 16px",
-                    borderBottom: "1px solid #1c1c1c",
-                    display: "flex", justifyContent: "space-between", alignItems: "center",
-                  }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                      <div style={{ width: 5, height: 5, borderRadius: 99, background: "#c8f135" }}/>
-                      <span style={{
-                        fontSize: 10, fontWeight: 600, color: "#4a4a4a",
-                        letterSpacing: "0.08em",
-                      }}>STATS · updated 3h ago</span>
-                    </div>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: "#4a4a4a" }}>WK 12 / 38</span>
-                  </div>
-
-                  {/* 3-column vertical bar grid */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
-                    {PERF_STATS.map((stat, i) => {
-                      const compVal      = compareMode === "team" ? stat.teamAvg   : stat.leagueAvg;
-                      const compareText  = compareMode === "team" ? stat.teamCompare : stat.leagueCompare;
-                      const compLabel    = compareMode === "team" ? "TM" : "LG";
-                      return (
-                        <div key={stat.key} style={{
-                          padding: "16px 14px 14px",
-                          borderRight: i < 2 ? "1px solid #1c1c1c" : "none",
-                        }}>
-                          {/* Label */}
-                          <div style={{
-                            fontSize: 9, fontWeight: 800, color: "#4a4a4a",
-                            letterSpacing: "0.14em", textTransform: "uppercase",
-                            display: "flex", alignItems: "center", gap: 4,
-                            marginBottom: 8,
-                          }}>
-                            <span style={{ color: "#4a4a4a" }}>{stat.icon}</span>
-                            {stat.label}
-                          </div>
-
-                          {/* Big number */}
-                          <div style={{
-                            fontSize: 30, fontWeight: 900, color: "#fff",
-                            letterSpacing: "-0.03em", lineHeight: 1,
-                            fontVariantNumeric: "tabular-nums",
-                          }}>{stat.value}</div>
-                          <div style={{
-                            fontSize: 10, fontWeight: 400, color: "#4a4a4a", marginTop: 3,
-                          }}>{stat.unit}</div>
-
-                          {/* Vertical bars */}
-                          <div style={{ marginTop: 12 }}>
-                            <VertBarPair
-                              playerVal={stat.value}
-                              compVal={compVal}
-                              max={stat.max}
-                              barsReady={barsReady}
-                              compLabel={compLabel}
-                            />
-                          </div>
-
-                          {/* Compare text */}
-                          <div style={{
-                            marginTop: 8,
-                            fontSize: 10, fontWeight: 600, color: "#c8f135",
-                            letterSpacing: "-0.01em", lineHeight: 1.3,
-                          }}>↳ {compareText}</div>
-
-                          {/* Column chip */}
-                          <div style={{
-                            marginTop: 10,
-                            background: "#0d0d0d", border: "1px solid #1c1c1c",
-                            borderRadius: 7, padding: "6px 8px", textAlign: "center",
-                          }}>
-                            <div style={{
-                              fontSize: 14, fontWeight: 900, color: "#fff",
-                              letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums",
-                            }}>{stat.chip.value}</div>
-                            <div style={{
-                              fontSize: 8, fontWeight: 700, color: "#4a4a4a",
-                              letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 2,
-                            }}>{stat.chip.label}</div>
-                          </div>
-
-                          {/* Rankings CTA */}
-                          <button style={{
-                            marginTop: 8,
-                            width: "100%", background: "none", border: "none",
-                            cursor: "pointer", fontFamily: "inherit", padding: 0,
-                            display: "flex", alignItems: "center", justifyContent: "center", gap: 3,
-                            fontSize: 9, fontWeight: 700, color: "#c8f135",
-                            letterSpacing: "0.04em", textTransform: "uppercase",
-                          }}>
-                            Rankings
-                            <Pic.arrowRight size={8}/>
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ── Percentages section ── */}
-            <div style={{ marginTop: 22 }}>
-              <div style={{ padding: "0 16px", marginBottom: 10 }}>
-                <div style={{
-                  fontSize: 11, fontWeight: 800, color: "#fff",
-                  letterSpacing: "0.14em", textTransform: "uppercase",
-                }}>Personal Season · Percentages</div>
-              </div>
-
-              <div style={{ padding: "0 16px" }}>
-                <div style={{
-                  background: "#131313", border: "1px solid #242424",
-                  borderRadius: 16, padding: "16px 16px 18px",
-                }}>
-                  <div style={{
-                    fontSize: 10, fontWeight: 700, color: "#3e3e3e",
-                    letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 18,
-                  }}>Season 2025/26</div>
-
-                  {[
-                    { value: 89, label: "Starting XI",  rankChip: "#2 SQUAD",   delay: 300 },
-                    { value: 56, label: "Win %",         rankChip: null,          delay: 420 },
-                    { value: 45, label: "Goalscorer",    rankChip: "#1 SQUAD ↑", delay: 540 },
-                  ].map(({ value, label, rankChip, delay }, i) => (
-                    <div key={label} style={{
-                      marginTop: i === 0 ? 0 : 18,
-                      paddingTop: i === 0 ? 0 : 18,
-                      borderTop: i === 0 ? "none" : "1px solid #1a1a1a",
-                    }}>
-                      <PctRow value={value} label={label} rankChip={rankChip} animDelay={delay}/>
-                    </div>
-                  ))}
-
-                  {/* CTA */}
-                  <div style={{
-                    marginTop: 20, paddingTop: 14,
-                    borderTop: "1px solid #1a1a1a",
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
-                  }}>
-                    <Ic.info size={13} stroke="#555" sw={1.8}/>
-                    <button style={{
-                      background: "none", border: "none", cursor: "pointer",
-                      fontFamily: "inherit", display: "flex", alignItems: "center", gap: 4,
-                      fontSize: 12, fontWeight: 600, color: "#555",
-                    }}>
-                      Learn & Correct your Statistics
-                      <Pic.arrowRight size={11} style={{ color: "#555" }}/>
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -788,97 +629,370 @@ function PlayerProfile() {
               </div>
             </div>
 
-            {/* ── Statistical Breakdown ── */}
+            {/* ── Performance section ── */}
             <div style={{ marginTop: 22 }}>
+              {/* Section header + toggle */}
               <div style={{
-                fontSize: 11, fontWeight: 800, color: "#fff",
-                letterSpacing: "0.14em", textTransform: "uppercase",
-                padding: "0 16px", marginBottom: 10,
-              }}>Statistical Breakdown</div>
+                display: "flex", alignItems: "flex-start",
+                justifyContent: "space-between",
+                padding: "0 16px", marginBottom: 10, gap: 12,
+              }}>
+                <div>
+                  <div style={{
+                    fontSize: 11, fontWeight: 800, color: "#fff",
+                    letterSpacing: "0.14em", textTransform: "uppercase",
+                  }}>Personal Season · Performance</div>
+                  <div style={{
+                    fontSize: 10, fontWeight: 500, color: "#555", marginTop: 3,
+                  }}>You vs your {compareMode === "team" ? "squad" : "league"}.</div>
+                </div>
+                <CompareToggle value={compareMode} onChange={setCompareMode}/>
+              </div>
 
               <div style={{ padding: "0 16px" }}>
                 <div style={{
                   background: "#131313", border: "1px solid #242424",
                   borderRadius: 16, overflow: "hidden",
                 }}>
-                  {/* Column headers */}
+                  {/* Status row */}
                   <div style={{
-                    display: "flex", justifyContent: "space-between", alignItems: "flex-end",
-                    padding: "12px 16px 10px",
+                    padding: "9px 16px",
                     borderBottom: "1px solid #1c1c1c",
+                    display: "flex", justifyContent: "space-between", alignItems: "center",
                   }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: "#fff" }}>
-                      All competitions · 2025/26
+                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                      <div style={{ width: 5, height: 5, borderRadius: 99, background: "#c8f135" }}/>
+                      <span style={{
+                        fontSize: 10, fontWeight: 600, color: "#4a4a4a",
+                        letterSpacing: "0.08em",
+                      }}><span style={{ color: "#fff" }}>STATS</span> · updated 3h ago</span>
                     </div>
-                    <div style={{ display: "flex" }}>
-                      <div style={{ width: 44 }}/>
-                      <div style={{
-                        width: 44, textAlign: "center",
-                        fontSize: 8, fontWeight: 700, color: "#3e3e3e",
-                        letterSpacing: "0.08em", lineHeight: 1.4,
-                      }}>TEAM<br/>RANK</div>
-                      <div style={{
-                        width: 44, textAlign: "center",
-                        fontSize: 8, fontWeight: 700, color: "#3e3e3e",
-                        letterSpacing: "0.08em", lineHeight: 1.4,
-                      }}>LEAGUE<br/>RANK</div>
-                    </div>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: "#4a4a4a" }}>Week 12 / 38</span>
                   </div>
 
-                  <div style={{ position: "relative", padding: "0 16px" }}>
-                    {/* Vertical divider before rank columns */}
-                    <div style={{
-                      position: "absolute", top: 0, bottom: 0,
-                      right: 88 + 16, width: 1,
-                      background: "#1c1c1c", pointerEvents: "none",
-                    }}/>
+                  {/* 3-column vertical bar grid */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
+                    {PERF_STATS.map((stat, i) => {
+                      const compVal      = compareMode === "team" ? stat.teamAvg   : stat.leagueAvg;
+                      const compareText  = compareMode === "team" ? stat.teamCompare : stat.leagueCompare;
+                      const compLabel    = compareMode === "team" ? "TM" : "LG";
+                      return (
+                        <div key={stat.key} style={{
+                          padding: "16px 14px 14px",
+                          borderRight: i < 2 ? "1px solid #1c1c1c" : "none",
+                        }}>
+                          {/* Label */}
+                          <div style={{
+                            fontSize: 9, fontWeight: 800, color: "#888",
+                            letterSpacing: "0.14em", textTransform: "uppercase",
+                            marginBottom: 8,
+                          }}>
+                            {stat.label}
+                          </div>
 
-                    {STAT_ROWS.map(({ label, value, pro, teamRank, leagueRank }, i) => (
-                      <div key={label} style={{
-                        display: "flex", alignItems: "center",
-                        padding: "10px 0",
-                        borderTop: i > 0 ? "1px solid #191919" : "none",
-                      }}>
-                        <div style={{ flex: 1, display: "flex", alignItems: "center", minWidth: 0 }}>
-                          <span style={{ fontSize: 12, color: "#4a4a4a", fontWeight: 400 }}>{label}</span>
-                          {pro && <ProBadge/>}
+                          {/* Big number */}
+                          <div style={{
+                            fontSize: 30, fontWeight: 900, color: "#fff",
+                            letterSpacing: "-0.03em", lineHeight: 1,
+                            fontVariantNumeric: "tabular-nums",
+                          }}>{stat.value}</div>
+                          <div style={{
+                            fontSize: 10, fontWeight: 400, color: "#4a4a4a", marginTop: 3,
+                          }}>{stat.unit}</div>
+
+                          {/* Vertical bars */}
+                          <div style={{ marginTop: 12 }}>
+                            <VertBarPair
+                              playerVal={stat.value}
+                              compVal={compVal}
+                              max={stat.max}
+                              barsReady={barsReady}
+                              compLabel={compLabel}
+                            />
+                          </div>
+
+                          {/* Compare text */}
+                          <div style={{
+                            marginTop: 8,
+                            fontSize: 10, fontWeight: 600, color: "#c8f135",
+                            letterSpacing: "-0.01em", lineHeight: 1.3,
+                          }}>{compareText}</div>
+
+                          {/* Column chip */}
+                          <div style={{
+                            marginTop: 10,
+                            background: "#0d0d0d", border: "1px solid #1c1c1c",
+                            borderRadius: 7, padding: "6px 8px", textAlign: "center",
+                          }}>
+                            <div style={{
+                              fontSize: 14, fontWeight: 900, color: "#fff",
+                              letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums",
+                            }}>{stat.chip.value}</div>
+                            <div style={{
+                              fontSize: 8, fontWeight: 700, color: "#4a4a4a",
+                              letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 2,
+                            }}>{stat.chip.label}</div>
+                          </div>
+
                         </div>
-                        <span style={{
-                          fontSize: 13, fontWeight: 700, color: "#fff",
-                          width: 44, textAlign: "right", paddingRight: 14,
-                          fontVariantNumeric: "tabular-nums",
-                        }}>{value}</span>
-                        <span style={{
-                          width: 44, textAlign: "center",
-                          fontSize: 13,
-                          fontWeight: teamRank === 1 ? 800 : 500,
-                          color: teamRank === 1 ? "#c8f135" : "#3e3e3e",
-                          fontVariantNumeric: "tabular-nums",
-                        }}>{teamRank}</span>
-                        <span style={{
-                          width: 44, textAlign: "center",
-                          fontSize: 13,
-                          fontWeight: leagueRank <= 3 ? 700 : 500,
-                          color: leagueRank <= 3 ? "#fff" : "#3e3e3e",
-                          fontVariantNumeric: "tabular-nums",
-                        }}>{leagueRank}</span>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
-                  <div style={{ padding: "12px 16px", borderTop: "1px solid #1c1c1c" }}>
+                  {/* View all rankings */}
+                  <div style={{
+                    padding: "12px 16px 14px",
+                    borderTop: "1px solid #1c1c1c",
+                  }}>
                     <button style={{
-                      width: "100%", background: "none", border: "none", cursor: "pointer",
-                      fontFamily: "inherit",
-                      display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
-                      fontSize: 12, fontWeight: 600, color: "#555",
+                      background: "none", border: "none", cursor: "pointer",
+                      fontFamily: "inherit", padding: 0,
+                      display: "inline-flex", alignItems: "center", gap: 6,
+                      fontSize: 13, fontWeight: 700, color: "#c8f135",
+                      letterSpacing: "-0.01em",
                     }}>
-                      <Ic.info size={13} stroke="#555" sw={1.8}/>
-                      Learn & Correct your Statistics
-                      <Pic.arrowRight size={11} style={{ color: "#555" }}/>
+                      View all rankings
+                      <i className="ph ph-arrow-right" style={{ fontSize: 14 }}/>
                     </button>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* ── Percentages section ── */}
+            <div style={{ marginTop: 22 }}>
+              <div style={{
+                display: "flex", alignItems: "flex-start",
+                justifyContent: "space-between",
+                padding: "0 16px", marginBottom: 10, gap: 12,
+              }}>
+                <div>
+                  <div style={{
+                    fontSize: 11, fontWeight: 800, color: "#fff",
+                    letterSpacing: "0.14em", textTransform: "uppercase",
+                    lineHeight: 1.5,
+                  }}>Personal Season ·<br/>Percentages</div>
+                  <div style={{
+                    fontSize: 10, fontWeight: 500, color: "#555", marginTop: 3,
+                  }}>You vs your {pctCompareMode === "team" ? "squad" : "league"}.</div>
+                </div>
+                <CompareToggle value={pctCompareMode} onChange={setPctCompareMode}/>
+              </div>
+
+              <div style={{ padding: "0 16px" }}>
+                <div style={{
+                  background: "#131313", border: "1px solid #242424",
+                  borderRadius: 16, padding: "16px 16px 0",
+                }}>
+                  <div style={{
+                    fontSize: 10, fontWeight: 700, color: "#fff",
+                    letterSpacing: "0.14em", textTransform: "uppercase",
+                    marginBottom: 18,
+                  }}>Season 2025/26</div>
+
+                  {[
+                    { value: 89, label: "Starting XI", teamChip: "#2 in Team",   leagueChip: "#11 in League", delay: 300 },
+                    { value: 56, label: "Win %",        teamChip: "#6 in Team",   leagueChip: "#14 in League", delay: 420 },
+                    { value: 45, label: "Goalscorer",   teamChip: "#1 in Team ↑", leagueChip: "#8 in League",  delay: 540 },
+                  ].map(({ value, label, teamChip, leagueChip, delay }, i) => (
+                    <div key={label} style={{
+                      marginTop: i === 0 ? 0 : 18,
+                      paddingTop: i === 0 ? 0 : 18,
+                      borderTop: i === 0 ? "none" : "1px solid #1a1a1a",
+                    }}>
+                      <PctRow
+                        value={value}
+                        label={label}
+                        rankChip={pctCompareMode === "team" ? teamChip : leagueChip}
+                        animDelay={delay}
+                      />
+                    </div>
+                  ))}
+
+                  {/* See statistics breakdown CTA */}
+                  <div style={{
+                    padding: "12px 0 14px",
+                    borderTop: "1px solid #1a1a1a",
+                    marginTop: 18,
+                  }}>
+                    <button style={{
+                      background: "none", border: "none", cursor: "pointer",
+                      fontFamily: "inherit", padding: 0,
+                      display: "inline-flex", alignItems: "center", gap: 6,
+                      fontSize: 13, fontWeight: 700, color: "#c8f135",
+                      letterSpacing: "-0.01em",
+                    }}>
+                      See statistics breakdown
+                      <i className="ph ph-arrow-right" style={{ fontSize: 14 }}/>
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            {/* ── Share image button ── */}
+            <div style={{ marginTop: 10, padding: "0 16px" }}>
+              <button style={{
+                width: "100%",
+                background: "#131313", border: "1px solid #242424",
+                borderRadius: 12, padding: "11px 16px",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                cursor: "pointer", fontFamily: "inherit",
+              }}>
+                <i className="ph ph-share-network" style={{ fontSize: 15, color: "#fff" }}/>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>
+                  Share to social media
+                </span>
+              </button>
+            </div>
+
+            {/* ── Learn & Correct CTA ── */}
+            <div style={{ marginTop: 10, padding: "0 16px" }}>
+              <button style={{
+                width: "100%",
+                background: "#131313", border: "1px solid #242424",
+                borderRadius: 12, padding: "11px 16px",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                cursor: "pointer", fontFamily: "inherit",
+              }}>
+                <i className="ph ph-info" style={{ fontSize: 15, color: "#666" }}/>
+                <span style={{ fontSize: 13, fontWeight: 600, color: "#666", letterSpacing: "-0.01em" }}>
+                  Learn & Correct your Statistics
+                </span>
+                <i className="ph ph-arrow-right" style={{ fontSize: 13, color: "#555" }}/>
+              </button>
+            </div>
+
+          </div>
+        )}
+
+        {/* ── Stats tab ── */}
+        {activeTab === "Stats" && (
+          <div style={{ paddingBottom: 100 }}>
+
+            {/* Season Performance card */}
+            <div style={{
+              margin: "14px 14px 10px",
+              background: "rgba(255,255,255,0.05)",
+              borderRadius: 16, padding: "18px 20px 22px",
+            }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>
+                Season Performance
+              </div>
+              <div style={{
+                fontSize: 12, fontWeight: 500, color: "rgba(255,255,255,0.42)",
+                marginTop: 4,
+              }}>2025/2026 · All competitions</div>
+
+              <div style={{ display: "flex", gap: 36, marginTop: 22 }}>
+                {[{ v: "18", l: "Games" }, { v: "9", l: "Goals" }, { v: "4", l: "Assists" }].map(({ v, l }) => (
+                  <div key={l}>
+                    <div style={{
+                      fontSize: 48, fontWeight: 900, color: "#fff",
+                      letterSpacing: "-0.04em", lineHeight: 1,
+                      fontVariantNumeric: "tabular-nums",
+                    }}>{v}</div>
+                    <div style={{
+                      fontSize: 13, color: "rgba(255,255,255,0.48)",
+                      marginTop: 7, fontWeight: 400,
+                    }}>{l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Statistical Breakdown card */}
+            <div style={{
+              margin: "0 14px 40px",
+              background: "rgba(255,255,255,0.05)",
+              borderRadius: 16, padding: "18px 20px 8px",
+            }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>
+                Statistical Breakdown
+              </div>
+
+              <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+                <button style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  background: "rgba(255,255,255,0.08)", border: "none", borderRadius: 999,
+                  padding: "8px 16px", color: "#fff", fontSize: 13, fontWeight: 600,
+                  cursor: "pointer", fontFamily: "inherit", letterSpacing: "-0.01em",
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                       stroke="#fff" strokeWidth="2" strokeLinecap="round">
+                    <line x1="3" y1="6"  x2="21" y2="6"/>
+                    <line x1="7" y1="12" x2="17" y2="12"/>
+                    <line x1="10" y1="18" x2="14" y2="18"/>
+                  </svg>
+                  Filter
+                </button>
+                <button style={{
+                  background: "#fff", border: "none", borderRadius: 999,
+                  padding: "8px 18px", color: "#0d0d0d", fontSize: 13, fontWeight: 700,
+                  cursor: "pointer", fontFamily: "inherit", letterSpacing: "-0.01em",
+                }}>Summary</button>
+              </div>
+
+              <div style={{ marginTop: 20, display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>All competitions</div>
+                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.42)", marginTop: 3, fontWeight: 500 }}>
+                    2025/2026
+                  </div>
+                </div>
+                <div style={{ display: "flex", paddingBottom: 2 }}>
+                  <div style={{ width: 46 }}/>
+                  <div style={{
+                    width: 46, textAlign: "center",
+                    fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.35)",
+                    letterSpacing: "0.02em", lineHeight: 1.3,
+                  }}>Team<br/>Rank</div>
+                  <div style={{
+                    width: 46, textAlign: "center",
+                    fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.35)",
+                    letterSpacing: "0.02em", lineHeight: 1.3,
+                  }}>League<br/>Rank</div>
+                </div>
+              </div>
+
+              <div style={{ position: "relative", marginTop: 8 }}>
+                <div style={{
+                  position: "absolute", top: 0, bottom: 0,
+                  right: 92, width: 1,
+                  background: "rgba(255,255,255,0.1)",
+                  pointerEvents: "none",
+                }}/>
+
+                {STATS_ROWS.map(({ label, value, pro, teamRank, leagueRank }, i) => (
+                  <div key={label} style={{
+                    display: "flex", alignItems: "center",
+                    padding: "12px 0",
+                    borderTop: i > 0 ? "1px solid rgba(255,255,255,0.07)" : "none",
+                  }}>
+                    <div style={{ flex: 1, display: "flex", alignItems: "center", minWidth: 0 }}>
+                      <span style={{ fontSize: 13, color: "rgba(255,255,255,0.52)", fontWeight: 400 }}>{label}</span>
+                      {pro && <ProBadge/>}
+                    </div>
+                    <span style={{
+                      fontSize: 14, fontWeight: 700, color: "#fff",
+                      width: 46, textAlign: "right", paddingRight: 14,
+                      fontVariantNumeric: "tabular-nums",
+                    }}>{value}</span>
+                    <span style={{
+                      width: 46, textAlign: "center",
+                      fontSize: 13, fontVariantNumeric: "tabular-nums",
+                      fontWeight: teamRank === 1 ? 800 : 500,
+                      color: teamRank === 1 ? "#c8f135" : "rgba(255,255,255,0.3)",
+                    }}>{teamRank}</span>
+                    <span style={{
+                      width: 46, textAlign: "center",
+                      fontSize: 13, fontVariantNumeric: "tabular-nums",
+                      fontWeight: leagueRank === 1 ? 800 : leagueRank <= 3 ? 700 : 500,
+                      color: leagueRank === 1 ? "#c8f135" : leagueRank <= 3 ? "#fff" : "rgba(255,255,255,0.3)",
+                    }}>{leagueRank}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -886,7 +1000,7 @@ function PlayerProfile() {
         )}
 
         {/* ── Other tabs ── */}
-        {activeTab !== "Information" && (
+        {activeTab !== "Overview" && activeTab !== "Stats" && (
           <div style={{
             padding: "60px 16px", textAlign: "center",
             color: "#3e3e3e", fontSize: 14, fontWeight: 500,
