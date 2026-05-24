@@ -410,7 +410,7 @@ function CardBriefing({ variant = "won" }) {
     roleMins:  "90 minutes",
     heroValue: "3",
     heroLabel: "goals",
-    narrative: "Your first hat trick of the season! That's 9 goals for the year, joint top in your league.",
+    narrative: <><span style={{ fontWeight: 700 }}>Your first hat trick of the season!</span> That's 9 goals for the year, joint top in your league.</>,
   };
 
   return (
