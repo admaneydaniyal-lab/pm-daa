@@ -115,7 +115,7 @@ const TraceContext = React.createContext(false);
 // ─────────────────────────────────────────────────────────────
 // Carousel card shell
 // ─────────────────────────────────────────────────────────────
-function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, traceDelay = "0ms", narrativeAlign = "flex-start", children }) {
+function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, traceDelay = "0ms", narrativeAlign = "flex-start", narrativeMarginTop = 22, children }) {
   const showTrace = React.useContext(TraceContext);
   return (
     <div className={pulse ? "pm-card-pulse" : undefined} style={{
@@ -177,7 +177,7 @@ function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, tr
       {/* Narrative sits tight under content; CTA gets pushed to the bottom */}
       {narrative && (
         <div style={{
-          marginTop: 22,
+          marginTop: narrativeMarginTop,
           display: "flex", alignItems: narrativeAlign, gap: 10,
           paddingRight: 4,
         }}>
@@ -687,6 +687,7 @@ function CardMarket() {
     <CardShell
       header="Market Value"
       subheader="Updated weekly"
+      narrativeMarginTop={14}
       narrativeIcon={<Pic.dollar size={20}/>}
       narrative={<>Up 4 weeks in a row. Highest of your career.<br/><span style={{ fontWeight: 700 }}>2nd most valuable</span> on your squad.</>}
       cta="See full trend"
@@ -714,7 +715,7 @@ function CardMarket() {
 
       {/* Countdown pill */}
       <div style={{
-        marginTop: 8,
+        marginTop: 14,
         display: "inline-flex", alignSelf: "flex-start", alignItems: "center", gap: 7,
         background: "rgba(255,255,255,0.04)",
         border: "1px solid var(--border)",
