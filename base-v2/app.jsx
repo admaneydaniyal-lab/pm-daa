@@ -549,7 +549,7 @@ function CardStanding() {
         marginTop: 10,
         fontSize: 14, fontWeight: 500, color: "var(--fg)",
         letterSpacing: "-0.01em",
-      }}>top scorer in your league</div>
+      }}>top scorer in NSL Division One</div>
 
       <div style={{
         marginTop: 12, marginBottom: 10,
