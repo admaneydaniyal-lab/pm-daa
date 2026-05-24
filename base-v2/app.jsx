@@ -150,13 +150,14 @@ function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, ch
       {narrative && (
         <div style={{
           marginTop: 22,
-          display: "flex", alignItems: "center", gap: 10,
+          display: "flex", alignItems: "flex-start", gap: 10,
           paddingRight: 4,
         }}>
           {narrativeIcon && (
             <div style={{
               flex: "0 0 auto",
               color: "var(--accent)",
+              paddingTop: 2,
             }}>{narrativeIcon}</div>
           )}
           <div style={{
