@@ -412,7 +412,7 @@ function CardBriefing({ variant = "won" }) {
       subheader={data.sub}
       narrativeIcon={<Pic.ball size={20}/>}
       narrative={data.narrative}
-      cta="View match details"
+      cta="Match recap"
       pulse={pulse}
       traceDelay={variant === "won" ? "3500ms" : "0ms"}
     >
