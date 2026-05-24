@@ -456,7 +456,7 @@ function CardForm() {
       header="Form & You"
       subheader="Last 5 matches"
       narrativeIcon={<i className="ph ph-shield-star" style={{ fontSize: 20 }}/>}
-      narrative={<>You've been scoring an avg of <span style={{ fontWeight: 700 }}>1 goal per 147 mins</span> recently. That's a hot streak, keep it going!</>}
+      narrative={<>You've been scoring an avg of <span style={{ fontWeight: 700 }}>1 goal per 147 mins</span> recently. That's <span style={{ fontWeight: 700 }}>Top 20%</span> in the league, keep it going!</>}
       cta="View recent matches"
     >
       {/* Form indicators */}
