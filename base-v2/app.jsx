@@ -185,7 +185,9 @@ function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, tr
             <div style={{
               flex: "0 0 auto",
               color: "var(--accent)",
-              paddingTop: 2,
+              display: "flex",
+              lineHeight: 1,
+              marginTop: 1,
             }}>{narrativeIcon}</div>
           )}
           <div style={{
