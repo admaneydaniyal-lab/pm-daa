@@ -846,11 +846,11 @@ function HeroCarousel({ briefingVariant }) {
 // ─────────────────────────────────────────────────────────────
 function QuickAccess() {
   const items = [
-    { key: "qa",     label: "Set up quick\naccess", ghost: true,  phIcon: "ph-bookmark-simple" },
-    { key: "table",  label: "League\nTable",        noIcon: true },
-    { key: "refer",  label: "Refer a\nFriend",      noIcon: true },
-    { key: "team",   label: "Team\nArea",           Icon: Ic.team },
-    { key: "rank",   label: "League\nRankings",     Icon: Ic.trophy },
+    { key: "qa",    label: "Set up quick\naccess", ghost: true },
+    { key: "table", label: "League\nTable" },
+    { key: "refer", label: "Refer a\nFriend" },
+    { key: "team",  label: "Team\nArea" },
+    { key: "rank",  label: "League\nRankings" },
   ];
   return (
     <div className="h-scroll" style={{
@@ -859,29 +859,42 @@ function QuickAccess() {
       padding: "0 16px",
       scrollSnapType: "x mandatory",
     }}>
-      {items.map(({ key, label, Icon, ghost, noIcon, phIcon }) => (
+      {items.map(({ key, label, ghost }) => (
         <div key={key} style={{
           flex: "0 0 auto",
-          width: 68, height: 68,
+          width: 68, height: 48,
           background: ghost ? "transparent" : "var(--surface)",
           border: ghost ? "1px dashed var(--border)" : "1px solid var(--border)",
           borderRadius: 10,
-          padding: "8px 10px",
-          display: "flex", flexDirection: "column", justifyContent: "space-between",
-          position: "relative",
+          padding: "7px 10px",
+          display: "flex", flexDirection: "column",
+          justifyContent: ghost ? "center" : "space-between",
+          alignItems: ghost ? "center" : "flex-start",
           scrollSnapAlign: "start",
           cursor: "pointer",
         }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            {phIcon && <i className={`ph ${phIcon}`} style={{ fontSize: 16, color: "#fff" }}/>}
-            {Icon && !phIcon && <Icon size={16} stroke="#ffffff"/>}
-            {!ghost && <Ic.arrowUR size={12} stroke="var(--fg-muted)" sw={1.8}/>}
-          </div>
-          <div style={{
-            fontSize: 10, fontWeight: 700, color: "var(--fg)",
-            lineHeight: 1.2, whiteSpace: "pre-line",
-            letterSpacing: "-0.01em",
-          }}>{label}</div>
+          {ghost ? (
+            <>
+              <i className="ph ph-bookmark-simple" style={{ fontSize: 15, color: "#fff" }}/>
+              <div style={{
+                marginTop: 4,
+                fontSize: 10, fontWeight: 700, color: "var(--fg)",
+                lineHeight: 1.2, whiteSpace: "pre-line",
+                letterSpacing: "-0.01em", textAlign: "center",
+              }}>{label}</div>
+            </>
+          ) : (
+            <>
+              <div style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
+                <Ic.arrowUR size={12} stroke="var(--fg-muted)" sw={1.8}/>
+              </div>
+              <div style={{
+                fontSize: 10, fontWeight: 700, color: "var(--fg)",
+                lineHeight: 1.2, whiteSpace: "pre-line",
+                letterSpacing: "-0.01em",
+              }}>{label}</div>
+            </>
+          )}
         </div>
       ))}
     </div>
