@@ -560,7 +560,7 @@ function CardStanding() {
           display: "inline-flex", alignItems: "center", gap: 3,
         }}>
           <i className="ph ph-arrow-up" style={{ color: "var(--accent)", fontSize: 13 }}/>
-          +3 places this week
+          +3 places
         </span>
       </div>
 
