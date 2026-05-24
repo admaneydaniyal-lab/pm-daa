@@ -127,17 +127,19 @@ function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, ch
       display: "flex", flexDirection: "column",
       cursor: "pointer",
     }}>
-      {/* Animated border trace */}
+      {/* Animated border trace — extends outside the card edge */}
       <svg style={{
-        position: "absolute", inset: 0, width: "100%", height: "100%",
-        pointerEvents: "none", borderRadius: 18,
+        position: "absolute", inset: -4,
+        width: "calc(100% + 8px)", height: "calc(100% + 8px)",
+        pointerEvents: "none", overflow: "visible",
       }} aria-hidden="true">
-        <rect x="1" y="1" rx="17" fill="none"
+        <rect x="4" y="4" rx="19" fill="none"
+          stroke="url(#card-trace-grad)"
+          strokeWidth="2"
+          strokeDasharray="70 1230"
           style={{
-            width: "calc(100% - 2px)", height: "calc(100% - 2px)",
-            stroke: "rgba(200,241,53,0.2)",
-            strokeWidth: "1.5",
-            strokeDasharray: "60 1200",
+            width: "calc(100% - 8px)", height: "calc(100% - 8px)",
+            filter: "url(#card-trace-glow)",
             animation: "pm-card-trace 8s linear infinite",
           }}
         />
@@ -1123,6 +1125,30 @@ function TabBar() {
 // ─────────────────────────────────────────────────────────────
 // App shell
 // ─────────────────────────────────────────────────────────────
+// Shared SVG defs — gradient + glow filter for card border trace
+function TraceDefs() {
+  return (
+    <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+      <defs>
+        <linearGradient id="card-trace-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stopColor="#c8f135" stopOpacity="0"/>
+          <stop offset="35%"  stopColor="#c8f135" stopOpacity="0.55"/>
+          <stop offset="50%"  stopColor="#ffffff"  stopOpacity="0.85"/>
+          <stop offset="65%"  stopColor="#c8f135" stopOpacity="0.55"/>
+          <stop offset="100%" stopColor="#c8f135" stopOpacity="0"/>
+        </linearGradient>
+        <filter id="card-trace-glow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="2.5" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+    </svg>
+  );
+}
+
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "briefingVariant": "won"
 }/*EDITMODE-END*/;
@@ -1131,6 +1157,7 @@ function App() {
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
   return (
     <>
+      <TraceDefs/>
       <div className="scroll-area" style={{ paddingTop: 44, paddingBottom: 96 }}
            data-screen-label="Base · Home">
         <TopBar/>
