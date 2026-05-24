@@ -73,7 +73,7 @@
   .ann {
     position: absolute;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     pointer-events: none;
     opacity: 0;
     transition: opacity 360ms ease, transform 360ms ease;
@@ -99,12 +99,19 @@
     border: 1.5px solid #c8f135;
     background: transparent;
     flex-shrink: 0;
+    margin-top: 5px;
   }
   .ann-line {
     width: 40px;
     height: 1px;
     background: #c8f135;
     flex-shrink: 0;
+    margin-top: 9px;
+  }
+  .ann-label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
   .ann-pill {
     background: #c8f135;
@@ -118,6 +125,18 @@
     padding: 4px 11px;
     white-space: nowrap;
     flex-shrink: 0;
+    align-self: flex-start;
+  }
+  .ann-desc {
+    font-family: var(--font-sans);
+    font-size: 9px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.65;
+    max-width: 172px;
+  }
+  .ann-l .ann-desc {
+    text-align: right;
   }
 </style>
 </head>
@@ -140,40 +159,68 @@
     <div class="indicator"></div>
   </div>
 
-  <!-- 1 · Player Card — right — always visible -->
+  <!-- 1 · Player Card — right -->
   <div class="ann ann-r" id="ann-1" style="top:158px;">
     <div class="ann-dot"></div><div class="ann-line"></div>
-    <div class="ann-pill">Player Card</div>
+    <div class="ann-label">
+      <div class="ann-pill">Player Card</div>
+      <div class="ann-desc">Simplified for sake of the challenge.</div>
+    </div>
   </div>
 
-  <!-- 2 · Player Comparison — left — always visible -->
+  <!-- 2 · Player Comparison — left -->
   <div class="ann ann-l" id="ann-2" style="top:268px;">
     <div class="ann-dot"></div><div class="ann-line"></div>
-    <div class="ann-pill">Player Comparison</div>
+    <div class="ann-label">
+      <div class="ann-pill">Player Comparison</div>
+      <div class="ann-desc">Comparison is the thief of joy. Not for sportspeople.</div>
+    </div>
   </div>
 
   <!-- 3 · Synthesized Overview — right -->
   <div class="ann ann-r" id="ann-overview" style="top:370px;">
     <div class="ann-dot"></div><div class="ann-line"></div>
-    <div class="ann-pill">Synthesized Overview</div>
+    <div class="ann-label">
+      <div class="ann-pill">Synthesized Overview</div>
+      <div class="ann-desc">"Joint top scorer in the league." One sentence of context before any numbers.</div>
+    </div>
   </div>
 
   <!-- 4 · Market Value — left -->
   <div class="ann ann-l" id="ann-3" style="top:450px;">
     <div class="ann-dot"></div><div class="ann-line"></div>
-    <div class="ann-pill">Market Value</div>
+    <div class="ann-label">
+      <div class="ann-pill">Market Value</div>
+      <div class="ann-desc">£24,300 +12.4% with narrative context. Not just a raw graph. A story of progress.</div>
+    </div>
   </div>
 
   <!-- 5 · Season Performance — right -->
   <div class="ann ann-r" id="ann-4" style="top:590px;">
     <div class="ann-dot"></div><div class="ann-line"></div>
-    <div class="ann-pill">Season Performance</div>
+    <div class="ann-label">
+      <div class="ann-pill">Season Performance</div>
+      <div class="ann-desc">
+        • Season stats with ranking at a glance.<br>
+        • Team/League toggle to adjust comparison, increases engagement.<br>
+        • Additional quick glance statistics to give further context.<br>
+        • CTA takes user to full stats leaderboards. User stays in the app loop.
+      </div>
+    </div>
   </div>
 
   <!-- 6 · Percentages — left -->
   <div class="ann ann-l" id="ann-5" style="top:730px;">
     <div class="ann-dot"></div><div class="ann-line"></div>
-    <div class="ann-pill">Percentages</div>
+    <div class="ann-label">
+      <div class="ann-pill">Percentages</div>
+      <div class="ann-desc">
+        • Horizontal bars that fill up to max 100%. More bar, better the performance.<br>
+        • Percentage rankings vs team/league for context.<br>
+        • Arrow up or down, depending on change in ranking.<br>
+        • CTA leads to full stats table under Player Profile/Stats tab.
+      </div>
+    </div>
   </div>
 
 </div><!-- /.ann-wrap -->
