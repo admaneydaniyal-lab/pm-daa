@@ -820,7 +820,7 @@ function PlayerProfile() {
               }}>
                 <i className="ph ph-share-network" style={{ fontSize: 15, color: "#fff" }}/>
                 <span style={{ fontSize: 13, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>
-                  Share image
+                  Share to social media
                 </span>
               </button>
             </div>
