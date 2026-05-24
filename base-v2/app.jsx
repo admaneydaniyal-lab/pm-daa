@@ -696,7 +696,7 @@ function CardMarket() {
         display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap",
       }}>
         <div style={{
-          fontWeight: 900, fontSize: 38, color: "var(--fg)",
+          fontWeight: 900, fontSize: 32, color: "var(--fg)",
           letterSpacing: "-0.03em", lineHeight: 1,
           fontVariantNumeric: "tabular-nums",
         }}>£{formatted}</div>
@@ -709,7 +709,7 @@ function CardMarket() {
 
       {/* Sparkline */}
       <div style={{ marginTop: 8, marginRight: -2, marginLeft: -2 }}>
-        <Sparkline width={290} height={62}/>
+        <Sparkline width={290} height={56}/>
       </div>
 
       {/* Countdown pill */}
