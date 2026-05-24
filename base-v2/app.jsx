@@ -115,7 +115,7 @@ const TraceContext = React.createContext(false);
 // ─────────────────────────────────────────────────────────────
 // Carousel card shell
 // ─────────────────────────────────────────────────────────────
-function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, traceDelay = "0ms", narrativeAlign = "flex-start", children }) {
+function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, traceDelay = "0ms", narrativeAlign = "flex-start", narrativeMarginTop = 22, children }) {
   const showTrace = React.useContext(TraceContext);
   return (
     <div className={pulse ? "pm-card-pulse" : undefined} style={{
@@ -167,7 +167,7 @@ function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, tr
           )}
         </div>
         <i className="ph-duotone ph-share-network" style={{
-          fontSize: 18, color: "var(--fg-muted)",
+          fontSize: 18, color: "#fff",
           flexShrink: 0, marginLeft: 8,
         }}/>
       </div>
@@ -177,7 +177,7 @@ function CardShell({ header, subheader, narrativeIcon, narrative, cta, pulse, tr
       {/* Narrative sits tight under content; CTA gets pushed to the bottom */}
       {narrative && (
         <div style={{
-          marginTop: 22,
+          marginTop: narrativeMarginTop,
           display: "flex", alignItems: narrativeAlign, gap: 10,
           paddingRight: 4,
         }}>
@@ -537,7 +537,7 @@ function CardStanding() {
     <CardShell
       header="Where You Stand"
       subheader="League scoring chart"
-      narrativeIcon={<i className="ph ph-medal" style={{ fontSize: 20 }}/>}
+      narrativeIcon={<i className="ph-duotone ph-ranking" style={{ fontSize: 20 }}/>}
       narrative={<>Joint top with <span style={{ fontWeight: 700 }}>Marcus Webb</span> of Bramall&nbsp;FC.</>}
       cta="View full rankings"
       narrativeAlign="center"
@@ -562,7 +562,7 @@ function CardStanding() {
             fontWeight: 900, fontSize: 24, color: "var(--fg)",
             letterSpacing: "-0.03em",
             fontVariantNumeric: "tabular-nums",
-          }}>8</div>
+          }}>9</div>
           <div style={{
             fontSize: 10, fontWeight: 700, color: "var(--fg-muted)",
             letterSpacing: "0.16em", textTransform: "uppercase",
@@ -641,14 +641,14 @@ function Sparkline({ width = 290, height = 80 }) {
             stroke="rgba(200,241,53,0.35)" strokeWidth="1" strokeDasharray="3 3"/>
 
       {/* Y-axis labels */}
-      <text x={width - 2} y={lastY - 5}
+      <text x={width - 2} y={PT}
             fill="rgba(255,255,255,0.45)" fontSize="9" textAnchor="end"
             fontFamily="'Archivo',sans-serif" fontWeight="600">
         {(maxVal / 1000).toFixed(1)}K
       </text>
-      <text x={width - 2} y={PT + cH - 2}
+      <text x={width - 2} y={height - 6}
             fill="rgba(255,255,255,0.25)" fontSize="9" textAnchor="end"
-            fontFamily="'Archivo',sans-serif" fontWeight="600">0</text>
+            fontFamily="'Archivo',sans-serif" fontWeight="600">0K</text>
 
       {/* X-axis date labels */}
       {xLabels.map(({ label, idx }, i) => (
@@ -687,6 +687,7 @@ function CardMarket() {
     <CardShell
       header="Market Value"
       subheader="Updated weekly"
+      narrativeMarginTop={14}
       narrativeIcon={<Pic.dollar size={20}/>}
       narrative={<>Up 4 weeks in a row. Highest of your career.<br/><span style={{ fontWeight: 700 }}>2nd most valuable</span> on your squad.</>}
       cta="See full trend"
@@ -696,7 +697,7 @@ function CardMarket() {
         display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap",
       }}>
         <div style={{
-          fontWeight: 900, fontSize: 38, color: "var(--fg)",
+          fontWeight: 900, fontSize: 32, color: "var(--fg)",
           letterSpacing: "-0.03em", lineHeight: 1,
           fontVariantNumeric: "tabular-nums",
         }}>£{formatted}</div>
@@ -709,12 +710,12 @@ function CardMarket() {
 
       {/* Sparkline */}
       <div style={{ marginTop: 8, marginRight: -2, marginLeft: -2 }}>
-        <Sparkline width={290} height={62}/>
+        <Sparkline width={290} height={56}/>
       </div>
 
       {/* Countdown pill */}
       <div style={{
-        marginTop: 8,
+        marginTop: 14,
         display: "inline-flex", alignSelf: "flex-start", alignItems: "center", gap: 7,
         background: "rgba(255,255,255,0.04)",
         border: "1px solid var(--border)",
