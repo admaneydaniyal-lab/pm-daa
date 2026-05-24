@@ -562,7 +562,7 @@ function CardStanding() {
         height: 1, background: "var(--border)",
       }}/>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "space-between" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{
             fontWeight: 900, fontSize: 24, color: "var(--fg)",
@@ -574,6 +574,19 @@ function CardStanding() {
             letterSpacing: "0.16em", textTransform: "uppercase",
             lineHeight: 1.3,
           }}>goals<br/>this season</div>
+        </div>
+        <div style={{ width: 1, height: 28, background: "var(--border)", flexShrink: 0 }}/>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{
+            fontWeight: 900, fontSize: 24, color: "var(--fg)",
+            letterSpacing: "-0.03em",
+            fontVariantNumeric: "tabular-nums",
+          }}>1,740</div>
+          <div style={{
+            fontSize: 10, fontWeight: 700, color: "var(--fg-muted)",
+            letterSpacing: "0.16em", textTransform: "uppercase",
+            lineHeight: 1.3,
+          }}>mins<br/>this season</div>
         </div>
       </div>
     </CardShell>
