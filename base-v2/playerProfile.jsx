@@ -285,15 +285,17 @@ function TabBar() {
 }
 
 // ─── Data ─────────────────────────────────────────────────────
+// Averages are forward/striker-position-filtered, not whole-squad
 const PERF_STATS = [
   {
     key: "goals",
     label: "Goals",
     unit: "scored",
     value: 9,
-    teamAvg: 3.2, leagueAvg: 2.8, max: 12,
-    teamCompare:   "+5.8 vs squad",
+    teamAvg: 2.2, leagueAvg: 1.8, max: 12,
+    teamCompare:   "+6.8 vs fwds",
     leagueCompare: "T-1st · NSL",
+    chip: { value: "147", label: "Mins / Goal" },
     icon: (
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
         <circle cx="12" cy="12" r="9"/>
@@ -307,9 +309,10 @@ const PERF_STATS = [
     label: "Assists",
     unit: "created",
     value: 4,
-    teamAvg: 1.8, leagueAvg: 1.5, max: 6,
-    teamCompare:   "+2.2 vs squad",
+    teamAvg: 1.2, leagueAvg: 0.9, max: 6,
+    teamCompare:   "+2.8 vs fwds",
     leagueCompare: "#7 in league",
+    chip: { value: "24", label: "Chances Created" },
     icon: (
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
@@ -322,9 +325,10 @@ const PERF_STATS = [
     label: "Games",
     unit: "played",
     value: 20,
-    teamAvg: 15, leagueAvg: 14, max: 22,
-    teamCompare:   "+5 vs squad",
+    teamAvg: 17, leagueAvg: 15, max: 22,
+    teamCompare:   "+3 vs fwds",
     leagueCompare: "Top 8% STs",
+    chip: { value: "3×", label: "Top XI" },
     icon: (
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
         <rect x="3" y="4" width="18" height="16" rx="2"/>
@@ -630,37 +634,38 @@ function PlayerProfile() {
                             fontSize: 10, fontWeight: 600, color: "#c8f135",
                             letterSpacing: "-0.01em", lineHeight: 1.3,
                           }}>↳ {compareText}</div>
+
+                          {/* Column chip */}
+                          <div style={{
+                            marginTop: 10,
+                            background: "#0d0d0d", border: "1px solid #1c1c1c",
+                            borderRadius: 7, padding: "6px 8px", textAlign: "center",
+                          }}>
+                            <div style={{
+                              fontSize: 14, fontWeight: 900, color: "#fff",
+                              letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums",
+                            }}>{stat.chip.value}</div>
+                            <div style={{
+                              fontSize: 8, fontWeight: 700, color: "#4a4a4a",
+                              letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 2,
+                            }}>{stat.chip.label}</div>
+                          </div>
+
+                          {/* Rankings CTA */}
+                          <button style={{
+                            marginTop: 8,
+                            width: "100%", background: "none", border: "none",
+                            cursor: "pointer", fontFamily: "inherit", padding: 0,
+                            display: "flex", alignItems: "center", justifyContent: "center", gap: 3,
+                            fontSize: 9, fontWeight: 700, color: "#c8f135",
+                            letterSpacing: "0.04em", textTransform: "uppercase",
+                          }}>
+                            Rankings
+                            <Pic.arrowRight size={8}/>
+                          </button>
                         </div>
                       );
                     })}
-                  </div>
-
-                  {/* Mini chips */}
-                  <div style={{
-                    padding: "10px 12px 14px",
-                    borderTop: "1px solid #1c1c1c",
-                    display: "flex", gap: 6,
-                  }}>
-                    {[
-                      { label: "Mins / Goal", value: "147" },
-                      { label: "Top XI",      value: "3×"  },
-                      { label: "Hat tricks",  value: "1"   },
-                    ].map(({ label, value }) => (
-                      <div key={label} style={{
-                        flex: 1,
-                        background: "#0d0d0d", border: "1px solid #1c1c1c",
-                        borderRadius: 8, padding: "8px 8px", textAlign: "center",
-                      }}>
-                        <div style={{
-                          fontSize: 16, fontWeight: 900, color: "#fff",
-                          letterSpacing: "-0.02em",
-                        }}>{value}</div>
-                        <div style={{
-                          fontSize: 9, fontWeight: 700, color: "#4a4a4a",
-                          letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 3,
-                        }}>{label}</div>
-                      </div>
-                    ))}
                   </div>
                 </div>
               </div>
