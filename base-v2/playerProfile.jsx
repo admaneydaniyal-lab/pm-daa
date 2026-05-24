@@ -633,7 +633,7 @@ function PlayerProfile() {
                             marginTop: 8,
                             fontSize: 10, fontWeight: 600, color: "#c8f135",
                             letterSpacing: "-0.01em", lineHeight: 1.3,
-                          }}>↳ {compareText}</div>
+                          }}>{compareText}</div>
 
                           {/* Column chip */}
                           <div style={{
