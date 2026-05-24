@@ -459,7 +459,7 @@ function PlayerProfile() {
               fontSize: 64, fontWeight: 900, color: "#fff",
               letterSpacing: "-0.04em", lineHeight: 1,
               fontVariantNumeric: "tabular-nums",
-              paddingTop: 4, opacity: 0.15,
+              paddingTop: 4, color: "#aaaaaa",
             }}>#9</div>
           </div>
         </div>
@@ -673,12 +673,10 @@ function PlayerProfile() {
                         }}>
                           {/* Label */}
                           <div style={{
-                            fontSize: 9, fontWeight: 800, color: "#4a4a4a",
+                            fontSize: 9, fontWeight: 800, color: "#888",
                             letterSpacing: "0.14em", textTransform: "uppercase",
-                            display: "flex", alignItems: "center", gap: 4,
                             marginBottom: 8,
                           }}>
-                            <span style={{ color: "#4a4a4a" }}>{stat.icon}</span>
                             {stat.label}
                           </div>
 
