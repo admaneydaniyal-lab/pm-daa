@@ -651,21 +651,25 @@ function PlayerProfile() {
                             }}>{stat.chip.label}</div>
                           </div>
 
-                          {/* Rankings CTA */}
-                          <button style={{
-                            marginTop: 8,
-                            width: "100%", background: "none", border: "none",
-                            cursor: "pointer", fontFamily: "inherit", padding: 0,
-                            display: "flex", alignItems: "center", justifyContent: "center", gap: 3,
-                            fontSize: 9, fontWeight: 700, color: "#c8f135",
-                            letterSpacing: "0.04em", textTransform: "uppercase",
-                          }}>
-                            Rankings
-                            <Pic.arrowRight size={8}/>
-                          </button>
                         </div>
                       );
                     })}
+                  </div>
+
+                  {/* View all rankings — single outline button */}
+                  <div style={{
+                    padding: "12px 16px 14px",
+                    borderTop: "1px solid #1c1c1c",
+                    display: "flex", justifyContent: "center",
+                  }}>
+                    <button style={{
+                      background: "transparent", color: "#c8f135",
+                      border: "1px solid #c8f135", borderRadius: 999,
+                      padding: "6px 18px",
+                      fontFamily: "inherit", fontWeight: 700, fontSize: 12,
+                      letterSpacing: "-0.01em", cursor: "pointer",
+                      whiteSpace: "nowrap",
+                    }}>View all rankings</button>
                   </div>
                 </div>
               </div>
