@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prematch — Design System v1.0</title>
+  <link rel="stylesheet" href="colors_and_type.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --page-bg: #050505;
+      --section-bg: #0d0d0d;
+      --card-bg: #131313;
+      --accent: #c8f135;
+      --accent-ink: #0d0d0d;
+      --border-subtle: #1a1a1a;
+      --border-mid: #242424;
+      --fg: #ffffff;
+      --fg-muted: rgba(255,255,255,0.35);
+      --fg-mid: rgba(255,255,255,0.52);
+      --mono: ui-monospace, Menlo, 'Cascadia Code', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--page-bg);
+      color: var(--fg);
+      font-family: 'Archivo', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* ── Top Nav ─────────────────────────────────────────────────── */
+    .top-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(5,5,5,0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--accent);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+    }
+    .nav-wordmark {
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      color: var(--fg);
+    }
+    .nav-wordmark span { color: var(--accent); }
+    .nav-version {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--fg-muted);
+      text-transform: uppercase;
+    }
+
+    /* ── Page wrapper ─────────────────────────────────────────────── */
+    .page-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 96px 32px 80px;
+    }
+
+    /* ── Section ─────────────────────────────────────────────────── */
+    .section {
+      margin-bottom: 72px;
+    }
+    .section-rule {
+      height: 1px;
+      background: var(--border-subtle);
+      margin-bottom: 24px;
+    }
+    .section-label {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 11px;
+      color: var(--fg-muted);
+      font-weight: 700;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-label a {
+      color: inherit;
+      text-decoration: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .section-label:hover a { opacity: 1; }
+    .section-label a::before { content: '#'; }
+
+    /* ── Spec box ────────────────────────────────────────────────── */
+    .spec-box {
+      background: #0d0d0d;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.65;
+    }
+    .spec-box .lime { color: var(--accent); }
+    .spec-box .bold { color: #fff; font-weight: 700; }
+
+    /* ── Muted note box ───────────────────────────────────────────── */
+    .note-box {
+      background: #0a0a0a;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.6;
+    }
+    .note-box strong { color: rgba(255,255,255,0.7); }
+    .note-box code {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      background: rgba(200,241,53,0.08);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    /* ── Code block ─────────────────────────────────────────────── */
+    .code-block {
+      background: #080808;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.7;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .code-block .lime { color: var(--accent); }
+    .code-block .muted { color: rgba(255,255,255,0.3); }
+    .code-block .kw { color: #8b9fff; }
+    .code-block .str { color: #f9bc60; }
+
+    /* ── Component card ─────────────────────────────────────────── */
+    .component-card {
+      background: var(--card-bg);
+      border: 1px solid #1c1c1c;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .component-header {
+      padding: 14px 18px 12px;
+      border-bottom: 1px solid #1c1c1c;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .component-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+    .component-tag {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.05);
+      padding: 3px 6px;
+      border-radius: 4px;
+    }
+    .component-body {
+      padding: 24px 18px;
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .specimen-area {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0d0d0d;
+      border: 1px solid #1c1c1c;
+      border-radius: 10px;
+      padding: 24px;
+      min-width: 160px;
+      min-height: 80px;
+    }
+    .spec-area {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    /* ── Table ────────────────────────────────────────────────────── */
+    .ds-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .ds-table th {
+      text-align: left;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--fg-muted);
+      padding: 0 12px 12px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .ds-table td {
+      padding: 10px 12px 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle;
+      color: rgba(255,255,255,0.7);
+    }
+    .ds-table td:first-child { color: var(--accent); font-family: var(--mono); font-size: 11px; }
+    .ds-table tr:last-child td { border-bottom: none; }
+
+    /* ── Color swatch ─────────────────────────────────────────────── */
+    .swatch-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .swatch-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .swatch {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .swatch-token {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: rgba(255,255,255,0.4);
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+    .swatch-hex {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+    }
+    .swatch-name {
+      font-size: 10px;
+      color: rgba(255,255,255,0.35);
+      text-align: center;
+      max-width: 80px;
+      line-height: 1.3;
+    }
+
+    /* ── Spacing viz ──────────────────────────────────────────────── */
+    .space-tokens {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .space-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .space-bar-wrap {
+      background: #0d0d0d;
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 8px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      width: 72px;
+      height: 60px;
+    }
+    .space-bar {
+      background: var(--accent);
+      border-radius: 2px;
+      width: 14px;
+      opacity: 0.8;
+    }
+    .space-label { font-family: var(--mono); font-size: 10px; color: var(--accent); }
+    .space-val { font-size: 10px; color: rgba(255,255,255,0.4); }
+
+    /* ── Radius chips ─────────────────────────────────────────────── */
+    .radius-tokens {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .radius-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .radius-swatch {
+      width: 56px;
+      height: 56px;
+      background: #1a1a1a;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .radius-label { font-family: var(--mono); font-size: 10px; color: var(--accent); }
+    .radius-val { font-size: 10px; color: rgba(255,255,255,0.4); }
+
+    /* ── Dev handoff items ───────────────────────────────────────── */
+    .handoff-item {
+      background: #0e0e0e;
+      border: 1px solid #1c1c1c;
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      line-height: 1.65;
+      color: rgba(255,255,255,0.65);
+    }
+    .handoff-item strong { color: #fff; }
+    .handoff-item code {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      background: rgba(200,241,53,0.08);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    .handoff-num {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-size: 10px;
+      font-weight: 900;
+      text-align: center;
+      line-height: 20px;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+    .handoff-row { display: flex; align-items: flex-start; gap: 0; }
+
+    /* ── Icon grid ─────────────────────────────────────────────────── */
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 12px;
+    }
+    .icon-cell {
+      background: #0d0d0d;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 16px 8px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .icon-cell i { font-size: 22px; color: rgba(255,255,255,0.75); }
+    .icon-cell .icon-name {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: rgba(255,255,255,0.35);
+      text-align: center;
+      line-height: 1.4;
+      word-break: break-all;
+    }
+
+    /* ── Pattern row ─────────────────────────────────────────────── */
+    .pattern-block {
+      margin-bottom: 28px;
+    }
+    .pattern-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pattern-title::before {
+      content: '';
+      display: inline-block;
+      width: 3px;
+      height: 12px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    /* ── Inline code ──────────────────────────────────────────────── */
+    code {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      background: rgba(200,241,53,0.08);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    /* ── Status colors ────────────────────────────────────────────── */
+    .status-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .status-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #0d0d0d;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+    .status-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .status-info { font-size: 12px; color: rgba(255,255,255,0.6); }
+    .status-info strong { color: #fff; font-family: var(--mono); font-size: 11px; }
+
+    /* ── Typography specimen row ──────────────────────────────────── */
+    .type-specimen {
+      display: inline-block;
+      min-width: 120px;
+    }
+
+    /* ── Bullet rules list ────────────────────────────────────────── */
+    .rules-list {
+      list-style: none;
+      padding: 0;
+    }
+    .rules-list li {
+      display: flex;
+      gap: 8px;
+      padding: 6px 0;
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.5;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .rules-list li:last-child { border-bottom: none; }
+    .rules-list li::before {
+      content: '—';
+      color: var(--accent);
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+    .rules-list code { font-family: var(--mono); font-size: 11px; color: var(--accent); background: rgba(200,241,53,0.08); padding: 1px 5px; border-radius: 3px; }
+
+    /* ── Scroll helpers ───────────────────────────────────────────── */
+    :target { scroll-margin-top: 72px; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     TOP NAV
+════════════════════════════════════════════════════════════════ -->
+<nav class="top-nav">
+  <div class="nav-wordmark">PRE<span>MATCH</span></div>
+  <div class="nav-version">Design System v1.0</div>
+</nav>
+
+<div class="page-wrap">
+
+  <!-- ════════════════════════════════════════════════════════════
+       § 1  OVERVIEW
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="section" id="overview">
+    <div class="section-rule"></div>
+    <div class="section-label">01 — Overview <a href="#overview">overview</a></div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
+      <div class="spec-box" style="border-left:3px solid var(--accent);">
+        <div style="font-size:15px; font-weight:900; color:#fff; margin-bottom:8px; letter-spacing:-0.02em;">Dark-first. Stats as hero.</div>
+        <div style="color:rgba(255,255,255,0.55); font-family:'Archivo',sans-serif; font-size:13px; line-height:1.6;">
+          Prematch is a sports analytics app built for players who want to see their data in sharp focus. The design language is deliberately sparse — deep black surfaces, a single lime accent (<span class="lime">#c8f135</span>), and numbers that dominate every screen.
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div class="spec-box">
+          <span class="bold">Accent</span> — <span class="lime">one colour only</span>. #c8f135 lime.<br>
+          Never introduce secondary accent colours.
+        </div>
+        <div class="spec-box">
+          <span class="bold">Viewport</span> — mobile 390px.<br>
+          All layouts designed at iPhone 14 Pro width.
+        </div>
+        <div class="spec-box">
+          <span class="bold">Typeface</span> — Archivo (900 for stats, 700 for headings, 400 for body).
+        </div>
+        <div class="spec-box">
+          <span class="bold">Tokens</span> — <span class="lime">always var(--token)</span>, never raw hex in component code.
+        </div>
+      </div>
+    </div>
+
+    <div class="note-box">
+      <strong>Design principles</strong><br>
+      Numbers take visual priority over labels. Stats are presented at hero scale — the viewer reads the number before the label. Surfaces use three elevation levels: <code>--pm-bg</code> (page), <code>--pm-surface</code> (cards), <code>--pm-surface-2</code> (inset panels). All colours flow from CSS custom properties — never hardcode hex values in component styling.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       § 2  COLOR TOKENS
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="section" id="colors">
+    <div class="section-rule"></div>
+    <div class="section-label">02 — Color Tokens <a href="#colors">colors</a></div>
+
+    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.14em; color:rgba(255,255,255,0.3); margin-bottom:14px;">Surfaces &amp; Foreground</div>
+    <div class="swatch-grid">
+      <div class="swatch-item">
+        <div class="swatch" style="background:#0d0d0d; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.12);"></div>
+        <div class="swatch-token">--pm-bg</div>
+        <div class="swatch-hex">#0d0d0d</div>
+        <div class="swatch-name">Page background</div>
+      </div>
+      <div class="swatch-item">
+        <div class="swatch" style="background:#1a1a1a;"></div>
+        <div class="swatch-token">--pm-surface</div>
+        <div class="swatch-hex">#1a1a1a</div>
+        <div class="swatch-name">Card / panel</div>
+      </div>
+      <div class="swatch-item">
+        <div class="swatch" style="background:#141414;"></div>
+        <div class="swatch-token">--pm-surface-2</div>
+        <div class="swatch-hex">#141414</div>
+        <div class="swatch-name">Elevation below surface</div>
+      </div>
+      <div class="swatch-item">
+        <div class="swatch" style="background:#2a2a2a;"></div>
+        <div class="swatch-token">--pm-border</div>
+        <div class="swatch-hex">#2a2a2a</div>
+        <div class="swatch-name">Hairline border</div>
+      </div>
+      <div class="swatch-item">
+        <div class="swatch" style="background:#ffffff;"></div>
+        <div class="swatch-token">--pm-fg</div>
+        <div class="swatch-hex">#ffffff</div>
+        <div class="swatch-name">Primary text</div>
+      </div>
+      <div class="swatch-item">
+        <div class="swatch" style="background:#666666;"></div>
+        <div class="swatch-token">--pm-fg-muted</div>
+        <div class="swatch-hex">#666666</div>
+        <div class="swatch-name">Secondary / labels</div>
+      </div>
+      <div class="swatch-item">
+        <div class="swatch" style="background:#404040;"></div>
+        <div class="swatch-token">--pm-fg-dim</div>
+        <div class="swatch-hex">#404040</div>
+        <div class="swatch-name">Tertiary / placeholder</div>
+      </div>
+    </div>
+
+    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.14em; color:rgba(255,255,255,0.3); margin-bottom:14px; margin-top:28px;">Accent</div>
+    <div class="swatch-grid">
+      <div class="swatch-item">
+        <div class="swatch" style="background:#c8f135;"></div>
+        <div class="swatch-token">--pm-accent</div>
+        <div class="swatch-hex">#c8f135</div>
+        <div class="swatch-name">Lime — single accent</div>
+      </div>
+      <div class="swatch-item">
+        <div class="swatch" style="background:#b3d92e;"></div>
+        <div class="swatch-token">--pm-accent-press</div>
+        <div class="swatch-hex">#b3d92e</div>
+        <div class="swatch-name">Lime press / hover</div>
+      </div>
+      <div class="swatch-item">
+        <div class="swatch" style="background:#0d0d0d; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.12);"></div>
+        <div class="swatch-token">--pm-accent-ink</div>
+        <div class="swatch-hex">#0d0d0d</div>
+        <div class="swatch-name">Text on lime</div>
+      </div>
+    </div>
+
+    <div class="note-box" style="margin-top:20px; margin-bottom:20px;">
+      <strong>Semantic alias rule</strong> — Use semantic aliases (<code>--bg</code>, <code>--surface</code>, <code>--border</code>, <code>--fg</code>, <code>--fg-muted</code>, <code>--accent</code>) everywhere. Never use raw hex values in component code. The <code>--pm-*</code> namespace is the single source of truth; aliases re-export them.
+    </div>
+
+    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.14em; color:rgba(255,255,255,0.3); margin-bottom:14px;">Status Colours (Use with caution — match results only)</div>
+    <div class="status-row">
+      <div class="status-chip">
+        <div class="status-dot" style="background:#22c55e;"></div>
+        <div class="status-info"><strong>#22c55e</strong><br>Win — WIN_GREEN</div>
+      </div>
+      <div class="status-chip">
+        <div class="status-dot" style="background:#ef4444;"></div>
+        <div class="status-info"><strong>#ef4444</strong><br>Loss — LOSS_RED</div>
+      </div>
+      <div class="status-chip">
+        <div class="status-dot" style="background:#f5b53b;"></div>
+        <div class="status-info"><strong>#f5b53b</strong><br>Draw — DRAW_AMBER</div>
+      </div>
+    </div>
+    <div class="note-box" style="margin-top:12px;">
+      Status colours are <strong>not in CSS tokens</strong>. Define them as JS constants: <code>WIN_GREEN = '#22c55e'</code>, <code>LOSS_RED = '#ef4444'</code>, <code>DRAW_AMBER = '#f5b53b'</code>. Only use in <em>match result</em> contexts (FormPill, match list rows).
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       § 3  TYPOGRAPHY
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="section" id="typography">
+    <div class="section-rule"></div>
+    <div class="section-label">03 — Typography <a href="#typography">typography</a></div>
+
+    <div style="overflow-x:auto; margin-bottom:24px;">
+      <table class="ds-table" style="min-width:700px;">
+        <thead>
+          <tr>
+            <th>Token</th>
+            <th>Size</th>
+            <th>Weight</th>
+            <th>Usage</th>
+            <th>Specimen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>--type-hero</td>
+            <td>96px</td>
+            <td>900</td>
+            <td>Single hero number (rating, big count)</td>
+            <td><span style="font-size:52px; font-weight:900; letter-spacing:-0.04em; line-height:1; color:#fff; font-variant-numeric:tabular-nums;">9</span></td>
+          </tr>
+          <tr>
+            <td>--type-stat-xl</td>
+            <td>64px</td>
+            <td>900</td>
+            <td>Primary stat number</td>
+            <td><span style="font-size:38px; font-weight:900; letter-spacing:-0.03em; line-height:1; color:#fff; font-variant-numeric:tabular-nums;">T-1st</span></td>
+          </tr>
+          <tr>
+            <td>--type-stat</td>
+            <td>48px</td>
+            <td>900</td>
+            <td>Standard stat card</td>
+            <td><span style="font-size:32px; font-weight:900; letter-spacing:-0.03em; line-height:1; color:#fff; font-variant-numeric:tabular-nums;">18</span></td>
+          </tr>
+          <tr>
+            <td>--type-stat-sm</td>
+            <td>32px</td>
+            <td>900</td>
+            <td>Compact stat</td>
+            <td><span style="font-size:24px; font-weight:900; letter-spacing:-0.02em; line-height:1; color:#fff; font-variant-numeric:tabular-nums;">56%</span></td>
+          </tr>
+          <tr>
+            <td>--type-h1</td>
+            <td>28px</td>
+            <td>900</td>
+            <td>Screen title</td>
+            <td><span style="font-size:20px; font-weight:900; letter-spacing:-0.02em; color:#fff;">LEWIS BILBIE</span></td>
+          </tr>
+          <tr>
+            <td>--type-h2</td>
+            <td>20px</td>
+            <td>700</td>
+            <td>Section title</td>
+            <td><span style="font-size:16px; font-weight:700; letter-spacing:-0.01em; color:#fff;">Season Performance</span></td>
+          </tr>
+          <tr>
+            <td>--type-h3</td>
+            <td>16px</td>
+            <td>700</td>
+            <td>Card title / sub-section</td>
+            <td><span style="font-size:14px; font-weight:700; color:#fff;">Statistical Breakdown</span></td>
+          </tr>
+          <tr>
+            <td>--type-body</td>
+            <td>15px</td>
+            <td>400</td>
+            <td>Narrative / body copy</td>
+            <td><span style="font-size:13px; font-weight:400; color:rgba(255,255,255,0.7); line-height:1.45;">Joint top scorer in the league.</span></td>
+          </tr>
+          <tr>
+            <td>--type-meta</td>
+            <td>13px</td>
+            <td>500</td>
+            <td>Meta info, table values</td>
+            <td><span style="font-size:12px; font-weight:500; color:rgba(255,255,255,0.55);">Ravenshead FC</span></td>
+          </tr>
+          <tr>
+            <td>--type-label</td>
+            <td>11px</td>
+            <td>800</td>
+            <td>Small-caps labels</td>
+            <td><span style="font-size:10px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.35);">SEASON PERFORMANCE</span></td>
+          </tr>
+          <tr>
+            <td>--type-micro</td>
+            <td>10px</td>
+            <td>700</td>
+            <td>Chips, tags, badges</td>
+            <td><span style="font-size:9px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.5);">PRO · NSL</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="spec-box">
+      <div style="font-weight:700; color:#fff; margin-bottom:8px;">Typography Rules</div>
+      <ul class="rules-list" style="font-family:inherit;">
+        <li>All numbers: <code>font-variant-numeric: tabular-nums</code></li>
+        <li>Big numbers: <code>letter-spacing: -0.03em</code> to <code>letter-spacing: -0.04em</code></li>
+        <li>Labels: <code>letter-spacing: 0.14em; text-transform: uppercase</code></li>
+        <li>Line-heights: <code>0.95</code> (hero numbers) · <code>1.15</code> (headings) · <code>1.45</code> (body)</li>
+        <li>Weights used: <code>400</code> body · <code>500</code> meta · <code>600</code> semi · <code>700</code> bold · <code>800</code> label · <code>900</code> stat/display</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       § 4  SPACING & RADIUS
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="section" id="spacing">
+    <div class="section-rule"></div>
+    <div class="section-label">04 — Spacing &amp; Radius <a href="#spacing">spacing</a></div>
+
+    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.14em; color:rgba(255,255,255,0.3); margin-bottom:14px;">Spacing Scale</div>
+    <div class="space-tokens">
+      <div class="space-chip">
+        <div class="space-bar-wrap"><div class="space-bar" style="height:4px;"></div></div>
+        <div class="space-label">--s-1</div>
+        <div class="space-val">4px</div>
+      </div>
+      <div class="space-chip">
+        <div class="space-bar-wrap"><div class="space-bar" style="height:8px;"></div></div>
+        <div class="space-label">--s-2</div>
+        <div class="space-val">8px</div>
+      </div>
+      <div class="space-chip">
+        <div class="space-bar-wrap"><div class="space-bar" style="height:12px;"></div></div>
+        <div class="space-label">--s-3</div>
+        <div class="space-val">12px</div>
+      </div>
+      <div class="space-chip">
+        <div class="space-bar-wrap"><div class="space-bar" style="height:16px;"></div></div>
+        <div class="space-label">--s-4</div>
+        <div class="space-val">16px</div>
+      </div>
+      <div class="space-chip">
+        <div class="space-bar-wrap"><div class="space-bar" style="height:20px;"></div></div>
+        <div class="space-label">--s-5</div>
+        <div class="space-val">20px</div>
+      </div>
+      <div class="space-chip">
+        <div class="space-bar-wrap"><div class="space-bar" style="height:24px;"></div></div>
+        <div class="space-label">--s-6</div>
+        <div class="space-val">24px</div>
+      </div>
+      <div class="space-chip">
+        <div class="space-bar-wrap"><div class="space-bar" style="height:32px;"></div></div>
+        <div class="space-label">--s-7</div>
+        <div class="space-val">32px</div>
+      </div>
+      <div class="space-chip">
+        <div class="space-bar-wrap"><div class="space-bar" style="height:44px;"></div></div>
+        <div class="space-label">--s-8</div>
+        <div class="space-val">48px</div>
+      </div>
+    </div>
+
+    <div class="note-box" style="margin-bottom:28px;">
+      <strong>Gutter:</strong> <code>--gutter: 20px</code> — screen edge padding on mobile. All sections and cards respect this. On the 390px viewport this yields <code>350px</code> usable inner width.
+    </div>
+
+    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.14em; color:rgba(255,255,255,0.3); margin-bottom:14px;">Border-Radius Scale</div>
+    <div class="radius-tokens">
+      <div class="radius-chip">
+        <div class="radius-swatch" style="border-radius:6px;"></div>
+        <div class="radius-label">--r-sm</div>
+        <div class="radius-val">6px</div>
+      </div>
+      <div class="radius-chip">
+        <div class="radius-swatch" style="border-radius:10px;"></div>
+        <div class="radius-label">--r-md</div>
+        <div class="radius-val">10px</div>
+      </div>
+      <div class="radius-chip">
+        <div class="radius-swatch" style="border-radius:14px;"></div>
+        <div class="radius-label">--r-lg</div>
+        <div class="radius-val">14px</div>
+      </div>
+      <div class="radius-chip">
+        <div class="radius-swatch" style="border-radius:20px;"></div>
+        <div class="radius-label">--r-xl</div>
+        <div class="radius-val">20px</div>
+      </div>
+      <div class="radius-chip">
+        <div class="radius-swatch" style="border-radius:999px; width:72px;"></div>
+        <div class="radius-label">--r-pill</div>
+        <div class="radius-val">999px</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       § 5  MOTION
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="section" id="motion">
+    <div class="section-rule"></div>
+    <div class="section-label">05 — Motion <a href="#motion">motion</a></div>
+
+    <div style="overflow-x:auto; margin-bottom:20px;">
+      <table class="ds-table" style="min-width:600px;">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Value</th>
+            <th>Usage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>--ease-out</td>
+            <td style="color:rgba(255,255,255,0.7);">cubic-bezier(0.2, 0.7, 0.2, 1)</td>
+            <td style="color:rgba(255,255,255,0.55);">All fills, bars, underlines</td>
+          </tr>
+          <tr>
+            <td>--t-fast</td>
+            <td style="color:rgba(255,255,255,0.7);">120ms</td>
+            <td style="color:rgba(255,255,255,0.55);">Toggle state changes</td>
+          </tr>
+          <tr>
+            <td>--t-base</td>
+            <td style="color:rgba(255,255,255,0.7);">200ms</td>
+            <td style="color:rgba(255,255,255,0.55);">Hover, opacity</td>
+          </tr>
+          <tr>
+            <td>Bar animation</td>
+            <td style="color:rgba(255,255,255,0.7);">700ms --ease-out</td>
+            <td style="color:rgba(255,255,255,0.55);">VertBarPair height on mount</td>
+          </tr>
+          <tr>
+            <td>Underline fill</td>
+            <td style="color:rgba(255,255,255,0.7);">760ms --ease-out, 120ms delay</td>
+            <td style="color:rgba(255,255,255,0.55);">LimeHero underline width</td>
+          </tr>
+          <tr>
+            <td>Count-up</td>
+            <td style="color:rgba(255,255,255,0.7);">1200–1600ms ease-out cubic</td>
+            <td style="color:rgba(255,255,255,0.55);">Number count-up via rAF</td>
+          </tr>
+          <tr>
+            <td>Pct bar</td>
+            <td style="color:rgba(255,255,255,0.7);">900ms --ease-out, staggered</td>
+            <td style="color:rgba(255,255,255,0.55);">Horizontal fill bars (300 / 420 / 540ms)</td>
+          </tr>
+          <tr>
+            <td>Annotations</td>
+            <td style="color:rgba(255,255,255,0.7);">360ms ease</td>
+            <td style="color:rgba(255,255,255,0.55);">Slide-in / opacity reveal</td>
+          </tr>
+          <tr>
+            <td>Card trace</td>
+            <td style="color:rgba(255,255,255,0.7);">8s linear infinite</td>
+            <td style="color:rgba(255,255,255,0.55);">Rotating border shimmer on CardShell</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note-box">
+      <strong>Motion rule:</strong> Never use <code>ease-in</code> or <code>linear</code> for fill animations. All growth/expansion animations (bars, underlines, fills) use <code>--ease-out: cubic-bezier(0.2, 0.7, 0.2, 1)</code>. This creates a snappy-feeling start with a soft settle — appropriate for data reveals.
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       § 6  COMPONENTS
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="section" id="components">
+    <div class="section-rule"></div>
+    <div class="section-label">06 — Components <a href="#components">components</a></div>
+
+    <!-- 6.1 HexLogo -->
+    <div class="component-card" id="c-hexlogo">
+      <div class="component-header">
+        <div class="component-name">HexLogo</div>
+        <div class="component-tag">6.1</div>
+      </div>
+      <div class="component-body">
+        <div class="specimen-area">
+          <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="19,2 35,11 35,27 19,36 3,27 3,11" fill="#000" stroke="#fff" stroke-width="1.8"/>
+            <text x="19" y="26" text-anchor="middle" fill="#fff" font-family="Archivo,sans-serif" font-weight="900" font-size="19" letter-spacing="-0.04em">P</text>
+          </svg>
+        </div>
+        <div class="spec-area">
+          <div class="spec-box">
+            <div class="bold">HexLogo</div><br>
+            <span class="lime">size:</span> 38×38px default<br>
+            <span class="lime">polygon:</span> points="19,2 35,11 35,27 19,36 3,27 3,11"<br>
+            <span class="lime">fill:</span> #000 · <span class="lime">stroke:</span> #fff 1.8px<br>
+            <span class="lime">letter:</span> "P" · font-size 19px · weight 900<br>
+            <span class="lime">letter-spacing:</span> -0.04em
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.2 HexCheck -->
+    <div class="component-card" id="c-hexcheck">
+      <div class="component-header">
+        <div class="component-name">HexCheck (Verified Badge)</div>
+        <div class="component-tag">6.2</div>
+      </div>
+      <div class="component-body">
+        <div class="specimen-area" style="gap:20px; flex-direction:row;">
+          <!-- 20px variant -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <svg width="20" height="26" viewBox="0 0 26 26" fill="none">
+              <polygon points="13,1 24,7 24,19 13,25 2,19 2,7" fill="#c8f135"/>
+              <polyline points="8.5,13 11.5,16 17.5,10" stroke="#0d0d0d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+            <span style="font-size:9px;color:rgba(255,255,255,0.35);">20px (hero)</span>
+          </div>
+          <!-- 26px variant -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+              <polygon points="13,1 24,7 24,19 13,25 2,19 2,7" fill="#c8f135"/>
+              <polyline points="8.5,13 11.5,16 17.5,10" stroke="#0d0d0d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+            <span style="font-size:9px;color:rgba(255,255,255,0.35);">26px (title)</span>
+          </div>
+        </div>
+        <div class="spec-area">
+          <div class="spec-box">
+            <div class="bold">HexCheck</div><br>
+            <span class="lime">fill:</span> #c8f135 (lime)<br>
+            <span class="lime">path:</span> M13 1 L24 7 L24 19 L13 25 L2 19 L2 7 Z<br>
+            <span class="lime">checkmark:</span> M8.5 13 L11.5 16 L17.5 10<br>
+            <span class="lime">check-stroke:</span> #0d0d0d · 2.2px · round<br>
+            <span class="lime">sizes:</span> 20px (hero card) · 26px (screen title)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.3 ProBadge -->
+    <div class="component-card" id="c-probadge">
+      <div class="component-header">
+        <div class="component-name">ProBadge</div>
+        <div class="component-tag">6.3</div>
+      </div>
+      <div class="component-body">
+        <div class="specimen-area">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:13px; color:rgba(255,255,255,0.55);">Goals</span>
+            <span style="background:#6d28d9; color:#fff; font-size:9px; font-weight:800; letter-spacing:0.06em; border-radius:4px; padding:2px 5px; text-transform:uppercase;">PRO</span>
+          </div>
+        </div>
+        <div class="spec-area">
+          <div class="spec-box">
+            <div class="bold">ProBadge</div><br>
+            <span class="lime">bg:</span> #6d28d9 (purple)<br>
+            <span class="lime">color:</span> #fff<br>
+            <span class="lime">font-size:</span> 9px<br>
+            <span class="lime">font-weight:</span> 800<br>
+            <span class="lime">letter-spacing:</span> 0.06em<br>
+            <span class="lime">border-radius:</span> 4px<br>
+            <span class="lime">padding:</span> 2px 5px<br>
+            <span class="lime">usage:</span> inline after stat labels for gated data
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.4 LimeHero -->
+    <div class="component-card" id="c-limehero">
+      <div class="component-header">
+        <div class="component-name">LimeHero</div>
+        <div class="component-tag">6.4</div>
+      </div>
+      <div class="component-body">
+        <div class="specimen-area" style="flex-direction:column; align-items:flex-start; min-width:200px;">
+          <div style="position:relative; display:inline-block; padding-bottom:10px;">
+            <div style="font-size:64px; font-weight:900; color:#fff; letter-spacing:-0.04em; line-height:0.95; font-variant-numeric:tabular-nums;">8.4</div>
+            <div class="lime-underline" style="height:6px; background:#c8f135; border-radius:2px; width:0%; transition:width 760ms cubic-bezier(0.2,0.7,0.2,1) 120ms; margin-top:6px;"></div>
+          </div>
+          <div style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.14em; color:rgba(255,255,255,0.35); margin-top:4px;">PLAYER RATING</div>
+        </div>
+        <div class="spec-area">
+          <div class="spec-box">
+            <div class="bold">LimeHero</div><br>
+            <span class="lime">number:</span> --type-stat-xl 64px 900<br>
+            <span class="lime">underline height:</span> 6px<br>
+            <span class="lime">underline color:</span> #c8f135<br>
+            <span class="lime">border-radius:</span> 2px<br>
+            <span class="lime">animate:</span> width 0% → ~70–86%<br>
+            <span class="lime">timing:</span> 760ms --ease-out, 120ms delay<br>
+            <span class="lime">usage:</span> hero metric on carousel cards
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.5 CompareToggle -->
+    <div class="component-card" id="c-comparetoggle">
+      <div class="component-header">
+        <div class="component-name">CompareToggle</div>
+        <div class="component-tag">6.5</div>
+      </div>
+      <div class="component-body">
+        <div class="specimen-area">
+          <div style="background:#111; border:1px solid #242424; border-radius:999px; padding:3px; gap:2px; display:flex;">
+            <div style="background:#fff; color:#0d0d0d; border-radius:999px; padding:5px 14px; font-size:11px; font-weight:700; cursor:pointer;">Team</div>
+            <div style="background:transparent; color:#555; border-radius:999px; padding:5px 14px; font-size:11px; font-weight:700; cursor:pointer;">League</div>
+          </div>
+        </div>
+        <div class="spec-area">
+          <div class="spec-box">
+            <div class="bold">CompareToggle</div><br>
+            <span class="lime">shell:</span> bg #111 · border 1px solid #242424<br>
+            <span class="lime">border-radius:</span> 999px · padding 3px · gap 2px<br>
+            <span class="lime">active segment:</span> bg #fff · color #0d0d0d<br>
+            <span class="lime">inactive:</span> bg transparent · color #555<br>
+            <span class="lime">transition:</span> background 160ms · color 160ms<br>
+            <span class="lime">font:</span> 11px 700
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.6 VertBarPair -->
+    <div class="component-card" id="c-vertbarpair">
+      <div class="component-header">
+        <div class="component-name">VertBarPair</div>
+        <div class="component-tag">6.6</div>
+      </div>
+      <div class="component-body">
+        <div class="specimen-area" style="flex-direction:column; gap:4px;">
+          <div style="display:flex; align-items:flex-end; gap:8px; height:64px; border-bottom:1px solid #242424; padding-bottom:0;">
+            <!-- Player bar (lime) -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <div style="font-size:12px;font-weight:800;color:#fff;">7</div>
+              <div style="width:18px; height:52px; background:#c8f135; border-radius:3px 3px 0 0;"></div>
+            </div>
+            <!-- Compare bar (dim) -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <div style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.5);">4</div>
+              <div style="width:18px; height:32px; background:#2c2c2c; border-radius:3px 3px 0 0;"></div>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; padding-top:4px;">
+            <div style="width:18px; text-align:center; font-size:7px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#c8f135;">YOU</div>
+            <div style="width:18px; text-align:center; font-size:7px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#404040;">TM</div>
+          </div>
+        </div>
+        <div class="spec-area">
+          <div class="spec-box">
+            <div class="bold">VertBarPair</div><br>
+            <span class="lime">player bar:</span> #c8f135 · 18px wide<br>
+            <span class="lime">compare bar:</span> #2c2c2c · 18px wide · 8px gap<br>
+            <span class="lime">container height:</span> 64px<br>
+            <span class="lime">baseline:</span> border-bottom 1px solid #242424<br>
+            <span class="lime">animate:</span> height 700ms cubic-bezier(0.2,0.7,0.2,1)<br>
+            <span class="lime">comp delay:</span> 60ms<br>
+            <span class="lime">YOU label:</span> lime 7px 800 · TM/LG: dim 7px 800<br>
+            <span class="lime">value:</span> 12px 700–800 above bar
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.7 PctRow -->
+    <div class="component-card" id="c-pctrow">
+      <div class="component-header">
+        <div class="component-name">PctRow (Horizontal Percentage Bar)</div>
+        <div class="component-tag">6.7</div>
+      </div>
+      <div class="component-body">
+        <div class="specimen-area" style="flex-direction:column; align-items:stretch; min-width:220px;">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:6px;">
+            <div>
+              <div style="font-size:28px; font-weight:900; color:#fff; letter-spacing:-0.03em; font-variant-numeric:tabular-nums; line-height:1;">68%</div>
+              <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.35); margin-top:2px;">Pass Acc.</div>
+            </div>
+            <div style="margin-left:auto;">
+              <div style="display:inline-flex; align-items:center; gap:3px; padding:3px 7px; border-radius:999px; background:#c8f135; color:#0d0d0d; font-size:10px; font-weight:800;">
+                <i class="ph ph-arrow-up" style="font-size:10px;"></i>1st
+              </div>
+            </div>
+          </div>
+          <div style="height:3px; background:#181818; border-radius:2px; overflow:hidden;">
+            <div style="height:100%; width:68%; background:#c8f135; border-radius:2px;"></div>
+          </div>
+        </div>
+        <div class="spec-area">
+          <div class="spec-box">
+            <div class="bold">PctRow</div><br>
+            <span class="lime">% number:</span> 28px 900 tabular-nums<br>
+            <span class="lime">label:</span> 10px 700 uppercase muted below<br>
+            <span class="lime">fill bar:</span> 3px tall · lime · border-radius 2px<br>
+            <span class="lime">track:</span> #181818 background<br>
+            <span class="lime">animate:</span> 900ms --ease-out, staggered<br>
+            <span class="lime">delays:</span> 300ms / 420ms / 540ms<br>
+            <span class="lime">rank chip (1st):</span> lime bg · dark ink<br>
+            <span class="lime">rank chip (rest):</span> white bg · dark ink
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.8 FormPill -->
+    <div class="component-card" id="c-formpill">
+      <div class="component-header">
+        <div class="component-name">FormPill (W / L / D)</div>
+        <div class="component-tag">6.8</div>
+      </div>
+      <div class="component-body">
+        <div class="specimen-area" style="gap:10px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:#22c55e; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:#0d0d0d; letter-spacing:-0.02em;">W</div>
+          <div style="width:40px; height:40px; border-radius:50%; background:#ef4444; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:#fff; letter-spacing:-0.02em;">L</div>
+          <div style="width:40px; height:40px; border-radius:50%; background:#f5b53b; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:#0d0d0d; letter-spacing:-0.02em;">D</div>
+        </div>
+        <div class="spec-area">
+          <div class="spec-box">
+            <div class="bold">FormPill</div><br>
+            <span class="lime">size:</span> 40×40px circle<br>
+            <span class="lime">W:</span> bg #22c55e · text #0d0d0d<br>
+            <span class="lime">L:</span> bg #ef4444 · text #fff<br>
+            <span class="lime">D:</span> bg #f5b53b · text #0d0d0d<br>
+            <span class="lime">font:</span> 18px 900 letter-spacing -0.02em<br>
+            <span class="lime">note:</span> uses WIN_GREEN / LOSS_RED / DRAW_AMBER constants
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.9 CardShell -->
+    <div class="component-card" id="c-cardshell">
+      <div class="component-header">
+        <div class="component-name">CardShell (Carousel Card)</div>
+        <div class="component-tag">6.9</div>
+      </div>
+      <div class="component-body" style="flex-direction:column;">
+        <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start;">
+          <div class="specimen-area" style="padding:0; overflow:hidden; min-width:220px; width:260px; flex-direction:column; align-items:stretch;">
+            <!-- CardShell specimen -->
+            <div style="background:#1a1a1a; border:1px solid #2a2a2a; border-radius:18px; padding:14px 18px; width:100%; min-height:180px; position:relative;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                <div>
+                  <div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.18em; color:rgba(255,255,255,0.35);">GOALS</div>
+                  <div style="font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.16em; color:rgba(255,255,255,0.2); margin-top:2px;">Season 2024/25</div>
+                </div>
+                <i class="ph-duotone ph-share-network" style="font-size:18px; color:rgba(255,255,255,0.3);"></i>
+              </div>
+              <div style="font-size:64px; font-weight:900; color:#fff; letter-spacing:-0.04em; line-height:0.95; font-variant-numeric:tabular-nums; margin-bottom:8px;">18</div>
+              <div style="height:6px; background:#c8f135; border-radius:2px; width:75%; margin-bottom:12px;"></div>
+              <div style="margin-top:auto; display:flex; align-items:center; gap:4px; color:#c8f135; font-size:12px; font-weight:700;">
+                View breakdown <i class="ph ph-arrow-right" style="font-size:12px;"></i>
+              </div>
+            </div>
+          </div>
+          <div class="spec-area" style="flex:1; min-width:200px;">
+            <div class="spec-box">
+              <div class="bold">CardShell</div><br>
+              <span class="lime">bg:</span> var(--surface) #1a1a1a<br>
+              <span class="lime">border:</span> 1px solid var(--border)<br>
+              <span class="lime">border-radius:</span> 18px<br>
+              <span class="lime">padding:</span> 14px 18px<br>
+              <span class="lime">height (carousel):</span> 305px<br>
+              <span class="lime">width:</span> ~322px (SCREEN_W - SIDE_PAD*2 - PEEK)<br>
+              <span class="lime">header:</span> 11px 800 uppercase 0.18em<br>
+              <span class="lime">subheader:</span> 10px 600 uppercase muted 0.16em<br>
+              <span class="lime">share icon:</span> ph-duotone ph-share-network 18px<br>
+              <span class="lime">CTA:</span> lime 12px 700 + ph-arrow-right<br>
+              <span class="lime">isolation:</span> isolate (z-index stack)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.10 Countdown Pill -->
+    <div class="component-card" id="c-countdown">
+      <div class="component-header">
+        <div class="component-name">Countdown Pill</div>
+        <div class="component-tag">6.10</div>
+      </div>
+      <div class="component-body">
+        <div class="specimen-area">
+          <div style="background:rgba(255,255,255,0.04); border:1px solid #2a2a2a; border-radius:999px; padding:4px 10px; display:flex; align-items:center; gap:6px;">
+            <div style="width:5px; height:5px; border-radius:50%; background:#c8f135; flex-shrink:0;"></div>
+            <span style="font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.16em; color:rgba(255,255,255,0.4);">NEXT UPDATE</span>
+            <span style="font-size:11px; font-weight:800; font-variant-numeric:tabular-nums; color:#fff;">02:14:38</span>
+          </div>
+        </div>
+        <div class="spec-area">
+          <div class="spec-box">
+            <div class="bold">Countdown Pill</div><br>
+            <span class="lime">bg:</span> rgba(255,255,255,0.04)<br>
+            <span class="lime">border:</span> 1px solid var(--border)<br>
+            <span class="lime">border-radius:</span> 999px<br>
+            <span class="lime">padding:</span> 4px 8–10px<br>
+            <span class="lime">dot:</span> 5×5px circle · #c8f135<br>
+            <span class="lime">label:</span> 9px 700 muted uppercase 0.16em<br>
+            <span class="lime">value:</span> 11px 800 tabular-nums
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.11 QuickAccess Chip -->
+    <div class="component-card" id="c-quickaccess">
+      <div class="component-header">
+        <div class="component-name">QuickAccess Chip</div>
+        <div class="component-tag">6.11</div>
+      </div>
+      <div class="component-body">
+        <div class="specimen-area" style="gap:10px;">
+          <!-- Default nav chip -->
+          <div style="width:68px; height:48px; border-radius:10px; background:#1a1a1a; border:1px solid #2a2a2a; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; position:relative;">
+            <i class="ph ph-shield-star" style="font-size:16px; color:rgba(255,255,255,0.6);"></i>
+            <span style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.6); letter-spacing:-0.01em; line-height:1.2; text-align:center;">Stats</span>
+            <i class="ph ph-arrow-right" style="font-size:9px; color:rgba(255,255,255,0.3); position:absolute; top:5px; right:6px;"></i>
+          </div>
+          <!-- Ghost chip -->
+          <div style="width:68px; height:48px; border-radius:10px; background:transparent; border:1px dashed #2a2a2a; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+            <span style="font-size:18px; color:rgba(255,255,255,0.2); font-weight:300; line-height:1;">+</span>
+            <span style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.25); letter-spacing:-0.01em; line-height:1.2; text-align:center;">Add</span>
+          </div>
+        </div>
+        <div class="spec-area">
+          <div class="spec-box">
+            <div class="bold">QuickAccess Chip</div><br>
+            <span class="lime">size:</span> 68×48px · border-radius 10px<br>
+            <span class="lime">default:</span> bg var(--surface) · border 1px solid var(--border)<br>
+            <span class="lime">ghost/CTA:</span> bg transparent · border 1px dashed var(--border)<br>
+            <span class="lime">label:</span> 10px 700 line-height 1.2 · letter-spacing -0.01em<br>
+            <span class="lime">arrow:</span> ph-arrow-right top-right for nav chips<br>
+            <span class="lime">ghost:</span> centered icon + label only
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.12 TabBar -->
+    <div class="component-card" id="c-tabbar">
+      <div class="component-header">
+        <div class="component-name">TabBar (Bottom Navigation)</div>
+        <div class="component-tag">6.12</div>
+      </div>
+      <div class="component-body" style="flex-direction:column;">
+        <div class="specimen-area" style="width:100%; min-width:unset; padding:0; overflow:hidden;">
+          <div style="width:100%; height:68px; background:#0d0d0d; border-top:1px solid #2a2a2a; display:flex; align-items:center;">
+            <!-- Home (active) -->
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; color:#fff;">
+              <i class="ph ph-house" style="font-size:22px; font-weight:bold;"></i>
+              <span style="font-size:11px; font-weight:800;">Home</span>
+            </div>
+            <!-- Search -->
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; color:#666;">
+              <i class="ph ph-magnifying-glass" style="font-size:22px;"></i>
+              <span style="font-size:11px; font-weight:600;">Search</span>
+            </div>
+            <!-- Profile -->
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; color:#666;">
+              <i class="ph ph-user" style="font-size:22px;"></i>
+              <span style="font-size:11px; font-weight:600;">Profile</span>
+            </div>
+            <!-- Stats -->
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; color:#666;">
+              <i class="ph ph-chart-bar" style="font-size:22px;"></i>
+              <span style="font-size:11px; font-weight:600;">Stats</span>
+            </div>
+            <!-- More -->
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; color:#666;">
+              <i class="ph ph-dots-three" style="font-size:22px;"></i>
+              <span style="font-size:11px; font-weight:600;">More</span>
+            </div>
+          </div>
+        </div>
+        <div class="spec-area" style="width:100%; margin-top:12px;">
+          <div class="spec-box">
+            <div class="bold">TabBar</div><br>
+            <span class="lime">height:</span> 68px · bg var(--bg) · border-top 1px var(--border)<br>
+            <span class="lime">tabs:</span> 5 equal · icon 22px + label 11px · gap 4px<br>
+            <span class="lime">active:</span> color var(--fg) · font-weight 800 · stroke-width 2<br>
+            <span class="lime">inactive:</span> color var(--fg-muted) · font-weight 600 · stroke-width 1.6<br>
+            <span class="lime">safe area:</span> padding-bottom env(safe-area-inset-bottom, 0px)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.13 Sticky Top Nav -->
+    <div class="component-card" id="c-stickynav">
+      <div class="component-header">
+        <div class="component-name">Sticky Top Nav (Scroll Reveal)</div>
+        <div class="component-tag">6.13</div>
+      </div>
+      <div class="component-body" style="flex-direction:column;">
+        <div class="specimen-area" style="width:100%; min-width:unset; padding:0; overflow:hidden; flex-direction:column; gap:8px;">
+          <!-- Pre-scroll state -->
+          <div style="width:100%; padding:8px 16px; display:flex; align-items:center; justify-content:space-between; background:transparent;">
+            <div style="display:flex;align-items:center;gap:8px;"><i class="ph ph-arrow-left" style="font-size:20px; color:rgba(255,255,255,0.7);"></i></div>
+            <div style="font-size:13px; font-weight:700; color:transparent;">LEWIS BILBIE</div>
+            <i class="ph ph-bookmark-simple" style="font-size:20px; color:rgba(255,255,255,0.7);"></i>
+          </div>
+          <div style="font-size:10px; color:rgba(255,255,255,0.25); text-align:center; padding:2px 0;">↑ transparent (before scroll threshold)</div>
+          <!-- Post-scroll state -->
+          <div style="width:100%; padding:8px 16px; display:flex; align-items:center; justify-content:space-between; background:rgba(13,13,13,0.96); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,0.06);">
+            <div style="display:flex;align-items:center;gap:8px;"><i class="ph ph-arrow-left" style="font-size:20px; color:rgba(255,255,255,0.7);"></i></div>
+            <div style="font-size:13px; font-weight:700; color:#fff;">LEWIS BILBIE</div>
+            <i class="ph ph-bookmark-simple" style="font-size:20px; color:rgba(255,255,255,0.7);"></i>
+          </div>
+          <div style="font-size:10px; color:rgba(255,255,255,0.25); text-align:center; padding:2px 0;">↑ frosted (after scrollTop &gt; 160px)</div>
+        </div>
+        <div class="spec-area" style="width:100%; margin-top:12px;">
+          <div class="spec-box">
+            <div class="bold">Sticky Top Nav</div><br>
+            <span class="lime">position:</span> absolute · top 0 · z-index 20<br>
+            <span class="lime">padding-top:</span> 54px (clears Dynamic Island)<br>
+            <span class="lime">threshold:</span> scrollTop &gt; 160px<br>
+            <span class="lime">bg (scrolled):</span> rgba(13,13,13,0.96) + backdrop-filter blur(12px)<br>
+            <span class="lime">bg transition:</span> 250ms<br>
+            <span class="lime">title:</span> opacity 0 → 1 at threshold, 200ms<br>
+            <span class="lime">layout:</span> back arrow left · title center · action right
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.14 Sticky Tabs -->
+    <div class="component-card" id="c-stickytabs">
+      <div class="component-header">
+        <div class="component-name">Sticky Tabs</div>
+        <div class="component-tag">6.14</div>
+      </div>
+      <div class="component-body" style="flex-direction:column;">
+        <div class="specimen-area" style="width:100%; min-width:unset; padding:0; overflow:hidden;">
+          <div style="width:100%; display:flex; border-bottom:1px solid #1c1c1c; background:#0d0d0d;">
+            <div style="padding:12px 16px; font-size:12px; font-weight:700; color:#fff; border-bottom:2px solid #fff; white-space:nowrap;">Overview</div>
+            <div style="padding:12px 16px; font-size:12px; font-weight:400; color:rgba(255,255,255,0.35); white-space:nowrap;">Performance</div>
+            <div style="padding:12px 16px; font-size:12px; font-weight:400; color:rgba(255,255,255,0.35); white-space:nowrap;">Form</div>
+            <div style="padding:12px 16px; font-size:12px; font-weight:400; color:rgba(255,255,255,0.35); white-space:nowrap;">History</div>
+          </div>
+        </div>
+        <div class="spec-area" style="width:100%; margin-top:12px;">
+          <div class="spec-box">
+            <div class="bold">Sticky Tabs</div><br>
+            <span class="lime">position:</span> sticky · top 90 · z-index 10<br>
+            <span class="lime">bg:</span> var(--bg)<br>
+            <span class="lime">border-bottom:</span> 1px solid #1c1c1c<br>
+            <span class="lime">active tab:</span> 12px 700 white + 2px solid white bottom border<br>
+            <span class="lime">inactive tab:</span> 12px 400 rgba(255,255,255,0.35)<br>
+            <span class="lime">overflow:</span> white-space nowrap on each tab
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.15 Headline Card -->
+    <div class="component-card" id="c-headlinecard">
+      <div class="component-header">
+        <div class="component-name">Headline Card (Synthesized Overview)</div>
+        <div class="component-tag">6.15</div>
+      </div>
+      <div class="component-body">
+        <div class="specimen-area" style="flex:1; padding:0; min-width:240px;">
+          <div style="background:#0f0f0f; border:1px solid #1e1e1e; border-left:3px solid #c8f135; border-radius:10px; padding:11px 14px; width:100%;">
+            <div style="font-size:10px; font-weight:800; color:#c8f135; text-transform:uppercase; letter-spacing:0.14em; margin-bottom:6px;">2024/25 Season</div>
+            <div style="font-size:14px; font-weight:400; color:#fff; line-height:1.5;">Joint top scorer in the league with 18 goals. Ranked 1st in shots on target across the entire division.</div>
+          </div>
+        </div>
+        <div class="spec-area">
+          <div class="spec-box">
+            <div class="bold">Headline Card</div><br>
+            <span class="lime">bg:</span> #0f0f0f<br>
+            <span class="lime">border:</span> 1px solid #1e1e1e<br>
+            <span class="lime">border-left:</span> 3px solid #c8f135<br>
+            <span class="lime">border-radius:</span> 10px<br>
+            <span class="lime">padding:</span> 11px 14px<br>
+            <span class="lime">season label:</span> 10px 800 lime uppercase 0.14em<br>
+            <span class="lime">body:</span> 14px 400 white line-height 1.5<br>
+            <span class="lime">note:</span> never use this pattern on data cards
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.16 Stat Table Row -->
+    <div class="component-card" id="c-stattable">
+      <div class="component-header">
+        <div class="component-name">Stat Table Row</div>
+        <div class="component-tag">6.16</div>
+      </div>
+      <div class="component-body" style="flex-direction:column;">
+        <div class="specimen-area" style="width:100%; min-width:unset; padding:12px 16px; flex-direction:column; align-items:stretch;">
+          <!-- Header row -->
+          <div style="display:flex; padding:0 0 8px 0; border-bottom:1px solid rgba(255,255,255,0.07);">
+            <div style="flex:1; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.25);">Stat</div>
+            <div style="width:46px; text-align:right; padding-right:14px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.25);">Val</div>
+            <div style="width:46px; text-align:center; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.25);">TM</div>
+            <div style="width:46px; text-align:center; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.25);">LG</div>
+          </div>
+          <!-- Row 1 (1st in both) -->
+          <div style="display:flex; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.07); position:relative;">
+            <div style="flex:1; font-size:13px; color:rgba(255,255,255,0.52); display:flex; align-items:center; gap:6px;">
+              Goals
+              <span style="background:#6d28d9; color:#fff; font-size:9px; font-weight:800; letter-spacing:0.06em; border-radius:4px; padding:2px 5px;">PRO</span>
+            </div>
+            <div style="width:46px; text-align:right; padding-right:14px; font-size:14px; font-weight:700; color:#fff; font-variant-numeric:tabular-nums;">18</div>
+            <div style="width:46px; text-align:center; font-size:13px; font-weight:800; color:#c8f135; font-variant-numeric:tabular-nums;">1</div>
+            <div style="width:46px; text-align:center; font-size:13px; font-weight:800; color:#c8f135; font-variant-numeric:tabular-nums;">1</div>
+            <div style="position:absolute; right:92px; top:0; bottom:0; width:1px; background:rgba(255,255,255,0.1);"></div>
+          </div>
+          <!-- Row 2 (3rd in league) -->
+          <div style="display:flex; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.07); position:relative;">
+            <div style="flex:1; font-size:13px; color:rgba(255,255,255,0.52);">Assists</div>
+            <div style="width:46px; text-align:right; padding-right:14px; font-size:14px; font-weight:700; color:#fff; font-variant-numeric:tabular-nums;">7</div>
+            <div style="width:46px; text-align:center; font-size:13px; font-weight:500; color:rgba(255,255,255,0.3); font-variant-numeric:tabular-nums;">4</div>
+            <div style="width:46px; text-align:center; font-size:13px; font-weight:700; color:#fff; font-variant-numeric:tabular-nums;">3</div>
+            <div style="position:absolute; right:92px; top:0; bottom:0; width:1px; background:rgba(255,255,255,0.1);"></div>
+          </div>
+          <!-- Row 3 (mid-table) -->
+          <div style="display:flex; padding:12px 0; position:relative;">
+            <div style="flex:1; font-size:13px; color:rgba(255,255,255,0.52);">Pass Accuracy</div>
+            <div style="width:46px; text-align:right; padding-right:14px; font-size:14px; font-weight:700; color:#fff; font-variant-numeric:tabular-nums;">68%</div>
+            <div style="width:46px; text-align:center; font-size:13px; font-weight:500; color:rgba(255,255,255,0.3); font-variant-numeric:tabular-nums;">6</div>
+            <div style="width:46px; text-align:center; font-size:13px; font-weight:500; color:rgba(255,255,255,0.3); font-variant-numeric:tabular-nums;">14</div>
+            <div style="position:absolute; right:92px; top:0; bottom:0; width:1px; background:rgba(255,255,255,0.1);"></div>
+          </div>
+        </div>
+        <div class="spec-area" style="width:100%; margin-top:12px;">
+          <div class="spec-box">
+            <div class="bold">Stat Table Row</div><br>
+            <span class="lime">row:</span> flex · padding 12px 0 · border-top 1px rgba(255,255,255,0.07) (skip first)<br>
+            <span class="lime">label col:</span> flex 1 · 13px rgba(255,255,255,0.52) + optional ProBadge<br>
+            <span class="lime">value col:</span> 14px 700 white · width 46px · text-right · pr 14px · tabular-nums<br>
+            <span class="lime">team rank:</span> width 46px · centered · 13px tabular-nums<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="lime">rank=1</span> → #c8f135 weight 800<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="lime">rank&gt;1</span> → rgba(255,255,255,0.3) weight 500<br>
+            <span class="lime">league rank:</span> same width<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="lime">rank=1</span> → #c8f135 weight 800<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="lime">rank≤3</span> → #fff weight 700<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="lime">rank&gt;3</span> → rgba(255,255,255,0.3) weight 500<br>
+            <span class="lime">divider:</span> position absolute · right 92px · 1px rgba(255,255,255,0.1)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.17 Sparkline -->
+    <div class="component-card" id="c-sparkline">
+      <div class="component-header">
+        <div class="component-name">Sparkline (SVG)</div>
+        <div class="component-tag">6.17</div>
+      </div>
+      <div class="component-body">
+        <div class="specimen-area" style="min-width:200px; flex-direction:column;">
+          <svg width="200" height="80" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#c8f135" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#c8f135" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- Axis labels -->
+            <text x="2" y="18" fill="rgba(255,255,255,0.35)" font-size="9" font-family="Archivo,sans-serif">18</text>
+            <text x="2" y="72" fill="rgba(255,255,255,0.35)" font-size="9" font-family="Archivo,sans-serif">0</text>
+            <!-- Gradient fill area -->
+            <path d="M18 60 L48 45 L78 50 L108 30 L138 20 L168 10 L192 6 L192 75 L18 75 Z" fill="url(#sparkGrad)"/>
+            <!-- Main line -->
+            <polyline points="18,60 48,45 78,50 108,30 138,20 168,10 192,6" fill="none" stroke="#c8f135" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Dashed reference line to y-axis -->
+            <line x1="16" y1="6" x2="192" y2="6" stroke="rgba(200,241,53,0.35)" stroke-width="1" stroke-dasharray="3 3"/>
+            <!-- Last point ripple -->
+            <circle cx="192" cy="6" r="7" fill="none" stroke="#c8f135" stroke-width="1.2" opacity="0.4">
+              <animate attributeName="r" values="4;10" dur="1.4s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.5;0" dur="1.4s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="192" cy="6" r="3" fill="#c8f135"/>
+          </svg>
+        </div>
+        <div class="spec-area">
+          <div class="spec-box">
+            <div class="bold">Sparkline</div><br>
+            <span class="lime">stroke:</span> #c8f135 · 2px · round caps/joins<br>
+            <span class="lime">fill:</span> gradient lime 0.3 → lime 0 vertical<br>
+            <span class="lime">last point:</span> animated ripple ring<br>
+            <span class="lime">ripple:</span> r 4→10 · opacity 0.5→0 · 1.4s infinite<br>
+            <span class="lime">solid dot:</span> r=3 fill lime (on top of ripple)<br>
+            <span class="lime">ref line:</span> rgba(200,241,53,0.35) · 1px · dasharray 3 3<br>
+            <span class="lime">axis labels:</span> 9px Archivo rgba(255,255,255,0.3–0.45)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.18 MiniSparkline -->
+    <div class="component-card" id="c-minisparkline">
+      <div class="component-header">
+        <div class="component-name">MiniSparkline (Profile Card Variant)</div>
+        <div class="component-tag">6.18</div>
+      </div>
+      <div class="component-body">
+        <div class="specimen-area">
+          <svg width="114" height="44" viewBox="0 0 114 44" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="miniGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#c8f135" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#c8f135" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M4 36 L24 28 L44 30 L64 18 L84 10 L104 4 L104 40 L4 40 Z" fill="url(#miniGrad)"/>
+            <polyline points="4,36 24,28 44,30 64,18 84,10 104,4" fill="none" stroke="#c8f135" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="104" cy="4" r="3" fill="#c8f135"/>
+          </svg>
+        </div>
+        <div class="spec-area">
+          <div class="spec-box">
+            <div class="bold">MiniSparkline</div><br>
+            <span class="lime">size:</span> 114×44px (default)<br>
+            <span class="lime">stroke:</span> 1.8px (thinner than full sparkline)<br>
+            <span class="lime">fill:</span> same gradient pattern<br>
+            <span class="lime">last dot:</span> r=3 fill lime (static, no ripple)<br>
+            <span class="lime">usage:</span> profile card / compact widget
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       § 7  ICONS
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="section" id="icons">
+    <div class="section-rule"></div>
+    <div class="section-label">07 — Icons <a href="#icons">icons</a></div>
+
+    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.14em; color:rgba(255,255,255,0.3); margin-bottom:14px;">Phosphor Icons (CDN)</div>
+    <div class="icon-grid" style="margin-bottom:20px;">
+      <div class="icon-cell">
+        <i class="ph ph-arrow-right"></i>
+        <div class="icon-name">ph-arrow-right</div>
+      </div>
+      <div class="icon-cell">
+        <i class="ph ph-arrow-up"></i>
+        <div class="icon-name">ph-arrow-up</div>
+      </div>
+      <div class="icon-cell">
+        <i class="ph ph-info"></i>
+        <div class="icon-name">ph-info</div>
+      </div>
+      <div class="icon-cell">
+        <i class="ph ph-share-network"></i>
+        <div class="icon-name">ph-share-network</div>
+      </div>
+      <div class="icon-cell">
+        <i class="ph-duotone ph-share-network"></i>
+        <div class="icon-name">ph-share-network (duotone)</div>
+      </div>
+      <div class="icon-cell">
+        <i class="ph ph-bookmark-simple"></i>
+        <div class="icon-name">ph-bookmark-simple</div>
+      </div>
+      <div class="icon-cell">
+        <i class="ph ph-shield-star"></i>
+        <div class="icon-name">ph-shield-star</div>
+      </div>
+      <div class="icon-cell">
+        <i class="ph-duotone ph-ranking"></i>
+        <div class="icon-name">ph-ranking (duotone)</div>
+      </div>
+      <div class="icon-cell">
+        <i class="ph ph-arrow-left"></i>
+        <div class="icon-name">ph-arrow-left</div>
+      </div>
+      <div class="icon-cell">
+        <i class="ph ph-magnifying-glass"></i>
+        <div class="icon-name">ph-magnifying-glass</div>
+      </div>
+      <div class="icon-cell">
+        <i class="ph ph-bell"></i>
+        <div class="icon-name">ph-bell</div>
+      </div>
+      <div class="icon-cell">
+        <i class="ph ph-house"></i>
+        <div class="icon-name">ph-house</div>
+      </div>
+      <div class="icon-cell">
+        <i class="ph ph-user"></i>
+        <div class="icon-name">ph-user</div>
+      </div>
+      <div class="icon-cell">
+        <i class="ph ph-chart-bar"></i>
+        <div class="icon-name">ph-chart-bar</div>
+      </div>
+      <div class="icon-cell">
+        <i class="ph ph-dots-three"></i>
+        <div class="icon-name">ph-dots-three</div>
+      </div>
+    </div>
+
+    <div class="note-box" style="margin-bottom:24px;">
+      <strong>Usage:</strong> Phosphor loads via CDN script tag. Regular icons: <code>&lt;i class="ph ph-icon-name"&gt;</code>. Duotone: <code>&lt;i class="ph-duotone ph-icon-name"&gt;</code>. Size via <code>font-size</code>, color via <code>color</code>.
+    </div>
+
+    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.14em; color:rgba(255,255,255,0.3); margin-bottom:14px;">Custom SVG Icons (Ic.*)</div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:12px;">
+      <div class="spec-box" style="display:flex; gap:12px; align-items:flex-start;">
+        <div style="flex-shrink:0; width:36px; height:36px; display:flex; align-items:center; justify-content:center;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="19,12 5,12"/>
+            <polyline points="11,6 5,12 11,18"/>
+          </svg>
+        </div>
+        <div><span class="bold">Ic.arrowL</span><br><span style="color:rgba(255,255,255,0.45);">Back arrow ← · top nav back button</span></div>
+      </div>
+      <div class="spec-box" style="display:flex; gap:12px; align-items:flex-start;">
+        <div style="flex-shrink:0; width:36px; height:36px; display:flex; align-items:center; justify-content:center;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2"/>
+          </svg>
+        </div>
+        <div><span class="bold">Ic.star</span><br><span style="color:rgba(255,255,255,0.45);">Star / favourite · top nav action button</span></div>
+      </div>
+      <div class="spec-box" style="display:flex; gap:12px; align-items:flex-start;">
+        <div style="flex-shrink:0; width:36px; height:36px; display:flex; align-items:center; justify-content:center;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/>
+          </svg>
+        </div>
+        <div><span class="bold">Ic.arrowUR</span><br><span style="color:rgba(255,255,255,0.45);">Diagonal ↗ · external links</span></div>
+      </div>
+      <div class="spec-box" style="display:flex; gap:12px; align-items:flex-start;">
+        <div style="flex-shrink:0; width:36px; height:36px; display:flex; align-items:center; justify-content:center;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/><path d="M12 3 C14 7 14 17 12 21"/><path d="M3 12 C7 10 17 10 21 12"/><path d="M5.5 6.5 C8 8 16 8 18.5 6.5"/><path d="M5.5 17.5 C8 16 16 16 18.5 17.5"/>
+          </svg>
+        </div>
+        <div><span class="bold">Ic.ball</span><br><span style="color:rgba(255,255,255,0.45);">Football/soccer ball · 1.4px stroke</span></div>
+      </div>
+      <div class="spec-box" style="display:flex; gap:12px; align-items:flex-start;">
+        <div style="flex-shrink:0; width:36px; height:36px; display:flex; align-items:center; justify-content:center;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2 L19 5.5 L19 12 C19 16 15.5 19.5 12 21 C8.5 19.5 5 16 5 12 L5 5.5 Z"/>
+          </svg>
+        </div>
+        <div><span class="bold">Ic.shield</span><br><span style="color:rgba(255,255,255,0.45);">Shield outline · team defence</span></div>
+      </div>
+      <div class="spec-box" style="display:flex; gap:12px; align-items:flex-start;">
+        <div style="flex-shrink:0; width:36px; height:36px; display:flex; align-items:center; justify-content:center;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+        <div><span class="bold">Ic.search</span><br><span style="color:rgba(255,255,255,0.45);">Search · top bar utility</span></div>
+      </div>
+    </div>
+
+    <div class="spec-box" style="margin-top:16px;">
+      <div class="bold">Sicon wrapper (all custom SVG icons)</div><br>
+      <span class="lime">width/height:</span> {size} · <span class="lime">viewBox:</span> "0 0 24 24"<br>
+      <span class="lime">fill:</span> "none" · <span class="lime">stroke:</span> "currentColor"<br>
+      <span class="lime">strokeWidth:</span> {sw} · <span class="lime">strokeLinecap/Join:</span> "round"
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       § 8  PATTERNS
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="section" id="patterns">
+    <div class="section-rule"></div>
+    <div class="section-label">08 — Patterns <a href="#patterns">patterns</a></div>
+
+    <!-- 8.1 useCountUp -->
+    <div class="pattern-block">
+      <div class="pattern-title">8.1 useCountUp Hook</div>
+      <div class="code-block"><span class="muted">// Ease-out cubic count-up from 0 to target over duration ms.</span>
+<span class="muted">// Re-runs when target changes.</span>
+<span class="kw">function</span> <span class="lime">useCountUp</span>(target, duration = <span class="str">1400</span>) {
+  <span class="kw">const</span> [val, setVal] = React.useState(<span class="str">0</span>);
+  React.useEffect(() => {
+    <span class="kw">let</span> raf;
+    <span class="kw">const</span> start = performance.now();
+    <span class="kw">const</span> tick = (t) => {
+      <span class="kw">const</span> p = Math.min(<span class="str">1</span>, (t - start) / duration);
+      setVal(target * (<span class="str">1</span> - Math.pow(<span class="str">1</span> - p, <span class="str">3</span>)));
+      <span class="kw">if</span> (p < <span class="str">1</span>) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    <span class="kw">return</span> () => cancelAnimationFrame(raf);
+  }, [target]);
+  <span class="kw">return</span> val;
+}
+<span class="muted">// Display: Math.round(val).toLocaleString('en-GB')</span></div>
+    </div>
+
+    <!-- 8.2 IntersectionObserver -->
+    <div class="pattern-block">
+      <div class="pattern-title">8.2 IntersectionObserver Trigger</div>
+      <div class="note-box" style="margin-bottom:10px;">Attach to the display element directly — <strong>not</strong> a wrapper with <code>display:contents</code>. The observer threshold must be 0.4 so the animation fires when the element is meaningfully visible.</div>
+      <div class="code-block"><span class="kw">const</span> obs = <span class="kw">new</span> IntersectionObserver(([e]) => {
+  <span class="kw">if</span> (e.isIntersecting) setVisible(<span class="str">true</span>);
+}, { threshold: <span class="str">0.4</span> });
+obs.observe(ref.current);
+
+<span class="muted">// Then pass visible ? target : 0 to useCountUp</span></div>
+    </div>
+
+    <!-- 8.3 Scroll-reveal nav -->
+    <div class="pattern-block">
+      <div class="pattern-title">8.3 Scroll-Reveal Nav</div>
+      <div class="code-block"><span class="kw">const</span> onScroll = () => setScrolled(el.scrollTop > <span class="str">160</span>);
+el.addEventListener(<span class="str">'scroll'</span>, onScroll, { passive: <span class="str">true</span> });
+
+<span class="muted">// Apply background + backdropFilter + title opacity</span>
+<span class="muted">// based on scrolled state (transition 250ms)</span></div>
+    </div>
+
+    <!-- 8.4 Bar animation on mount -->
+    <div class="pattern-block">
+      <div class="pattern-title">8.4 Bar Animation on Mount</div>
+      <div class="code-block"><span class="kw">const</span> [barsReady, setBarsReady] = React.useState(<span class="str">false</span>);
+React.useEffect(() => {
+  <span class="kw">const</span> t = setTimeout(() => setBarsReady(<span class="str">true</span>), <span class="str">220</span>);
+  <span class="kw">return</span> () => clearTimeout(t);
+}, []);
+<span class="muted">// Pass barsReady to VertBarPair:</span>
+<span class="muted">// height goes 0% → actual% when barsReady is true</span></div>
+    </div>
+
+    <!-- 8.5 Carousel snap -->
+    <div class="pattern-block">
+      <div class="pattern-title">8.5 Carousel Snap</div>
+      <div class="code-block"><span class="lime">.carousel</span> {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+<span class="lime">.card</span> {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  flex: 0 0 322px; <span class="muted">/* CARD_W */</span>
+}
+<span class="muted">/* Hide scrollbar: */</span>
+<span class="lime">.carousel::-webkit-scrollbar</span> { display: none }
+<span class="lime">.carousel</span> { scrollbar-width: none; }</div>
+    </div>
+
+    <!-- 8.6 H-scroll hide -->
+    <div class="pattern-block">
+      <div class="pattern-title">8.6 Horizontal Scrollbar Hide (all h-scroll elements)</div>
+      <div class="code-block"><span class="lime">.h-scroll</span> { scrollbar-width: none; -ms-overflow-style: none; }
+<span class="lime">.h-scroll::-webkit-scrollbar</span> { display: none; }</div>
+    </div>
+
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       § 9  DEV HANDOFF NOTES
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="section" id="handoff">
+    <div class="section-rule"></div>
+    <div class="section-label">09 — Dev Handoff Notes <a href="#handoff">handoff</a></div>
+
+    <div class="handoff-item">
+      <div style="display:flex; align-items:flex-start; gap:10px;">
+        <span class="handoff-num">1</span>
+        <div><strong>Font loading</strong> — Archivo is loaded from Google Fonts in <code>colors_and_type.css</code>. Do not duplicate the import. In React Native, use Inter as a fallback with the same weight mapping (400/500/600/700/800/900).</div>
+      </div>
+    </div>
+
+    <div class="handoff-item">
+      <div style="display:flex; align-items:flex-start; gap:10px;">
+        <span class="handoff-num">2</span>
+        <div><strong>Token usage</strong> — Import <code>colors_and_type.css</code> at the page level. Use only <code>var(--token)</code> in all style declarations. The only exceptions are the three status colours (Win/Loss/Draw) defined as JS constants <code>WIN_GREEN</code> / <code>LOSS_RED</code> / <code>DRAW_AMBER</code>.</div>
+      </div>
+    </div>
+
+    <div class="handoff-item">
+      <div style="display:flex; align-items:flex-start; gap:10px;">
+        <span class="handoff-num">3</span>
+        <div><strong>Number formatting</strong> — Always use <code>font-variant-numeric: tabular-nums</code> on stat numbers. Format as <code>Math.round(val).toLocaleString('en-GB')</code> (produces "24,300"). Never use <code>.toFixed()</code> for display values.</div>
+      </div>
+    </div>
+
+    <div class="handoff-item">
+      <div style="display:flex; align-items:flex-start; gap:10px;">
+        <span class="handoff-num">4</span>
+        <div><strong>Phosphor Icons</strong> — Loaded via CDN script tag. Regular: <code>&lt;i className="ph ph-icon-name"/&gt;</code>. Duotone: <code>&lt;i className="ph-duotone ph-icon-name"/&gt;</code>. Size via <code>fontSize</code>, color via <code>color</code>.</div>
+      </div>
+    </div>
+
+    <div class="handoff-item">
+      <div style="display:flex; align-items:flex-start; gap:10px;">
+        <span class="handoff-num">5</span>
+        <div><strong>Z-index layers</strong> — Sticky nav: <code>20</code> · Sticky tabs: <code>10</code> · Bottom tab bar: <code>5</code> · Cards: auto (<code>isolation: isolate</code> on CardShell).</div>
+      </div>
+    </div>
+
+    <div class="handoff-item">
+      <div style="display:flex; align-items:flex-start; gap:10px;">
+        <span class="handoff-num">6</span>
+        <div><strong>Safe areas</strong> — Tab bar uses <code>padding-bottom: env(safe-area-inset-bottom, 0px)</code>. Top nav uses <code>padding-top: 54px</code> to clear Dynamic Island / status bar on notched iPhones.</div>
+      </div>
+    </div>
+
+    <div class="handoff-item">
+      <div style="display:flex; align-items:flex-start; gap:10px;">
+        <span class="handoff-num">7</span>
+        <div><strong>Scroll performance</strong> — All scroll listeners use <code>{ passive: true }</code>. Never call <code>preventDefault()</code> in scroll handlers. This ensures native scroll momentum is preserved on iOS.</div>
+      </div>
+    </div>
+
+    <div class="handoff-item">
+      <div style="display:flex; align-items:flex-start; gap:10px;">
+        <span class="handoff-num">8</span>
+        <div><strong>Animation performance</strong> — Bar/underline animations use <code>height</code> or <code>width</code> transitions. Count-up uses <code>requestAnimationFrame</code> loops, always cleaned up on unmount via the cleanup function returned from <code>useEffect</code>.</div>
+      </div>
+    </div>
+
+    <div class="handoff-item">
+      <div style="display:flex; align-items:flex-start; gap:10px;">
+        <span class="handoff-num">9</span>
+        <div><strong>Screen dimensions</strong> — Design target: 390×844px (iPhone 14 Pro). <code>--screen-w: 390px</code>, <code>--gutter: 20px</code>. Card widths: <code>SCREEN_W - SIDE_PAD * 2 - PEEK</code> where PEEK = ~16px to show the next card edge.</div>
+      </div>
+    </div>
+
+    <div class="handoff-item">
+      <div style="display:flex; align-items:flex-start; gap:10px;">
+        <span class="handoff-num">10</span>
+        <div><strong>Component isolation</strong> — Each screen (Base, PlayerProfile, PlayerStats) is a self-contained <code>.jsx</code> file mounted into <code>#root</code>. Shared utilities (<code>useCountUp</code>, icon components) are duplicated per file — there is no shared module system in the prototype.</div>
+      </div>
+    </div>
+
+    <div class="handoff-item">
+      <div style="display:flex; align-items:flex-start; gap:10px;">
+        <span class="handoff-num">11</span>
+        <div><strong>Rank colour logic</strong> — Team rank: <code>=1 → lime</code>. League rank: <code>=1 → lime</code>, <code>≤3 → white weight 700</code>, <code>&gt;3 → rgba(255,255,255,0.3) weight 500</code>. Apply this logic consistently across all stat tables throughout the app.</div>
+      </div>
+    </div>
+
+    <div class="handoff-item">
+      <div style="display:flex; align-items:flex-start; gap:10px;">
+        <span class="handoff-num">12</span>
+        <div><strong>Left-border accent card pattern</strong> — <code>border-left: 3px solid var(--accent)</code> + <code>border: 1px solid #1e1e1e</code> + <code>background: #0f0f0f</code> + <code>border-radius: 10px</code> — used exclusively for synthesized editorial overview callouts (Headline Card). Never apply this pattern on data cards or stat tables.</div>
+      </div>
+    </div>
+
+  </section>
+
+</div>
+
+<!-- ── Animate the LimeHero underline on page load ─────────────── -->
+<script>
+  window.addEventListener('load', function() {
+    var el = document.querySelector('.lime-underline');
+    if (el) {
+      setTimeout(function() { el.style.width = '76%'; }, 100);
+    }
+  });
+</script>
+
+</body>
+</html>
