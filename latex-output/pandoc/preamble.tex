@@ -1,0 +1,61 @@
+% ============================================================================
+% Custom preamble injected via `pandoc -H pandoc/preamble.tex`.
+% This is added to whatever Pandoc generates, so all of the formatting below
+% is re-applied automatically every time a new .docx is converted.
+% ============================================================================
+
+% --- Wider text block so figures and wide tables have room to breathe --------
+\usepackage[letterpaper,margin=1in]{geometry}
+
+% --- Never let a figure overflow the margins --------------------------------
+% Caps images to the text area, preserving aspect ratio. postprocess.py also
+% sizes images explicitly by type, but this is a belt-and-braces safety net.
+\usepackage[export]{adjustbox}
+
+% --- Ease dense tables: smaller font + a little more row spacing -------------
+% Applies to every longtable Pandoc emits. Extra-wide tables (6+ columns) are
+% dropped a further step to \footnotesize by postprocess.py.
+\usepackage{etoolbox}
+\AtBeginEnvironment{longtable}{%
+  \small
+  \setlength{\tabcolsep}{5pt}%
+  \renewcommand{\arraystretch}{1.25}%
+}
+
+% --- Let pdfLaTeX render Unicode math/Greek symbols found in the text --------
+\ifPDFTeX
+  \usepackage{newunicodechar}
+  \newunicodechar{α}{\ensuremath{\alpha}}
+  \newunicodechar{β}{\ensuremath{\beta}}
+  \newunicodechar{γ}{\ensuremath{\gamma}}
+  \newunicodechar{δ}{\ensuremath{\delta}}
+  \newunicodechar{Δ}{\ensuremath{\Delta}}
+  \newunicodechar{ε}{\ensuremath{\varepsilon}}
+  \newunicodechar{η}{\ensuremath{\eta}}
+  \newunicodechar{θ}{\ensuremath{\theta}}
+  \newunicodechar{λ}{\ensuremath{\lambda}}
+  \newunicodechar{μ}{\ensuremath{\mu}}
+  \newunicodechar{π}{\ensuremath{\pi}}
+  \newunicodechar{ρ}{\ensuremath{\rho}}
+  \newunicodechar{σ}{\ensuremath{\sigma}}
+  \newunicodechar{Σ}{\ensuremath{\Sigma}}
+  \newunicodechar{τ}{\ensuremath{\tau}}
+  \newunicodechar{φ}{\ensuremath{\varphi}}
+  \newunicodechar{χ}{\ensuremath{\chi}}
+  \newunicodechar{ψ}{\ensuremath{\psi}}
+  \newunicodechar{ω}{\ensuremath{\omega}}
+  \newunicodechar{Ω}{\ensuremath{\Omega}}
+  \newunicodechar{×}{\ensuremath{\times}}
+  \newunicodechar{÷}{\ensuremath{\div}}
+  \newunicodechar{±}{\ensuremath{\pm}}
+  \newunicodechar{∓}{\ensuremath{\mp}}
+  \newunicodechar{≤}{\ensuremath{\leq}}
+  \newunicodechar{≥}{\ensuremath{\geq}}
+  \newunicodechar{≠}{\ensuremath{\neq}}
+  \newunicodechar{≈}{\ensuremath{\approx}}
+  \newunicodechar{−}{\ensuremath{-}}
+  \newunicodechar{→}{\ensuremath{\rightarrow}}
+  \newunicodechar{∞}{\ensuremath{\infty}}
+  \newunicodechar{∑}{\ensuremath{\sum}}
+  \newunicodechar{√}{\ensuremath{\surd}}
+\fi

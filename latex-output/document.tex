@@ -69,6 +69,67 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+% ============================================================================
+% Custom preamble injected via `pandoc -H pandoc/preamble.tex`.
+% This is added to whatever Pandoc generates, so all of the formatting below
+% is re-applied automatically every time a new .docx is converted.
+% ============================================================================
+
+% --- Wider text block so figures and wide tables have room to breathe --------
+\usepackage[letterpaper,margin=1in]{geometry}
+
+% --- Never let a figure overflow the margins --------------------------------
+% Caps images to the text area, preserving aspect ratio. postprocess.py also
+% sizes images explicitly by type, but this is a belt-and-braces safety net.
+\usepackage[export]{adjustbox}
+
+% --- Ease dense tables: smaller font + a little more row spacing -------------
+% Applies to every longtable Pandoc emits. Extra-wide tables (6+ columns) are
+% dropped a further step to \footnotesize by postprocess.py.
+\usepackage{etoolbox}
+\AtBeginEnvironment{longtable}{%
+  \small
+  \setlength{\tabcolsep}{5pt}%
+  \renewcommand{\arraystretch}{1.25}%
+}
+
+% --- Let pdfLaTeX render Unicode math/Greek symbols found in the text --------
+\ifPDFTeX
+  \usepackage{newunicodechar}
+  \newunicodechar{α}{\ensuremath{\alpha}}
+  \newunicodechar{β}{\ensuremath{\beta}}
+  \newunicodechar{γ}{\ensuremath{\gamma}}
+  \newunicodechar{δ}{\ensuremath{\delta}}
+  \newunicodechar{Δ}{\ensuremath{\Delta}}
+  \newunicodechar{ε}{\ensuremath{\varepsilon}}
+  \newunicodechar{η}{\ensuremath{\eta}}
+  \newunicodechar{θ}{\ensuremath{\theta}}
+  \newunicodechar{λ}{\ensuremath{\lambda}}
+  \newunicodechar{μ}{\ensuremath{\mu}}
+  \newunicodechar{π}{\ensuremath{\pi}}
+  \newunicodechar{ρ}{\ensuremath{\rho}}
+  \newunicodechar{σ}{\ensuremath{\sigma}}
+  \newunicodechar{Σ}{\ensuremath{\Sigma}}
+  \newunicodechar{τ}{\ensuremath{\tau}}
+  \newunicodechar{φ}{\ensuremath{\varphi}}
+  \newunicodechar{χ}{\ensuremath{\chi}}
+  \newunicodechar{ψ}{\ensuremath{\psi}}
+  \newunicodechar{ω}{\ensuremath{\omega}}
+  \newunicodechar{Ω}{\ensuremath{\Omega}}
+  \newunicodechar{×}{\ensuremath{\times}}
+  \newunicodechar{÷}{\ensuremath{\div}}
+  \newunicodechar{±}{\ensuremath{\pm}}
+  \newunicodechar{∓}{\ensuremath{\mp}}
+  \newunicodechar{≤}{\ensuremath{\leq}}
+  \newunicodechar{≥}{\ensuremath{\geq}}
+  \newunicodechar{≠}{\ensuremath{\neq}}
+  \newunicodechar{≈}{\ensuremath{\approx}}
+  \newunicodechar{−}{\ensuremath{-}}
+  \newunicodechar{→}{\ensuremath{\rightarrow}}
+  \newunicodechar{∞}{\ensuremath{\infty}}
+  \newunicodechar{∑}{\ensuremath{\sum}}
+  \newunicodechar{√}{\ensuremath{\surd}}
+\fi
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -81,30 +142,6 @@
 
 \author{}
 \date{}
-
-% Widen the text block so figures and tables have room to breathe
-\usepackage[letterpaper,margin=1in]{geometry}
-
-% Never let a figure overflow the margins: cap to text width/height,
-% preserving aspect ratio, regardless of the hard-coded size below.
-\usepackage[export]{adjustbox}
-
-% Give dense tables more breathing room
-\usepackage{etoolbox}
-\AtBeginEnvironment{longtable}{\small\setlength{\tabcolsep}{5pt}\renewcommand{\arraystretch}{1.25}}
-
-% Map Unicode math/Greek symbols so pdfLaTeX can render them
-\ifPDFTeX
-  \IfFileExists{newunicodechar.sty}{%
-    \usepackage{newunicodechar}
-    \newunicodechar{√}{\ensuremath{\surd}}
-    \newunicodechar{α}{\ensuremath{\alpha}}
-    \newunicodechar{Σ}{\ensuremath{\Sigma}}
-    \newunicodechar{μ}{\ensuremath{\mu}}
-    \newunicodechar{×}{\ensuremath{\times}}
-    \newunicodechar{−}{\ensuremath{-}}
-  }{}
-\fi
 
 \begin{document}
 
@@ -864,7 +901,7 @@ These four modalities cover the principal physiological constructs targeted by t
 
 \textbf{Figure 3.4} Recommended Sensors screen, displaying to the user sensors recommended by the system to users based on their study goal selected in the Study Setup. The system also recommends metrics to track, along with an information message in plain language detailing why those sensors were recommended, and what the user should watch out for.
 
-\includegraphics[max width=\linewidth,max totalheight=0.9\textheight]{media/media/image19.png}
+\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image19.png}\end{center}
 
 \textbf{Figure 3.5} Manual Sensor Selection screen, which lets the user customize their selection of sensors to use, and the metrics to track in their study.
 
@@ -918,7 +955,7 @@ The readiness checklist is the first of two preparatory phases; sensor-specific 
 
 To support users without prior experience in verifying compliance with each condition, each checklist item includes an inline description and a clickable tooltip providing the relevant reference standard. For example, the seating item specifies the 60 cm viewing distance recommended for Tobii eye trackers, and the lighting item describes adequate ambient conditions for biosensor and eye-tracking detection. This approach embeds the domain knowledge required for self-assessment directly at the point of decision, reducing reliance on external manuals or prior training.
 
-\includegraphics[max width=\linewidth,max totalheight=0.9\textheight]{media/media/image10.png}
+\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image10.png}\end{center}
 
 \textbf{Figure 3.10} Calibration Overview screen with disabled and gated Proceed to Recording button until all required sensors are calibrated and set up.
 
@@ -1828,13 +1865,14 @@ This chapter reports the study\textquotesingle s results in two strands. Section
 
 All comparisons were within-subjects and paired (N = 12). Descriptive statistics, showcasing the mean, standard deviation (SD), and the minimum and maximum values for each DV and condition can be viewed in Table 5.1. For each measure the distribution of the difference scores was tested for normality with the Shapiro-Wilk test; measures whose differences were normal were compared with a paired-samples t-test (effect size Cohen\textquotesingle s dz), and the two whose differences departed from normality, gaze accuracy and gaze precision, were compared with the Wilcoxon signed-rank test (effect size matched-pairs rank-biserial correlation, r), as seen in Table 5.2. Multiple comparisons are controlled with a Bonferroni correction applied within each hypothesis family, as set out in Section 4.6: the H1 timing family and the H5 calibration-quality test family each use an adjusted threshold of α = .025 and α = 0.0125 respectively, while H2, H3, and H4 each rest on a single test and use α = .05. Calibration confidence, and the EDA baseline are reported descriptively and are not part of the corrected confirmatory analysis. Exact p-values, effect sizes, and 95 percent confidence intervals are reported for every measure regardless of significance. All tests were two-tailed. Due to the small sample size, effect sizes and their intervals are given interpretive weight in their own right.
 
+\begingroup\let\small\footnotesize\setlength{\tabcolsep}{4pt}
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2418}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1478}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1239}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1313}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1552}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2000}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.3997}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1547}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1032}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1032}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1032}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1161}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 \textbf{Measure}
@@ -2114,6 +2152,7 @@ U
 \bottomrule\noalign{}
 \endlastfoot
 \end{longtable}
+\endgroup
 
 \textbf{Table 5.1} Descriptive statistics for all measures by condition (N = 12). F denotes the fragmented condition and U the unified condition.
 
@@ -2489,7 +2528,7 @@ After Bonferroni correction across the four-test family, none of the four dimens
 
 The mean resting EDA baseline was recorded as a comparability check rather than a scored outcome, and is reported descriptively. The two conditions were similar (fragmented M = 4.53 uS, SD = 3.20; unified M = 5.56 uS, SD = 4.28), t(11) = -1.88, p = .087, dz = -0.54, 95\% CI {[}-1.14, 0.08{]}, with an interval that spans zero, indicating that the baseline signal and its microsiemens conversion behaved comparably across the two workflows.
 
-\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image17.png}\\\end{center}
+\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image17.png}\end{center}
 \textbf{Figure 5.11} Mean resting EDA baseline by condition, raincloud plot (N = 12), in microsiemens. This is a comparability check on the baseline signal and its conversion, not a scored calibration-quality outcome.
 
 \hypertarget{summary-of-quantitative-results}{%
@@ -2497,15 +2536,15 @@ The mean resting EDA baseline was recorded as a comparability check rather than 
 
 The table reports each measure with its descriptive statistics, the reported test, the exact p-value, the effect size and its 95 percent confidence interval, the family threshold, and the outcome after correction.
 
-\begingroup\let\small\footnotesize
+\begingroup\let\small\footnotesize\setlength{\tabcolsep}{4pt}
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1600}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1300}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1300}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1300}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.0600}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.2700}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1200}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1734}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1508}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1282}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1357}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.0603}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.2111}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1206}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 \textbf{Measure}
@@ -2738,14 +2777,12 @@ Across the five themes, participants\textquotesingle{} accounts converge on a co
 
 {[}to be written{]}
 
-% ============================================================
-% REFERENCES (APA-7)
-% Paste each reference as its own paragraph below. The
-% environment gives an alphabetised-list look with a hanging
-% indent, as APA-7 requires. No manual formatting needed.
-% ============================================================
-\hypertarget{references}{%
-\section*{References}\label{references}}
+% ============================================================================
+% References section injected via `pandoc -A pandoc/references.tex`, placed
+% just before \end{document}. Skip it by passing --no-references to convert.sh
+% (e.g. once your .docx contains its own References section).
+% ============================================================================
+\section*{References}
 \addcontentsline{toc}{section}{References}
 
 \begingroup
@@ -2753,9 +2790,10 @@ Across the five themes, participants\textquotesingle{} accounts converge on a co
 \setlength{\leftskip}{0.5in}
 \setlength{\parskip}{6pt plus 2pt minus 1pt}
 
-% --- Add your references here, one per paragraph ---
+% --- Add each reference as its own paragraph (APA-7, hanging indent). --------
 % Example:
-% Author, A. A., \& Author, B. B. (Year). Title of the work. \textit{Journal Name}, \textit{Vol}(Issue), pages. https://doi.org/xxxx
+% Author, A. A., \& Author, B. B. (Year). Title of the work. \textit{Journal
+% Name}, \textit{Vol}(Issue), pages. https://doi.org/xxxx
 
 \endgroup
 
