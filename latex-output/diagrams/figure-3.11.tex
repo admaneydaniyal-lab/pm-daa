@@ -1,0 +1,45 @@
+\documentclass[border=6pt]{standalone}
+\input{flowstyles}
+\begin{document}
+\begin{tikzpicture}[node distance=0pt]
+
+  % ---- Nodes -------------------------------------------------------------
+  \node[orange] (start) at (0,0)      {Start Eye Tracker Calibration};
+  \node[blue]   (step1) at (3.4,0)    {Step 1: Instructions};
+  \node[blue]   (step2) at (6.8,0)    {Step 2: Positioning};
+  \node[decision](det)  at (10.6,0)   {Eye Tracker Detected?};
+  \node[decision](seat) at (15.2,0)   {Is Participant seated 60 cm away?};
+
+  \node[gray]   (usb)   at (10.6,-4)  {Check Eye Tracker USB Connection};
+  \node[blue]   (step3) at (15.2,-4)  {Step 3: Run Calibration};
+
+  \node[decision](calok)at (15.2,-7)  {Calibrated successfully?};
+  \node[blue]   (step4) at (15.2,-10.2){Step 4: Run Validation Check};
+  \node[decision](rerun)at (15.2,-13.4){Rerun validation?};
+  \node[green]  (done)  at (20,-13.4) {Eye Tracker successfully calibrated};
+
+  % ---- Edges -------------------------------------------------------------
+  \draw[flow] (start) -- (step1);
+  \draw[flow] (step1) -- (step2);
+  \draw[flow] (step2) -- (det);
+  \draw[flow] (det)   -- (seat);
+  \draw[flow] (det)   -- (usb);
+  \draw[flow] (usb)   -- (step3);
+
+  % seated? Yes -> run calibration ; No -> back up to positioning
+  \draw[flow] (seat) -- node[elabel,right]{Yes} (step3);
+  \draw[flow] (seat.north) |- ($(step2.north)+(0,1.4)$)
+        node[elabel,pos=0.25,above]{No} -- (step2.north);
+
+  % run calibration -> calibrated? ; No loops back, Yes -> validation
+  \draw[flow] (step3) -- (calok);
+  \draw[flow] (calok.west) -- ++(-1.6,0) node[elabel,pos=0.6,above]{No} |- (step3.west);
+  \draw[flow] (calok) -- node[elabel,right]{Yes} (step4);
+
+  % validation -> rerun? ; Yes loops back, No -> done
+  \draw[flow] (step4) -- (rerun);
+  \draw[flow] (rerun.west) -- ++(-1.6,0) node[elabel,pos=0.6,above]{Yes} |- (step4.west);
+  \draw[flow] (rerun) -- node[elabel,above]{No} (done);
+
+\end{tikzpicture}
+\end{document}

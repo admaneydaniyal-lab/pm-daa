@@ -1,0 +1,47 @@
+\documentclass[border=6pt]{standalone}
+\input{flowstyles}
+\begin{document}
+\begin{tikzpicture}[node distance=0pt]
+
+  % ---- Nodes -------------------------------------------------------------
+  \node[blue]   (root)  at (5,0)      {Study Setup and Onboarding};
+
+  \node[blue]   (new)   at (1.5,-3)   {Start New Study};
+  \node[purple] (open)  at (5,-3)     {Open Existing Study};
+  \node[purple] (past)  at (8.5,-3)   {View Past Studies};
+
+  \node[blue]   (rec)   at (0,-6)     {Record New Data};
+  \node[purple] (pre)   at (3.4,-6)   {Use Pre Recorded Data};
+
+  \node[blue]   (form)  at (0,-9)     {Study Setup Form};
+  \node[bdecision](sens)at (5.2,-10.5){Sensors recommended by the system};
+
+  \node[blue]   (manual)at (0,-13.4)  {Select Sensors Manually};
+  \node[blue]   (proj)  at (7,-13.4)  {Project Details Form};
+  \node[orange] (ready) at (11,-13.4) {Pre-Calibration Readiness Check};
+
+  % ---- Edges -------------------------------------------------------------
+  % root fans out to the three top options
+  \draw[flow] (root.south) -- ++(0,-0.7) -| (new.north);
+  \draw[flow] (root.south) -- ++(0,-0.7) -| (open.north);
+  \draw[flow] (root.south) -- ++(0,-0.7) -| (past.north);
+
+  % start new study -> record / pre-recorded
+  \draw[flow] (new.south) -- ++(0,-0.7) -| (rec.north);
+  \draw[flow] (new.south) -- ++(0,-0.7) -| (pre.north);
+
+  \draw[flow] (rec) -- (form);
+
+  % study setup form -> recommendation decision
+  \draw[flow] (form.east) -- (form.east -| sens.north) -- (sens.north);
+
+  % decision branches
+  \draw[flow] (sens.west) -- node[elabel,above]{Reject Recommendation} ++(-3.6,0) |- (manual.east);
+  \draw[flow] (sens.east) -- node[elabel,above]{Accept Recommendation} ++(1.8,0) |- (proj.north);
+
+  % both selection paths converge on project details, then readiness
+  \draw[flow] (manual.south) |- ($(proj.south)+(0,-1)$) -- (proj.south);
+  \draw[flow] (proj) -- (ready);
+
+\end{tikzpicture}
+\end{document}
