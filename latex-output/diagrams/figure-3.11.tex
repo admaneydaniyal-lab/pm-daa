@@ -22,9 +22,9 @@
   \draw[flow] (start) -- (step1);
   \draw[flow] (step1) -- (step2);
   \draw[flow] (step2) -- (det);
-  \draw[flow] (det)   -- (seat);
-  \draw[flow] (det)   -- (usb);
-  \draw[flow] (usb)   -- (step3);
+  % detected? Yes -> seated check ; No -> check USB (a dead-end fix-it step)
+  \draw[flow] (det)   -- node[elabel,above]{Yes} (seat);
+  \draw[flow] (det)   -- node[elabel,right]{No} (usb);
 
   % seated? Yes -> run calibration ; No -> back up to positioning
   \draw[flow] (seat) -- node[elabel,right]{Yes} (step3);
@@ -33,7 +33,7 @@
 
   % run calibration -> calibrated? ; No loops back, Yes -> validation
   \draw[flow] (step3) -- (calok);
-  \draw[flow] (calok.west) -- ++(-1.6,0) node[elabel,pos=0.6,above]{No} |- (step3.west);
+  \draw[flow] (calok.west) -- ++(-0.9,0) node[elabel,pos=0.6,above]{No} |- (step3.west);
   \draw[flow] (calok) -- node[elabel,right]{Yes} (step4);
 
   % validation -> rerun? ; Yes loops back, No -> done
