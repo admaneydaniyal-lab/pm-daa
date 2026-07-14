@@ -1,0 +1,56 @@
+\documentclass[border=6pt]{standalone}
+\input{flowstyles}
+\usetikzlibrary{fit}
+\begin{document}
+\begin{tikzpicture}
+
+  % ---- Entry -------------------------------------------------------------
+  \node[orange] (start) at (0,0)    {Start eye tracking validation};
+  \node[gray]   (instr) at (3.6,0)  {Display validation instructions};
+
+  % ---- Repeat-for-all-5-targets container --------------------------------
+  \node[blue]   (present) at (8.2,1.6)  {Present target, collect gaze data};
+  \node[blue]   (keep)    at (8.2,-0.6) {Keep valid binocular sample, discard others};
+  \node[blue]   (mean)    at (8.2,-2.8) {Compute mean gaze across both eyes};
+
+  \node[draw=dioBlueS, line width=1pt, fill=dioGrayF, fill opacity=0.45,
+        rounded corners=14pt, inner xsep=10pt, inner ysep=12pt,
+        fit=(present)(keep)(mean)] (loop) {};
+  % redraw the inner nodes above the translucent container fill
+  \node[blue] at (8.2,1.6)  {Present target, collect gaze data};
+  \node[blue] at (8.2,-0.6) {Keep valid binocular sample, discard others};
+  \node[blue] at (8.2,-2.8) {Compute mean gaze across both eyes};
+  \node[rotate=90, font=\small\bfseries, anchor=south]
+        at (loop.west) {Repeat for all 5 targets};
+
+  \draw[flow] (present) -- (keep);
+  \draw[flow] (keep) -- (mean);
+
+  % ---- Post-loop metric computation --------------------------------------
+  \node[gray] (dist)  at (13.2,1.2)  {Measure viewing distance};
+  \node[gray] (err)   at (13.2,-1.2) {Compute on-screen error};
+  \node[gray] (angle) at (16.6,0)    {Convert to visual angle (arctan)};
+
+  \draw[flow] (instr.east) -- ++(0.5,0) |- ($(loop.west)+(0,-1)$);
+  \draw[flow] (loop.east) -- ++(0.7,0) |- (err.west);
+  \draw[flow] (dist.east) -- ++(0.5,0) |- ($(angle.west)+(0,0.25)$);
+  \draw[flow] (err.east)  -- ++(0.5,0) |- ($(angle.west)+(0,-0.25)$);
+
+  % ---- Threshold decision and outcomes ------------------------------------
+  \node[decision] (thresh) at (16.6,-3.4) {Is angle within set pass threshold?};
+  \node[green] (pass) at (14.4,-6.2) {Pass};
+  \node[red]   (fail) at (18.8,-6.2) {Fail};
+  \node[gray]  (agg)  at (16.6,-8.6) {Aggregate metrics};
+  \node[orange](rep)  at (16.6,-11)  {Report Results};
+
+  \draw[flow] (angle) -- (thresh);
+  \draw[flow] (thresh.west) -| (pass.north);
+  \draw[flow] (thresh.east) -| (fail.north);
+  \draw[flow] (pass.south) |- ($(agg.west)+(-0.4,0)$) -- (agg.west);
+  \draw[flow] (fail.south) |- ($(agg.east)+(0.4,0)$) -- (agg.east);
+  \draw[flow] (agg) -- (rep);
+
+  \draw[flow] (start) -- (instr);
+
+\end{tikzpicture}
+\end{document}

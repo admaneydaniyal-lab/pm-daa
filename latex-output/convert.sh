@@ -19,11 +19,14 @@ set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-INCLUDE_REFS=1
+# The thesis docx now carries its own "List of References" section, so the
+# scaffold is OFF by default; pass --add-references to append it anyway.
+INCLUDE_REFS=0
 SRC=""
 for arg in "$@"; do
   case "$arg" in
-    --no-references) INCLUDE_REFS=0 ;;
+    --add-references) INCLUDE_REFS=1 ;;
+    --no-references)  INCLUDE_REFS=0 ;;
     *) SRC="$arg" ;;
   esac
 done
@@ -44,6 +47,20 @@ done
 
 cd "$HERE"
 
+# Compile any TikZ diagrams whose PDF is missing or stale, so postprocess can
+# slot them in where Pandoc dropped the native Word drawings.
+if compgen -G "diagrams/*.tex" >/dev/null; then
+  echo ">> Building diagrams ..."
+  for d in diagrams/figure-*.tex; do
+    pdf="${d%.tex}.pdf"
+    if [[ ! -f "$pdf" || "$d" -nt "$pdf" || diagrams/flowstyles.tex -nt "$pdf" ]]; then
+      (cd diagrams && pdflatex -interaction=nonstopmode "$(basename "$d")" >/dev/null) \
+        || { echo "error: diagram $d failed to compile" >&2; exit 1; }
+    fi
+  done
+  rm -f diagrams/*.aux diagrams/*.log
+fi
+
 echo ">> Converting $SRC with Pandoc ..."
 PANDOC_ARGS=(
   "$SRC"
@@ -61,12 +78,13 @@ pandoc "${PANDOC_ARGS[@]}"
 echo ">> Post-processing (image sizing, wide-table handling) ..."
 python3 postprocess.py document.tex
 
-echo ">> Compiling (two passes for TOC/links) ..."
+echo ">> Compiling (three passes for TOC / List of Figures / List of Tables) ..."
+pdflatex -interaction=nonstopmode document.tex >/dev/null
 pdflatex -interaction=nonstopmode document.tex >/dev/null
 pdflatex -interaction=nonstopmode document.tex >/dev/null
 
-# Clean LaTeX aux files, keep .tex/.pdf/media
-rm -f document.aux document.log document.out document.toc document.lof document.lot
+# Keep .toc/.lof/.lot so manual re-runs of pdflatex stay correct; drop the rest
+rm -f document.log document.out
 
 pages="$(command -v pdfinfo >/dev/null 2>&1 && pdfinfo document.pdf 2>/dev/null | awk '/Pages/{print $2}')"
 echo ">> Done: document.pdf${pages:+ ($pages pages)}"

@@ -12,6 +12,13 @@
 % sizes images explicitly by type, but this is a belt-and-braces safety net.
 \usepackage[export]{adjustbox}
 
+% --- Attach whole external PDFs (Appendix H/I source documents) --------------
+\usepackage{pdfpages}
+
+% --- List of Figures / List of Tables titles ---------------------------------
+\renewcommand{\listfigurename}{List of Figures}
+\renewcommand{\listtablename}{List of Tables}
+
 % --- Ease dense tables: smaller font + a little more row spacing -------------
 % Applies to every longtable Pandoc emits. Extra-wide tables (6+ columns) are
 % dropped a further step to \footnotesize by postprocess.py.
@@ -58,4 +65,6 @@
   \newunicodechar{∞}{\ensuremath{\infty}}
   \newunicodechar{∑}{\ensuremath{\sum}}
   \newunicodechar{√}{\ensuremath{\surd}}
+  \newunicodechar{☐}{\ensuremath{\square}}
+  \newunicodechar{☒}{\ensuremath{\boxtimes}}
 \fi

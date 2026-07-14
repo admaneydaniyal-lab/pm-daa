@@ -17,8 +17,8 @@ That single command:
 2. **Re-applies the formatting** (see below).
 3. **Compiles** `document.pdf` (two pdfLaTeX passes for the TOC and links).
 
-Add `--no-references` once the `.docx` contains its own References section, so
-the pipeline doesn't append its APA-7 scaffold.
+The thesis docx now carries its own "List of References" section, so the
+appended scaffold is off by default (pass `--add-references` to restore it).
 
 > Running `convert.sh` overwrites `document.tex` and the `media/` folder — they
 > are build outputs. Put manual formatting changes in `pandoc/preamble.tex`, not
@@ -31,8 +31,13 @@ the pipeline doesn't append its APA-7 scaffold.
 | Wider margins, dense-table spacing, Unicode math/Greek (√ α Σ μ × − …) | `pandoc/preamble.tex` | Injected into every conversion via `pandoc -H` |
 | Images never overflow the margins | `pandoc/preamble.tex` + `postprocess.py` | `adjustbox` safety net + explicit per-image sizing |
 | Plots shrunk & centred; screenshots kept full width | `postprocess.py` | Decided by pixel width (< 900px ⇒ plot). No manual tagging |
-| Wide tables (6+ columns) set to `\footnotesize` with **content-proportional column widths** | `postprocess.py` | Each column gets width in proportion to its longest cell, so e.g. an "Effect Size (95% CI)" column widens on its own |
-| APA-7 References section appended | `pandoc/references.tex` | Injected via `pandoc -A`; disable with `--no-references` |
+| Wide tables (6+ cols → `\footnotesize`, 10+ cols → `\scriptsize`) with **content-proportional column widths** | `postprocess.py` | Each column gets width in proportion to its longest cell |
+| **TikZ flowcharts auto-inserted** where Word drawings were dropped | `diagrams/` + `postprocess.py` | Any `diagrams/figure-X.Y.pdf` slots in above the matching "Figure X.Y" caption; diagrams recompile automatically when their `.tex` changes |
+| **List of Figures / List of Tables** generated from the captions | `postprocess.py` | Replaces the docx placeholder section, with page numbers |
+| **List of Abbreviations** injected | `pandoc/abbreviations.tex` | Edit that file to add/remove entries |
+| **References** formatted with APA-7 hanging indent | `postprocess.py` | Formats the docx's own "List of References" section |
+| **Appendix PDFs attached** | `appendix/` + `postprocess.py` | Each "[add PDF]" marker becomes `\includepdf` of `appendix/appendix-<letter>.pdf`; a visible placeholder note appears until the file exists |
+| Long URLs/DOIs break across lines | `postprocess.py` | Converts Word's underlined self-links to `\url{}` |
 
 ## Files
 

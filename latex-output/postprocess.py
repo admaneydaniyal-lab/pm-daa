@@ -104,6 +104,10 @@ def shrink_wide_tables(text):
     def repl(m):
         block = m.group(0)
         ncols = block.count(r"\arraybackslash}p{")  # one per Pandoc p-column
+        if ncols >= 10:  # extremely wide (e.g. per-participant data): go smaller
+            block = _rebalance_columns(block, ncols)
+            return ("\\begingroup\\let\\small\\scriptsize"
+                    "\\setlength{\\tabcolsep}{2.5pt}\n" + block + "\n\\endgroup")
         if ncols >= WIDE_TABLE_COLS:
             block = _rebalance_columns(block, ncols)
             return ("\\begingroup\\let\\small\\footnotesize"
@@ -111,6 +115,157 @@ def shrink_wide_tables(text):
         return block
 
     return lt_re.sub(repl, text)
+
+
+def fix_url_breaking(text):
+    """Turn \\href{URL}{\\ul{URL}} (Word's underlined self-links) into \\url{URL}
+    so long DOIs/links can break across lines instead of overflowing."""
+    pat = re.compile(r"\\href\{([^}]*)\}\{\\ul\{([^}]*)\}\}")
+    return pat.sub(
+        lambda m: "\\url{%s}" % m.group(1) if m.group(1) == m.group(2)
+        else m.group(0),
+        text)
+
+
+_CAPTION_RE = re.compile(
+    r"^\\textbf\{(Figure|Table)\s+(\d+\.\d+)[^\n]*", re.MULTILINE)
+
+
+def insert_diagrams(text, base_dir):
+    """Insert diagrams/figure-X.Y.pdf before its caption if no image is there.
+
+    The flowcharts are native Word drawings that Pandoc drops, so the caption
+    survives conversion but the graphic doesn't. Any diagrams/figure-X.Y.pdf
+    is inserted (centred, capped to the text area) directly above the matching
+    "Figure X.Y" caption unless an \\includegraphics already sits within the
+    few preceding lines.
+    """
+    inserted = []
+
+    def repl(m):
+        kind, num = m.group(1), m.group(2)
+        if kind != "Figure":
+            return m.group(0)
+        pdf = os.path.join(base_dir, "diagrams", "figure-%s.pdf" % num)
+        if not os.path.exists(pdf):
+            return m.group(0)
+        # look back a few lines for an existing image
+        before = text[:m.start()].rsplit("\n", 7)[1:]
+        if any("includegraphics" in ln for ln in before):
+            return m.group(0)
+        inserted.append(num)
+        return ("\\begin{center}\\includegraphics[max width=\\linewidth,"
+                "max totalheight=0.85\\textheight]{diagrams/figure-%s.pdf}"
+                "\\end{center}\n\n%s" % (num, m.group(0)))
+
+    return _CAPTION_RE.sub(repl, text), inserted
+
+
+def add_figure_table_lists(text):
+    """Feed every Figure/Table caption into the .lof/.lot files and replace
+    the docx's empty "List of Figures / List of Tables" placeholder section
+    with real \\listoffigures / \\listoftables."""
+
+    def entry(m):
+        kind, num = m.group(1), m.group(2)
+        # first sentence of the caption as plain text (LaTeX-safe for .lof/.lot)
+        cap = m.group(0)
+        cap = re.sub(r"^\\textbf\{(Figure|Table)\s+[\d.]+\s*", "", cap)
+        cap = cap.split(". ")[0]
+        cap = cap.replace("\\%", "%")              # unescape first,
+        cap = re.sub(r"\\[a-zA-Z]+\s*", "", cap)   # drop \textbf etc.
+        cap = re.sub(r"[{}]", "", cap)             # drop stray braces
+        cap = cap.replace("%", r"\%").strip(".} \\") + "."
+        listname = "lof" if kind == "Figure" else "lot"
+        return ("\\phantomsection\\addcontentsline{%s}{%s}"
+                "{\\protect\\numberline{%s}%s}\n%s"
+                % (listname, kind.lower(), num, cap, m.group(0)))
+
+    text = _CAPTION_RE.sub(entry, text)
+
+    # swap the placeholder section for the generated lists
+    placeholder = re.compile(
+        r"\\hypertarget\{list-of-figures-list-of-tables\}\{%\n"
+        r"\\section\{[^\n]*List of Figures[^\n]*\}"
+        r"\\label\{list-of-figures-list-of-tables\}\}")
+    lists = (
+        "\\hypertarget{list-of-figures-list-of-tables}{}%\n"
+        "\\phantomsection\\addcontentsline{toc}{section}{List of Figures}\n"
+        "\\listoffigures\n"
+        "\\phantomsection\\addcontentsline{toc}{section}{List of Tables}\n"
+        "\\listoftables\n")
+    text, n = placeholder.subn(lambda _: lists, text)
+    return text, n
+
+
+def inject_abbreviations(text, base_dir):
+    """Fill the empty "List of Abbreviations" placeholder section with the
+    table maintained in pandoc/abbreviations.tex."""
+    path = os.path.join(base_dir, "pandoc", "abbreviations.tex")
+    if not os.path.exists(path):
+        return text, False
+    with open(path, encoding="utf-8") as fh:
+        table = fh.read()
+    # keep only the content (drop comment header lines)
+    table = "\n".join(ln for ln in table.split("\n")
+                      if not ln.lstrip().startswith("%"))
+    anchor = re.search(r"\\label\{list-of-abbreviations\}\}\n", text)
+    if not anchor:
+        return text, False
+    pos = anchor.end()
+    return text[:pos] + "\n" + table.strip() + "\n" + text[pos:], True
+
+
+def format_references(text):
+    """Give the docx's own "List of References" section an APA-7 hanging
+    indent by wrapping its body in a group."""
+    m = re.search(
+        r"(\\section\{[^\n]*List of References[^\n]*\}"
+        r"\\label\{list-of-references\}\})\n", text)
+    if not m:
+        return text, False
+    start = m.end()
+    nxt = re.search(r"\\hypertarget\{[^}]*\}\{%\n\\section", text[start:])
+    end = start + (nxt.start() if nxt else len(text) - start)
+    body = text[start:end]
+    # LaTeX suppresses \parindent on the first paragraph after a heading, so
+    # pull the first entry's opening line back by hand to keep its hang.
+    body = re.sub(r"^(\s*)(\S)", r"\1\\hspace*{-0.5in}\2", body, count=1)
+    wrapped = ("\n\\begingroup\n"
+               "\\setlength{\\parindent}{-0.5in}"
+               "\\setlength{\\leftskip}{0.5in}"
+               "\\setlength{\\parskip}{6pt plus 2pt minus 1pt}\n"
+               + body +
+               "\n\\endgroup\n")
+    return text[:start] + wrapped + text[end:], True
+
+
+def attach_appendix_pdfs(text, base_dir):
+    """Replace "[add PDF]" markers with \\includepdf of appendix/<letter>.pdf.
+
+    The letter comes from the closest preceding "Appendix X" heading. When the
+    file isn't in appendix/ yet, leave a visible note saying what to drop in.
+    """
+    marker = re.compile(r"\{\[\}add PDF\s*\{\]\}")
+    out, last, attached, missing = [], 0, [], []
+    for m in marker.finditer(text):
+        head = None
+        for hm in re.finditer(r"Appendix\s+([A-Z])[:\s]", text[:m.start()]):
+            head = hm.group(1)
+        pdf_rel = "appendix/appendix-%s.pdf" % (head or "X")
+        if head and os.path.exists(os.path.join(base_dir, pdf_rel)):
+            repl = ("\\includepdf[pages=-,width=\\textwidth,pagecommand={}]"
+                    "{%s}" % pdf_rel)
+            attached.append(head)
+        else:
+            repl = ("\\emph{{[}Placeholder: drop the PDF into %s and re-run "
+                    "convert.sh{]}}" % pdf_rel)
+            missing.append(pdf_rel)
+        out.append(text[last:m.start()])
+        out.append(repl)
+        last = m.end()
+    out.append(text[last:])
+    return "".join(out), attached, missing
 
 
 def main():
@@ -121,8 +276,14 @@ def main():
     with open(tex, encoding="utf-8") as fh:
         text = fh.read()
 
+    text = fix_url_breaking(text)
     text = resize_images(text, base_dir)
     text = shrink_wide_tables(text)
+    text, diagrams = insert_diagrams(text, base_dir)
+    text, lists_done = add_figure_table_lists(text)
+    text, abbr_done = inject_abbreviations(text, base_dir)
+    text, refs_done = format_references(text)
+    text, appendices, missing = attach_appendix_pdfs(text, base_dir)
 
     with open(tex, "w", encoding="utf-8") as fh:
         fh.write(text)
@@ -132,6 +293,14 @@ def main():
     n_wide = text.count(r"\begingroup\let\small\footnotesize")
     print("postprocess: %d plots shrunk, %d screenshots capped, "
           "%d wide tables set to footnotesize" % (n_plots, n_shots, n_wide))
+    print("postprocess: diagrams inserted: %s" % (", ".join(diagrams) or "none"))
+    print("postprocess: LoF/LoT placeholder replaced: %s" % bool(lists_done))
+    print("postprocess: abbreviations injected: %s" % abbr_done)
+    print("postprocess: references hanging indent: %s" % refs_done)
+    print("postprocess: appendix PDFs attached: %s"
+          % (", ".join(appendices) or "none"))
+    for p in missing:
+        print("postprocess: NOTE - awaiting %s" % p)
 
 
 if __name__ == "__main__":

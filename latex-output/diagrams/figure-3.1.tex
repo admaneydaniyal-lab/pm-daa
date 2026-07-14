@@ -1,0 +1,24 @@
+\documentclass[border=6pt]{standalone}
+\input{flowstyles}
+\begin{document}
+\begin{tikzpicture}
+
+  \node[sq, fill=dioRedF,    draw=dioRedS]    (home)   at (0,0)     {Home};
+  \node[circ]                                 (newstudy) at (3.1,0) {New Study};
+  \node[sq, fill=dioBlueF,   draw=dioBlueS]   (setup)  at (6.2,0)   {Study Setup and Onboarding};
+  \node[sq, fill=dioOrangeF, draw=dioOrangeS] (sensor) at (9.3,0)   {Sensor Setup and Calibration};
+  \node[sq, fill=dioGreenF,  draw=dioGreenS]  (record) at (12.4,0)  {Recording and Session Control};
+  \node[sq, fill=dioYellowF, draw=dioYellowS] (analysis) at (15.5,0){Data Analysis};
+  \node[sq, fill=dioTealF,   draw=dioTealS]   (interp) at (18.6,0)  {Data Interpretation};
+  \node[sq, fill=dioPurpleF, draw=dioPurpleS] (export) at (21.7,0)  {Data Export};
+
+  \draw[flow] (home)     -- (newstudy);
+  \draw[flow] (newstudy) -- (setup);
+  \draw[flow] (setup)    -- (sensor);
+  \draw[flow] (sensor)   -- (record);
+  \draw[flow] (record)   -- (analysis);
+  \draw[flow] (analysis) -- (interp);
+  \draw[flow] (interp)   -- (export);
+
+\end{tikzpicture}
+\end{document}
