@@ -24,6 +24,20 @@
 % --- Keep table titles/captions on the same page as their table --------------
 \usepackage{needspace}
 
+% --- Keep figures/tables and their captions on one page ----------------------
+\usepackage{float}
+
+% --- APA-7 URL/DOI line breaking ----------------------------------------------
+% Pandoc's template loads xurl.sty, which allows a break at almost any
+% character (including inside a DOI's digits, e.g. "10" / ".1145"). APA-7
+% expects breaks at natural points instead — chiefly before a slash — so
+% restrict \UrlBreaks to slash and hyphen, overriding xurl's aggressive set.
+\makeatletter
+\g@addto@macro\document{%
+  \def\UrlBreaks{\do\/\do\-}%
+}
+\makeatother
+
 % --- List of Figures / List of Tables titles ---------------------------------
 \renewcommand{\listfigurename}{List of Figures}
 \renewcommand{\listtablename}{List of Tables}

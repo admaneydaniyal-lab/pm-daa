@@ -21,6 +21,9 @@ import sys
 SMALL_IMAGE_PX = 900
 # Display width for those small plots, as a fraction of the text width.
 PLOT_WIDTH = r"0.62\linewidth"
+# Screenshots are capped short of a full page so their caption (added by
+# wrap_figures_with_captions) always has room to sit on the same page.
+SCREENSHOT_MAX_HEIGHT = r"0.78\textheight"
 # A longtable with at least this many columns is treated as "wide".
 WIDE_TABLE_COLS = 6
 # Per-diagram display width overrides (default \linewidth).
@@ -55,7 +58,7 @@ def resize_images(text, base_dir):
             return (r"\begin{center}\includegraphics[width=%s]{%s}\end{center}"
                     % (PLOT_WIDTH, path))
         return (r"\includegraphics[max width=\linewidth,"
-                r"max totalheight=0.9\textheight]{%s}" % path)
+                r"max totalheight=%s]{%s}" % (SCREENSHOT_MAX_HEIGHT, path))
 
     text = img_re.sub(repl, text)
     # A stray "\\" left immediately after a centred image would break the box.
@@ -133,10 +136,34 @@ def align_cells_top(text):
     return text.replace(r"\begin{minipage}[b]", r"\begin{minipage}[t]")
 
 
+# A table+caption reservation bigger than this many lines is skipped: forcing
+# it would either fail outright (content taller than a page) or just push a
+# near-empty page for no benefit, so genuinely huge tables are left to flow.
+MAX_TABLE_NEEDSPACE_LINES = 36
+
+
+def _table_needspace(block, cap_above, cap_below, ncols):
+    """Estimate a \\Needspace reservation covering a table plus its caption,
+    so document-wide, a caption is never stranded on a different page than
+    its table. Returns "" when the estimate is too large to be worth forcing.
+    """
+    cells = _CELL_RE.findall(block)
+    nrows = len(cells) // ncols if ncols else 0
+    cap_text = (cap_above or "") + (cap_below or "")
+    plain_cap = re.sub(r"\\[a-zA-Z]+|[{}]", "", cap_text)
+    cap_lines = max(1.0, len(plain_cap) / (95 if ncols < 10 else 150))
+    body_lines = nrows * 1.55 + 1.6  # body rows + header/rule allowance
+    total = body_lines + cap_lines + 1.5  # small buffer
+    if total > MAX_TABLE_NEEDSPACE_LINES:
+        return ""
+    return "\\Needspace{%.1f\\baselineskip}\n" % total
+
+
 def shrink_wide_tables(text):
     """Rebalance every longtable's column widths by content; step wide tables
-    down in size, and rotate the very widest (10+ columns) onto landscape
-    pages together with their captions."""
+    down in size, rotate the very widest (10+ columns) onto landscape pages,
+    and reserve enough space that each table stays on one page with its
+    caption wherever that's a reasonable amount of space to reserve."""
     lt_re = re.compile(
         r"(?:(\\textbf\{Table\s[^\n]*)\n\n)?"          # caption above (opt.)
         r"(\\begin\{longtable\}.*?\\end\{longtable\})"  # the table
@@ -146,14 +173,24 @@ def shrink_wide_tables(text):
     def repl(m):
         cap_above, block, cap_below = m.group(1), m.group(2), m.group(3)
         ncols = block.count(r"\arraybackslash}p{")  # one per Pandoc p-column
+        needspace = ""
         if ncols >= 2:
             # landscape pages are wider, so a character eats a smaller
             # fraction of the line there
             block = _rebalance_columns(
                 block, ncols, char_frac=0.0075 if ncols >= 10 else 0.0095)
+            # Skip reservation if a heading immediately above (e.g. Appendix
+            # J's "Deductive codes...") already reserved space via
+            # keep_captions_with_tables — avoid double-reserving right after
+            # a heading and forcing it (rather than just the table tail)
+            # onto a fresh page.
+            already_reserved = ("\\Needspace{" in
+                                 text[max(0, m.start() - 400):m.start()])
+            if not already_reserved:
+                needspace = _table_needspace(block, cap_above, cap_below, ncols)
         if ncols >= 10:  # per-participant data tables: rotate to landscape
             inner = "\n\n".join(p for p in (cap_above, block, cap_below) if p)
-            return ("\\begin{landscape}\n"
+            return (needspace + "\\begin{landscape}\n"
                     "\\begingroup\\let\\small\\footnotesize"
                     "\\setlength{\\tabcolsep}{4pt}\n" + inner +
                     "\n\\endgroup\n\\end{landscape}")
@@ -161,7 +198,7 @@ def shrink_wide_tables(text):
             block = ("\\begingroup\\let\\small\\footnotesize"
                      "\\setlength{\\tabcolsep}{4pt}\n" + block + "\n\\endgroup")
         parts = [p for p in (cap_above, block, cap_below) if p]
-        return "\n\n".join(parts)
+        return needspace + "\n\n".join(parts)
 
     return lt_re.sub(repl, text)
 
@@ -239,6 +276,12 @@ def apply_text_edits(text):
     for i in "1234":
         text = re.sub(r"(?m)^For RQ%s," % i,
                       r"\\textbf{For RQ%s,}" % i, text)
+    # Stray space before a closing paren in a page-number citation.
+    text = text.replace("(Dell Inc., 2016, p. 6 )", "(Dell Inc., 2016, p. 6)")
+    # Chapter 7.2: bold each contribution's lead-in clause.
+    text = re.sub(
+        r"(?m)^The (first|second|third|fourth) contribution is ([^:\n]+):",
+        r"\\textbf{The \1 contribution is \2:}", text)
     return text
 
 
@@ -258,14 +301,158 @@ def move_figure_318(text):
     return text[:pos] + "\n" + block + text[pos:], True
 
 
+_TABLE_5_1_ROWS = [
+    # (measure, F mean, F sd, F min, F max, U mean, U sd, U min, U max)
+    ("Setup time (s)", "1226", "292.7", "779", "1645",
+     "998.4", "193.4", "599", "1256"),
+    ("Calibration time (s)", "925.9", "262.2", "533", "1317",
+     "666.6", "187.5", "407", "1039"),
+    ("NASA-TLX", "43.61", "20.01", "13.33", "73.33",
+     "22.22", "18.83", "0.00", "61.67"),
+    ("SUS", "46.46", "30.22", "0.00", "90.00",
+     "73.33", "20.57", "32.50", "100.00"),
+    ("Calibration confidence (1--7)", "5.08", "2.02", "1", "7",
+     "5.75", "1.42", "2", "7"),
+    ("Interaction breakdowns", "20.00", "4.61", "12", "26",
+     "8.17", "4.06", "2", "13"),
+    ("Gaze accuracy (deg)", "2.03", "2.25", "0.64", "9.07",
+     "1.28", "0.66", "0.19", "2.37"),
+    ("Gaze precision (deg)", "0.65", "0.33", "0.19", "1.24",
+     "1.29", "1.27", "0.29", "3.89"),
+    (r"Valid data yield (\%)", "99.54", "1.13", "96.40", "100.00",
+     "99.21", "1.21", "96.30", "100.00"),
+    ("EDA baseline (uS)", "4.53", "3.20", "0.64", "11.15",
+     "5.56", "4.28", "0.60", "14.55"),
+]
+
+
+def restructure_table_5_1(text):
+    """Table 5.1 listed each measure across two rows (one per condition),
+    which roughly doubled its length versus a paired layout. Transpose it to
+    one row per measure with F and U mean(SD) and range side by side — same
+    ten measures, same four statistics per condition, nothing dropped.
+
+    Matched by its exact header fingerprint (Measure/Condition/Mean/SD/
+    Min/Max) rather than position, so it only fires on this specific table
+    and simply no-ops if the docx's own Table 5.1 is later edited to match.
+    """
+    tables = list(re.finditer(
+        r"\\begin\{longtable\}.*?\\end\{longtable\}", text, re.DOTALL))
+    target = None
+    for m in tables:
+        block = m.group(0)
+        if (r"\textbf{Measure}" in block and r"\textbf{Condition}" in block
+                and r"\textbf{Mean}" in block and r"\textbf{SD}" in block
+                and r"\textbf{Min}" in block and r"\textbf{Max}" in block
+                and "Setup time (s)" in block
+                and "EDA baseline (uS)" in block):
+            target = m
+            break
+    if target is None:
+        return text, False
+
+    header = (r"\begin{longtable}[]{@{}"
+              r">{\raggedright\arraybackslash}p{0.28\columnwidth}"
+              r">{\raggedright\arraybackslash}p{0.16\columnwidth}"
+              r">{\raggedright\arraybackslash}p{0.16\columnwidth}"
+              r">{\raggedright\arraybackslash}p{0.16\columnwidth}"
+              r">{\raggedright\arraybackslash}p{0.16\columnwidth}@{}}" "\n"
+              r"\toprule\noalign{}" "\n"
+              r"\textbf{Measure} & \textbf{F Mean (SD)} & \textbf{F Range} "
+              r"& \textbf{U Mean (SD)} & \textbf{U Range} \\" "\n"
+              r"\midrule\noalign{}" "\n"
+              r"\endhead" "\n"
+              r"\bottomrule\noalign{}" "\n"
+              r"\endlastfoot" "\n")
+    rows = []
+    for measure, fm, fsd, fmin, fmax, um, usd, umin, umax in _TABLE_5_1_ROWS:
+        rows.append(
+            r"%s & %s (%s) & %s--%s & %s (%s) & %s--%s \\"
+            % (measure, fm, fsd, fmin, fmax, um, usd, umin, umax))
+    new_table = header + "\n".join(rows) + "\n\\end{longtable}"
+    return text[:target.start()] + new_table + text[target.end():], True
+
+
+def demote_appendix_subheaders(text):
+    """Flatten internal headings inside each appendix artefact (A1, A2, B, C,
+    D, E, F, H, I, K) to plain bold text, since these are reproduced forms/
+    instruments rather than thesis chapters. Appendix G and J keep their
+    internal structure (G's questionnaire sections, J's Part A-D navigation).
+    Each appendix's own opening "Appendix X: ..." title is always preserved.
+    """
+    opener_re = re.compile(
+        r"\\hypertarget\{appendix-([a-z0-9]+)[^}]*\}\{%\n"
+        r"\\subsection\{(?:\\texorpdfstring\{[^{}]*\}\{[^{}]*\}|[^{}]*)\}"
+        r"\\label\{[^}]*\}\}")
+    openers = list(opener_re.finditer(text))
+    if not openers:
+        return text, 0
+    header_re = re.compile(
+        r"\\hypertarget\{[^}]*\}\{%\n"
+        r"\\(subsection|subsubsection|paragraph)\{"
+        r"(?:\\texorpdfstring\{([^{}]*)\}\{[^{}]*\}|([^{}]*))"
+        r"\}\\label\{[^}]*\}\}")
+    count = 0
+    out = [text[:openers[0].start()]]
+    for i, m in enumerate(openers):
+        letter = m.group(1)
+        body_start = m.end()
+        body_end = openers[i + 1].start() if i + 1 < len(openers) else len(text)
+        out.append(text[m.start():body_start])
+        body = text[body_start:body_end]
+        if letter not in ("g", "j"):
+            def sub(mm):
+                nonlocal count
+                title = (mm.group(2) or mm.group(3) or "").strip()
+                if not title:
+                    return ""
+                count += 1
+                return "\\textbf{%s}" % title
+            body = header_re.sub(sub, body)
+        out.append(body)
+    return "".join(out), count
+
+
+_FIG_CAPTION_LINE_RE = re.compile(
+    r"^\\textbf\{Figure\s+(?:\d+|[A-Z])\.\d+\}[^\n]*\n", re.MULTILINE)
+
+
+def wrap_figures_with_captions(text):
+    """Keep every figure image and its caption on one page (document-wide),
+    using the float package's [H] specifier so the pair is treated as a
+    single unbreakable block that moves to the next page as a unit if it
+    doesn't fit. Must run after add_figure_table_lists, since it relies on
+    the \\phantomsection...addcontentsline line it inserts before captions.
+    """
+    unit_re = re.compile(
+        r"(\\begin\{center\}\\includegraphics\[[^\]]*\]\{[^}]+\}\\end\{center\}"
+        r"\\?\\?|\\includegraphics\[[^\]]*\]\{[^}]+\}\\?\\?)\n\n"
+        r"(\\phantomsection\\addcontentsline\{lof\}\{figure\}\{[^\n]*\}%\n)?"
+        + _FIG_CAPTION_LINE_RE.pattern.lstrip("^"))
+
+    def repl(m):
+        return ("\\begin{figure}[H]\n" + m.group(0).rstrip("\n") +
+                "\n\\end{figure}\n")
+
+    return unit_re.subn(repl, text)
+
+
 def keep_captions_with_tables(text):
-    """Reserve space before a heading or caption that directly precedes a
-    longtable, so titles like "Inductive codes" (Appendix J) don't strand at
-    the bottom of the previous page."""
+    """Reserve space before a heading that directly precedes a longtable, so
+    titles like "Inductive codes" (Appendix J) don't strand at the bottom of
+    the previous page.
+
+    Deliberately does NOT match a "\\textbf{Table X.Y}" caption here: for
+    back-to-back tables with no heading between them (e.g. Appendix K's
+    K.1/K.2/K.3), table N's own trailing caption sits immediately before
+    table N+1's \\begin{longtable} — matching it here would misread table N's
+    caption as a heading for table N+1, breaking the adjacency that
+    shrink_wide_tables relies on to pair each table with its own caption
+    (its own general Needspace logic already covers the caption case).
+    """
     pat = re.compile(
-        r"((?:\\hypertarget\{[^}]*\}\{%\n"
-        r"\\(?:paragraph|subsubsection)\{[^\n]*\}\}\n|"
-        r"\\textbf\{Table\s[^\n]*\n))"
+        r"(\\hypertarget\{[^}]*\}\{%\n"
+        r"\\(?:paragraph|subsubsection)\{[^\n]*\}\}\n)"
         r"(\n\\begin\{longtable\})")
     return pat.sub(lambda m: "\\Needspace{14\\baselineskip}\n"
                    + m.group(1) + m.group(2), text)
@@ -322,8 +509,9 @@ def insert_diagrams(text, base_dir):
         inserted.append(num)
         width = DIAGRAM_WIDTHS.get(num, "\\linewidth")
         return ("\\begin{center}\\includegraphics[max width=%s,"
-                "max totalheight=0.85\\textheight]{diagrams/figure-%s.pdf}"
-                "\\end{center}\n\n%s" % (width, num, m.group(0)))
+                "max totalheight=%s]{diagrams/figure-%s.pdf}"
+                "\\end{center}\n\n%s"
+                % (width, SCREENSHOT_MAX_HEIGHT, num, m.group(0)))
 
     return _CAPTION_RE.sub(repl, text), inserted
 
@@ -518,15 +706,18 @@ def main():
 
     text = fix_url_breaking(text)
     text = demote_caption_headings(text)
+    text, appendix_headers_demoted = demote_appendix_subheaders(text)
     text = apply_text_edits(text)
     text = fix_formulas(text)
     text = align_cells_top(text)
+    text, table_5_1_done = restructure_table_5_1(text)
     text = resize_images(text, base_dir)
     text, moved_318 = move_figure_318(text)
-    text = shrink_wide_tables(text)
     text = keep_captions_with_tables(text)
+    text = shrink_wide_tables(text)
     text, diagrams = insert_diagrams(text, base_dir)
     text, lists_done = add_figure_table_lists(text)
+    text = wrap_figures_with_captions(text)[0]
     text, abbr_done = inject_abbreviations(text, base_dir)
     text, refs_done = format_references(text)
     text, appendices, missing = attach_appendix_pdfs(text, base_dir)
@@ -548,6 +739,9 @@ def main():
           % (", ".join(appendices) or "none"))
     print("postprocess: front matter: %s" % fm_notes)
     print("postprocess: figure 3.18 moved: %s" % moved_318)
+    print("postprocess: appendix sub-headers demoted: %d"
+          % appendix_headers_demoted)
+    print("postprocess: table 5.1 restructured: %s" % table_5_1_done)
     for p in missing:
         print("postprocess: NOTE - awaiting %s" % p)
 
