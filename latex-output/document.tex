@@ -92,6 +92,9 @@
 % --- Live table of contents titling ------------------------------------------
 \renewcommand{\contentsname}{Table of Contents}
 
+% --- Keep table titles/captions on the same page as their table --------------
+\usepackage{needspace}
+
 % --- List of Figures / List of Tables titles ---------------------------------
 \renewcommand{\listfigurename}{List of Figures}
 \renewcommand{\listtablename}{List of Tables}
@@ -1061,14 +1064,16 @@ The validation threshold is configurable by the user (Figure 3.14) during Step 3
 
 Validation results are presented as a two-dimensional scatter plot that overlays, in normalised display space, the five target locations and the corresponding mean gaze positions, with a dashed offset line connecting each target to its measured gaze (Figure 3.18 and Figure 3.19). The length of each offset line is the visual representation of the accuracy error, and elements are colour-coded against the pass threshold (within threshold in green, exceeding it in red), so the operator can see at a glance both the magnitude and the spatial pattern of any systematic offset, for example a consistent downward displacement indicating a vertical bias. A target passes if its accuracy is within the pass threshold (3 degrees of visual angle by default, as defined in Chapter 3.3.4.4); the session passes if a sufficient number of targets are valid and the mean accuracy across valid targets is within that threshold. Presenting the measurement outcome visibly and immediately follows established usability guidance on visibility of system status (Nielsen, 1994).
 
+\includegraphics[max width=\linewidth,max totalheight=0.9\textheight]{media/media/image28.png}
+
+\phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.18}Eye-tracking calibration, Step 4: Validation, showing a successful calibration.}%
+\textbf{Figure 3.18} Eye-tracking calibration, Step 4: Validation, showing a successful calibration. A green success banner sits above a scatter plot of the five-point grid, showing the intended gaze target against the computed gaze position for each point. A collapsible table below reports the colour-coded metrics: gaze accuracy, gaze precision, valid data yield, points detected, recalibration attempts, the pass threshold, and the overall result.
+
+
 This is why, post validation, the user is presented with a colour coded banner message at the top indicating whether the calibration quality was good (green) or prompts the user to perform calibration again (red) above the scatter plot.
 
 Underneath the scatter plot, the user is also presented with numerical outputs for each calibration-quality metric, namely: gaze accuracy and gaze precision in degrees, valid data yield as a percentage, the number of points detected, whether the calibration succeeded on the first attempt, the number of recalibration attempts, the pass threshold, and the overall calibration status (pass or fail), as seen Figure 3.18 and Figure 3.19, along with a colour coded banner message at the top indicating success or failure of the validation.
 
--\includegraphics[max width=\linewidth,max totalheight=0.9\textheight]{media/media/image28.png}
-
-\phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.18}Eye-tracking calibration, Step 4: Validation, showing a successful calibration.}%
-\textbf{Figure 3.18} Eye-tracking calibration, Step 4: Validation, showing a successful calibration. A green success banner sits above a scatter plot of the five-point grid, showing the intended gaze target against the computed gaze position for each point. A collapsible table below reports the colour-coded metrics: gaze accuracy, gaze precision, valid data yield, points detected, recalibration attempts, the pass threshold, and the overall result.
 
 \includegraphics[max width=\linewidth,max totalheight=0.9\textheight]{media/media/image25.png}
 
@@ -1087,7 +1092,7 @@ It must be noted that Sensa\textquotesingle s validation procedure is custom-bui
 
 To ensure consistency in design, as shown in Figure 3.20, the biometric sensor calibration also follows a consistent four-step pattern, visible a stepper across the top of every screen (Placement, Connect, Signal Check, Baseline), always keeping the researcher informed of which step is active and what remains. The flow is described here for the electrodermal activity (EDA, or GSR) sensor, the biosignal modality scored in this study; the same four-stage structure is applied to the other supported biosensors. As with the readiness checklist and eye-tracker positioning, each step gates progression: the researcher cannot advance until the current stage\textquotesingle s requirements are confirmed, which prevents baseline recording from an improperly prepared or disconnected state (error prevention; see Chapter 3.6).
 
-\begin{center}\includegraphics[max width=\linewidth,max totalheight=0.85\textheight]{diagrams/figure-3.20.pdf}\end{center}
+\begin{center}\includegraphics[max width=0.85\linewidth,max totalheight=0.85\textheight]{diagrams/figure-3.20.pdf}\end{center}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.20}EDA sensor calibration subflow.}%
 \textbf{Figure 3.20} EDA sensor calibration subflow. The diagram traces the user\textquotesingle s journey from starting EDA sensor calibration through to a successful calibration.
@@ -1523,11 +1528,11 @@ A 30-second resting EDA baseline was recorded in both conditions to check whethe
 All dependent variables summarized in Table 4.2 were compared within participants across the two conditions (fragmented vs unified).
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1753}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.3187}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1195}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1514}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2151}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1748}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.3166}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1235}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1510}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2142}}@{}}
 \toprule\noalign{}
 \begin{minipage}[t]{\linewidth}\raggedright
 \textbf{Construct}
@@ -1725,11 +1730,11 @@ One measure, first-pass calibration success, could not be analysed with the test
 Since the study tests several hypotheses mapping to their own distinct research question, the analysis applies a Bonferroni correction within each hypothesis family, as opposed to applying it across the whole set of tests. Correcting across every measure at once would treat conceptually distinct questions like setup speed, workload, usability, breakdowns, and calibration quality all as a single family, and at this sample size would remove almost all statistical power. Correcting within each hypothesis keeps the correction meaningful while respecting that each hypothesis tests a different construct. Table 4.3 summarises the resulting families and their adjusted thresholds.
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1019}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1725}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.4939}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1045}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1722}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.4919}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.0627}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1490}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1488}}@{}}
 \toprule\noalign{}
 \begin{minipage}[t]{\linewidth}\raggedright
 \textbf{Hypothesis}
@@ -2339,8 +2344,8 @@ Paired t-test
 \endlastfoot
 \end{longtable}
 
-\phantomsection\addcontentsline{lot}{table}{\protect\numberline{5.2}Shapiro-Wilk tests of normality on the within-participant difference scores, with the test applied to each measure.}%
-\textbf{Table 5.2} Shapiro-Wilk tests of normality on the within-participant difference scores, with the test applied to each measure. Only gaze accuracy and gaze precision departed from normality (p \textless{} .05) and were analysed with the Wilcoxon signed-rank test; all other measures met the assumption and used a paired-samples t-test
+\phantomsection\addcontentsline{lot}{table}{\protect\numberline{5.2}Shapiro-Wilk tests of normality.}%
+\textbf{Table 5.2} Shapiro-Wilk tests of normality. The tests were applied to the within-participant difference scores of each measure. Only gaze accuracy and gaze precision departed from normality (p \textless{} .05) and were analysed with the Wilcoxon signed-rank test; all other measures met the assumption and used a paired-samples t-test
 
 Multiple comparisons were controlled with a Bonferroni correction applied within each hypothesis family, as set out in Chapter 4.6.1.4. The H1 timing family uses an adjusted threshold of α = .025 and the four-test H5 calibration-quality family uses α = .0125, while H2, H3, and H4 each rest on a single test at α = .05. Calibration confidence and the EDA baseline are reported descriptively and are not part of the corrected confirmatory analysis.
 
@@ -2385,7 +2390,7 @@ Perceived usability was significantly higher in the unified condition (M = 73.33
 \begin{center}\includegraphics[width=0.62\linewidth]{media/media/image24.png}\end{center}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{5.4}SUS scores by condition.}%
-\textbf{Figure 5.4} SUS scores by condition. Raincloud plot (N = 12) for the fragmented and unified conditions. Higher values indicate greater perceived usability.{[}add a line dash for 68?{]}
+\textbf{Figure 5.4} SUS scores by condition. Raincloud plot (N = 12) for the fragmented and unified conditions. Higher values indicate greater perceived usability.
 
 \hypertarget{calibration-confidence-secondary-measure}{%
 \subsubsection{5.1.4 Calibration confidence (secondary measure)}\label{calibration-confidence-secondary-measure}}
@@ -2501,8 +2506,8 @@ Request for clarification
 \endlastfoot
 \end{longtable}
 
-\phantomsection\addcontentsline{lot}{table}{\protect\numberline{5.3}Interaction breakdowns by category and condition (N = 12 per condition).}%
-\textbf{Table 5.3} Interaction breakdowns by category and condition (N = 12 per condition). Totals are the summed count across all participants; M is the mean per participant. The category counts sum to the total breakdown count analysed under H4.
+\phantomsection\addcontentsline{lot}{table}{\protect\numberline{5.3}Interaction breakdowns by category and condition.}%
+\textbf{Table 5.3} Interaction breakdowns by category and condition. Counts cover N = 12 participants per condition. Totals are the summed count across all participants; M is the mean per participant. The category counts sum to the total breakdown count analysed under H4.
 
 \hypertarget{calibration-quality-h5}{%
 \subsubsection{5.1.6 Calibration quality (H5)}\label{calibration-quality-h5}}
@@ -2579,10 +2584,8 @@ H5 held that the unified workflow would achieve calibration quality comparable t
 \endlastfoot
 \end{longtable}
 
-\begin{quote}
-\phantomsection\addcontentsline{lot}{table}{\protect\numberline{5.4}First-pass calibration success: two-by-two contingency of first-attempt outcomes in the fragmented and unified conditions, with the exact McNemar test (N = 12; six discordant pairs).}%
-\textbf{Table 5.4} First-pass calibration success: two-by-two contingency of first-attempt outcomes in the fragmented and unified conditions, with the exact McNemar test (N = 12; six discordant pairs).
-\end{quote}
+\phantomsection\addcontentsline{lot}{table}{\protect\numberline{5.4}First-pass calibration success.}%
+\textbf{Table 5.4} First-pass calibration success. Two-by-two contingency of first-attempt outcomes in the fragmented and unified conditions, with the exact McNemar test (N = 12; six discordant pairs).
 
 After Bonferroni correction across the four-test family, none of the four dimensions reached the adjusted threshold of α = .0125. No significant differences were detected in gaze accuracy, valid data yield, or first-pass calibration success, and first-pass success was descriptively no lower in the unified condition, as H5 predicted. Gaze precision was the exception: the unified condition was poorer, with a difference that was significant before correction but not after it. H5 is therefore supported with one qualification concerning gaze precision, whose possible causes are examined in the Discussion (Chapter 6.5).
 
@@ -2602,13 +2605,13 @@ The table reports each measure with its descriptive statistics, the reported tes
 
 \begingroup\let\small\footnotesize\setlength{\tabcolsep}{4pt}
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1734}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1508}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1282}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1357}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.0603}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.2111}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1206}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1713}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1491}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1263}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1339}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.0602}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.2062}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1330}}@{}}
 \toprule\noalign{}
 \begin{minipage}[t]{\linewidth}\raggedright
 \textbf{Measure}
@@ -2782,8 +2785,8 @@ comparability
 \end{longtable}
 \endgroup
 
-\phantomsection\addcontentsline{lot}{table}{\protect\numberline{5.5}Paired comparisons between conditions, with exact p-values, effect sizes and their 95 percent confidence intervals, family-wise thresholds, and outcomes after per-hypothesis Bonferroni correction (N = 12).}%
-\textbf{Table 5.5} Paired comparisons between conditions, with exact p-values, effect sizes and their 95 percent confidence intervals, family-wise thresholds, and outcomes after per-hypothesis Bonferroni correction (N = 12).
+\phantomsection\addcontentsline{lot}{table}{\protect\numberline{5.5}Paired comparisons between conditions.}%
+\textbf{Table 5.5} Paired comparisons between conditions. Reported are exact p-values, effect sizes with 95 percent confidence intervals, family-wise thresholds, and the outcomes after per-hypothesis Bonferroni correction (N = 12).
 
 After per-hypothesis Bonferroni correction, the picture by hypothesis is as follows. For H1, neither timing measure reached the corrected threshold: setup time did not differ significantly, and calibration time favoured the unified workflow with a medium-to-large effect and an interval excluding zero but did not meet the Bonferroni-adjusted threshold of α = .025. H2, H3, and H4 were each supported: workload fell, usability rose, and breakdowns fell sharply, the last the largest effect in the study, all with confidence intervals excluding zero. For H5, no dimension reached the corrected threshold. No significant differences were detected in gaze accuracy, valid data yield, or first-pass calibration success, with first-pass success descriptively no lower in the unified condition. Gaze precision was the exception: the unified condition was poorer, with a difference that was significant before correction but not after it. H5 is therefore supported with one qualification concerning gaze precision. Calibration confidence and the EDA baseline, which are not tied to any hypothesis, showed small differences with intervals spanning zero.
 
@@ -2934,13 +2937,13 @@ This thesis set out to build and empirically evaluate an integrated, usability-c
 
 The study used a within-subjects, counterbalanced design with twelve participants, each completing both workflows. It combined objective performance measures, validated subjective instruments, eye-tracking calibration indicators, EDA setup and baseline measures, and a reflexive thematic analysis of participants\textquotesingle{} written accounts.
 
-For RQ1, which examined the steps and breakdowns that contributed most to completion time, the findings point primarily to uncertainty rather than error. Hesitations and requests for clarification (both indicating that participants were unsure whether a step had been completed successfully or what they should do next) accounted for nearly the entire difference between the two workflows. By contrast, explicit procedural errors were rare in both conditions. The main cost of the fragmented workflow, therefore, was not incorrect action but the uncertainty created when participants were left to determine the system state and the next step for themselves.
+\textbf{For RQ1,} which examined the steps and breakdowns that contributed most to completion time, the findings point primarily to uncertainty rather than error. Hesitations and requests for clarification (both indicating that participants were unsure whether a step had been completed successfully or what they should do next) accounted for nearly the entire difference between the two workflows. By contrast, explicit procedural errors were rare in both conditions. The main cost of the fragmented workflow, therefore, was not incorrect action but the uncertainty created when participants were left to determine the system state and the next step for themselves.
 
-For RQ2, the unified workflow reduced calibration time significantly, with a medium-to-large effect. Setup time was also shorter in the unified condition, although this difference was not statistically significant. The findings therefore provide clear evidence of improved calibration efficiency, but only tentative evidence of faster setup. Both measures favoured the unified workflow, but after correction for multiple comparisons neither difference remained statistically significant. The study therefore cannot confirm that the unified workflow is faster, although both measures pointed that way, and the reduction was clearer for calibration time than for setup time. A likely interpretation, though not something the study establishes, is that this reflects the calibration phase being where the fragmented workflow\textquotesingle s tool-switching is densest.
+\textbf{For RQ2,} the unified workflow reduced calibration time significantly, with a medium-to-large effect. Setup time was also shorter in the unified condition, although this difference was not statistically significant. The findings therefore provide clear evidence of improved calibration efficiency, but only tentative evidence of faster setup. Both measures favoured the unified workflow, but after correction for multiple comparisons neither difference remained statistically significant. The study therefore cannot confirm that the unified workflow is faster, although both measures pointed that way, and the reduction was clearer for calibration time than for setup time. A likely interpretation, though not something the study establishes, is that this reflects the calibration phase being where the fragmented workflow\textquotesingle s tool-switching is densest.
 
-For RQ3, the effect on workload, usability, and confidence, the results differ across the three measures. Perceived workload was roughly halved and perceived usability rose from below to above the established benchmark, both large effects on validated instruments. Calibration confidence, by contrast, did not change on average. The qualitative data explains this flat average: making the system state visible could raise confidence by confirming progress, but it could also lower confidence by revealing a problem that would have gone unnoticed in the fragmented workflow, and these two movements offset each other across participants.
+\textbf{For RQ3,} the effect on workload, usability, and confidence, the results differ across the three measures. Perceived workload was roughly halved and perceived usability rose from below to above the established benchmark, both large effects on validated instruments. Calibration confidence, by contrast, did not change on average. The qualitative data explains this flat average: making the system state visible could raise confidence by confirming progress, but it could also lower confidence by revealing a problem that would have gone unnoticed in the fragmented workflow, and these two movements offset each other across participants.
 
-For RQ4, the effect on calibration quality, the two workflows showed no significant differences in gaze accuracy, valid data yield, or first-pass calibration success, which is what would be expected given that the same calibration engine operates in both conditions. Gaze precision was the exception: it was poorer in the unified condition, and this was driven by two participants who also recorded the lowest valid-data yields in that condition. Since low yield means fewer usable samples, and unstable tracking would tend to reduce both the number of samples and their consistency, the probable reading is that these two sessions had less stable tracking and that the workflow itself did not worsen precision. The same association between low yield and poorer precision also appeared in the fragmented condition, where the guided workflow was absent. H5 is therefore supported for gaze accuracy, valid data yield, and first-pass success, and qualified for gaze precision, whose cause the study cannot resolve.
+\textbf{For RQ4,} the effect on calibration quality, the two workflows showed no significant differences in gaze accuracy, valid data yield, or first-pass calibration success, which is what would be expected given that the same calibration engine operates in both conditions. Gaze precision was the exception: it was poorer in the unified condition, and this was driven by two participants who also recorded the lowest valid-data yields in that condition. Since low yield means fewer usable samples, and unstable tracking would tend to reduce both the number of samples and their consistency, the probable reading is that these two sessions had less stable tracking and that the workflow itself did not worsen precision. The same association between low yield and poorer precision also appeared in the fragmented condition, where the guided workflow was absent. H5 is therefore supported for gaze accuracy, valid data yield, and first-pass success, and qualified for gaze precision, whose cause the study cannot resolve.
 
 Taken together, restructuring the onboarding and calibration of a multi-sensor setup as a single guided flow produced large improvements in perceived workload, perceived usability, and interaction stability. It also reduced calibration time, though not by a margin the study can confirm. It did this without any detected loss of gaze accuracy, valid data yield, or first-pass calibration success.
 
@@ -3753,6 +3756,7 @@ Session start time: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ Session end time: \_\_\_\_\_\
 
 Total session duration: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
+\Needspace{14\baselineskip}
 \hypertarget{session-timestamps-for-condition}{%
 \subsubsection{\texorpdfstring{Session Timestamps for condition: }{Session Timestamps for condition: }}\label{session-timestamps-for-condition}}
 
@@ -3876,6 +3880,7 @@ Session start time: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ Session end time: \_\_\_\_\_\
 
 Total session duration: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
+\Needspace{14\baselineskip}
 \hypertarget{session-timestamps-for-condition-1}{%
 \subsubsection{\texorpdfstring{Session Timestamps for condition: }{Session Timestamps for condition: }}\label{session-timestamps-for-condition-1}}
 
@@ -3926,6 +3931,7 @@ Task fully completed
 \endlastfoot
 \end{longtable}
 
+\Needspace{14\baselineskip}
 \hypertarget{first-pass-calibration-success-h5}{%
 \subsubsection{First-pass calibration success (H5)}\label{first-pass-calibration-success-h5}}
 
@@ -4005,6 +4011,7 @@ Requests for clarification
 
 \textbf{Total breakdown count (sum of all rows above): \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_}
 
+\Needspace{14\baselineskip}
 \hypertarget{captured-values-recorded-not-scored-for-h5-quality}{%
 \subsubsection{Captured values (recorded, not scored for H5 quality)}\label{captured-values-recorded-not-scored-for-h5-quality}}
 
@@ -4196,7 +4203,7 @@ Participants rated the following on a 7-point scale (1 = Not at all confident, 7
 
 This is the printed reference extract available to participants during eye-tracker calibration in the fragmented condition. It documents the Tobii Eye Tracking software used to calibrate the eye tracker in this study. Reproduced from Dell Inc. (2016).
 
-\emph{{[}Placeholder: drop the PDF into appendix/appendix-H.pdf and re-run convert.sh{]}}
+\includepdf[pages=-,width=\textwidth,pagecommand={}]{appendix/appendix-H.pdf}
 
 
 \clearpage
@@ -4205,7 +4212,7 @@ This is the printed reference extract available to participants during eye-track
 
 This is the printed electrode-placement reference sheet available to participants during EDA setup in the fragmented condition. The same illustration was presented on screen in the unified workflow and on this printed sheet in the fragmented workflow. Reproduced from PLUX Wireless Biosignals, S.A. (2020, Fig. 3).
 
-\emph{{[}Placeholder: drop the PDF into appendix/appendix-I.pdf and re-run convert.sh{]}}
+\includepdf[pages=-,width=\textwidth,pagecommand={}]{appendix/appendix-I.pdf}
 
 
 \clearpage
@@ -4221,6 +4228,7 @@ All participant extracts are reproduced verbatim from the typed written response
 \hypertarget{part-a.-codebook-30-codes}{%
 \subsubsection{Part A. Codebook (30 codes)}\label{part-a.-codebook-30-codes}}
 
+\Needspace{14\baselineskip}
 \hypertarget{deductive-codes-defined-before-analysis}{%
 \paragraph{Deductive codes (defined before analysis)}\label{deductive-codes-defined-before-analysis}}
 
@@ -4326,8 +4334,10 @@ The workflow catching or recovering from mistakes, versus letting them happen
 \endlastfoot
 \end{longtable}
 
+\phantomsection\addcontentsline{lot}{table}{\protect\numberline{J.1}Deductive codebook.}%
 \textbf{Table J.1} Deductive codebook. The twelve codes and their definitions, derived before analysis from the interaction-breakdown categories, the usability constructs, and the Nielsen heuristics.
 
+\Needspace{14\baselineskip}
 \hypertarget{inductive-codes-developed-from-the-data}{%
 \paragraph{Inductive codes (developed from the data)}\label{inductive-codes-developed-from-the-data}}
 
@@ -4475,6 +4485,7 @@ Working difficulties out alone, sometimes framed as mastery
 \endlastfoot
 \end{longtable}
 
+\phantomsection\addcontentsline{lot}{table}{\protect\numberline{J.2}Inductive codebook.}%
 \textbf{Table J.2} Inductive codebook. The eighteen codes and their definitions, developed during analysis from the participants\textquotesingle{} written responses and the observation notes.
 
 \hypertarget{part-b.-coded-data-extracts-all-instances}{%
@@ -5754,11 +5765,12 @@ P02, P04, P06, P07
 \endlastfoot
 \end{longtable}
 
-\hypertarget{table-j.3-code-application-by-participant.-the-participants-in-whom-each-of-the-thirty-codes-appeared-split-by-condition.}{%
-\paragraph{Table J.3 Code application by participant. The participants in whom each of the thirty codes appeared, split by condition.}\label{table-j.3-code-application-by-participant.-the-participants-in-whom-each-of-the-thirty-codes-appeared-split-by-condition.}}
+\phantomsection\addcontentsline{lot}{table}{\protect\numberline{J.3}Code application by participant.}%
+\textbf{Table J.3} Code application by participant. The participants in whom each of the thirty codes appeared, split by condition.
 
 The pattern is directional and consistent with the quantitative results: the fragmented-heavy codes cluster around disconnected tools and hidden state (I1, I2, I3, I4, I13, D2, D6), while the unified-heavy codes cluster around visible feedback and guidance (I5, I6, I7, I8, D5, D8). Several codes are genuinely cross-cutting (I10, I11, I15, I16), and these are the residual problems that the unified workflow did not resolve.
 
+\Needspace{14\baselineskip}
 \hypertarget{part-d.-consolidation-into-the-five-themes}{%
 \subsubsection{Part D. Consolidation into the five themes}\label{part-d.-consolidation-into-the-five-themes}}
 
@@ -5831,17 +5843,17 @@ Gaze accuracy and gaze precision are reported in degrees of visual angle. Intera
 \begin{landscape}
 \begingroup\let\small\footnotesize\setlength{\tabcolsep}{4pt}
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0738}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.1001}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.1001}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.1317}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.1317}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0685}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0685}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0422}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0422}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.1106}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.1106}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0900}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0963}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0956}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.1277}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.1277}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0684}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0684}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0450}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0450}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.1080}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.1080}}@{}}
 \toprule\noalign{}
 \begin{minipage}[t]{\linewidth}\raggedright
 \textbf{Participant}
@@ -6194,6 +6206,7 @@ P12
 \endlastfoot
 \end{longtable}
 
+\phantomsection\addcontentsline{lot}{table}{\protect\numberline{K.1}Per-participant efficiency and subjective outcomes.}%
 \textbf{Table K.1} Per-participant efficiency and subjective outcomes. Setup time, calibration time, Raw NASA-TLX, System Usability Scale, and calibration confidence for each participant (N = 12) in both conditions.
 \endgroup
 \end{landscape}
@@ -6201,17 +6214,17 @@ P12
 \begin{landscape}
 \begingroup\let\small\footnotesize\setlength{\tabcolsep}{4pt}
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0618}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0662}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0662}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.1059}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.1059}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.1104}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.1104}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.1104}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.1104}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0662}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0662}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0900}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0825}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0825}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0931}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0931}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0985}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0985}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0884}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0884}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0825}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 20\tabcolsep) * \real{0.0825}}@{}}
 \toprule\noalign{}
 \begin{minipage}[t]{\linewidth}\raggedright
 \textbf{Participant}
@@ -6564,7 +6577,8 @@ Pass
 \endlastfoot
 \end{longtable}
 
-\textbf{Table K.2 Per-participant interaction breakdowns and eye-tracking calibration quality. Breakdown counts, gaze accuracy, gaze precision, valid data yield, and first-pass calibration success for each participant (N = 12) in both conditions.}
+\phantomsection\addcontentsline{lot}{table}{\protect\numberline{K.2}Per-participant interaction breakdowns and eye-tracking calibration quality.}%
+\textbf{Table K.2} Per-participant interaction breakdowns and eye-tracking calibration quality. Breakdown counts, gaze accuracy, gaze precision, valid data yield, and first-pass calibration success for each participant (N = 12) in both conditions.
 \endgroup
 \end{landscape}
 
@@ -6684,7 +6698,8 @@ P12
 \endlastfoot
 \end{longtable}
 
-\textbf{Table K.3 Per-participant mean resting EDA baseline. Mean resting electrodermal activity in microsiemens for each participant (N = 12) in both conditions.}
+\phantomsection\addcontentsline{lot}{table}{\protect\numberline{K.3}Per-participant mean resting EDA baseline.}%
+\textbf{Table K.3} Per-participant mean resting EDA baseline. Mean resting electrodermal activity in microsiemens for each participant (N = 12) in both conditions.
 
 \clearpage
 \hypertarget{ai-usage-disclosure}{%

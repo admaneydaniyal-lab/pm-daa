@@ -23,6 +23,8 @@ SMALL_IMAGE_PX = 900
 PLOT_WIDTH = r"0.62\linewidth"
 # A longtable with at least this many columns is treated as "wide".
 WIDE_TABLE_COLS = 6
+# Per-diagram display width overrides (default \linewidth).
+DIAGRAM_WIDTHS = {"3.20": "0.85\\linewidth"}
 
 
 def png_width(path):
@@ -39,6 +41,9 @@ def png_width(path):
 
 def resize_images(text, base_dir):
     """Size every \\includegraphics by whether its image is a plot or a shot."""
+    # Strip stray characters Word left glued to an image line (e.g. a lone
+    # "-" or "1" before \includegraphics) — they render as debris in the PDF.
+    text = re.sub(r"(?m)^[-\d]\s*(?=\\includegraphics)", "", text)
     img_re = re.compile(r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}")
 
     def repl(m):
@@ -76,24 +81,44 @@ def _visual_len(cell):
     return len(t.strip())
 
 
-def _rebalance_columns(block, ncols):
+def _rebalance_columns(block, ncols, char_frac=0.0095):
     """Reassign p{} column widths in proportion to each column's longest cell.
 
     Cell lengths are capped so a wall-of-text column (which wraps anyway)
-    doesn't starve the short ID/value columns beside it — it still gets the
-    lion's share, just not everything.
+    doesn't starve the short ID/value columns beside it. Each column is also
+    floored at the width of its longest unbreakable word (roughly char_frac
+    of the text width per character), so headers like "Participant" or
+    "Breakdowns" can't poke into the next column.
     """
     cells = _CELL_RE.findall(block)
     if not cells or len(cells) % ncols != 0:
         return block  # unexpected shape; leave Pandoc's widths alone
     maxlen = [0] * ncols
+    maxword = [0] * ncols
     for i, cell in enumerate(cells):
         col = i % ncols
         maxlen[col] = max(maxlen[col], min(_visual_len(cell), 60))
+        plain = re.sub(r"\\[a-zA-Z]+\s*|[{}]", "", cell)
+        for w in plain.split():
+            maxword[col] = max(maxword[col], len(w))
     pad = 3  # smooths out very short columns so they keep a sane minimum
     weights = [m + pad for m in maxlen]
     total = float(sum(weights))
-    fracs = [round(w / total * 0.98, 4) for w in weights]
+    fracs = [w / total * 0.98 for w in weights]
+
+    # enforce longest-word floors, taking the excess from the roomier columns
+    floors = [(w + 1) * char_frac for w in maxword]
+    for _ in range(3):  # a few passes are plenty to converge
+        deficit = sum(max(f, fl) for f, fl in zip(fracs, floors)) - 0.98
+        fracs = [max(f, fl) for f, fl in zip(fracs, floors)]
+        if deficit <= 0:
+            break
+        slack = [max(f - fl, 0.0) for f, fl in zip(fracs, floors)]
+        s = sum(slack)
+        if s <= 0:
+            break
+        fracs = [f - deficit * (sl / s) for f, sl in zip(fracs, slack)]
+    fracs = [round(f, 4) for f in fracs]
 
     it = iter(fracs)
     new_block, n = _REAL_RE.subn(
@@ -122,7 +147,10 @@ def shrink_wide_tables(text):
         cap_above, block, cap_below = m.group(1), m.group(2), m.group(3)
         ncols = block.count(r"\arraybackslash}p{")  # one per Pandoc p-column
         if ncols >= 2:
-            block = _rebalance_columns(block, ncols)
+            # landscape pages are wider, so a character eats a smaller
+            # fraction of the line there
+            block = _rebalance_columns(
+                block, ncols, char_frac=0.0075 if ncols >= 10 else 0.0095)
         if ncols >= 10:  # per-participant data tables: rotate to landscape
             inner = "\n\n".join(p for p in (cap_above, block, cap_below) if p)
             return ("\\begin{landscape}\n"
@@ -150,14 +178,97 @@ def fix_url_breaking(text):
 
 
 def demote_caption_headings(text):
-    """Word styled some table captions as headings (e.g. Table K.2/K.3 are
-    \\subsubsection). Demote them to plain bold caption paragraphs so they
-    don't pollute the generated table of contents."""
+    """Word styled some table captions as headings (Table K.2/K.3 are
+    \\subsubsections, Table J.3 a \\paragraph). Demote them to normal caption
+    paragraphs — bolding only the "Table X.Y" label, per the caption
+    convention — so they don't pollute the generated table of contents."""
     pat = re.compile(
         r"\\hypertarget\{[^}]*\}\{%\n"
-        r"\\(?:sub)+section\{(Table\s+[A-Z0-9]+\.\d+[^{}]*)\}"
-        r"\\label\{[^}]*\}\}")
-    return pat.sub(lambda m: "\\textbf{%s}" % m.group(1), text)
+        r"\\(?:(?:sub)+section|paragraph)\{(Table\s+[A-Z0-9]+\.\d+)"
+        r"([^{}]*)\}\\label\{[^}]*\}\}")
+    text = pat.sub(
+        lambda m: "\\textbf{%s}%s" % (m.group(1), m.group(2).rstrip()), text)
+    # Word sometimes indents a caption, which Pandoc turns into a quote
+    # environment (renders centred-ish). Unwrap those.
+    text = re.sub(
+        r"\\begin\{quote\}\n(\\textbf\{Table\s[^\n]*)\n\\end\{quote\}",
+        lambda m: m.group(1), text)
+    return text
+
+
+# Caption rewrites: give over-long first sentences a short title sentence so
+# the List of Tables stays scannable. Content is preserved, just re-punctuated.
+CAPTION_REWRITES = [
+    ("\\textbf{Table 5.2} Shapiro-Wilk tests of normality on the "
+     "within-participant difference scores, with the test applied to each "
+     "measure.",
+     "\\textbf{Table 5.2} Shapiro-Wilk tests of normality. The tests were "
+     "applied to the within-participant difference scores of each measure."),
+    ("\\textbf{Table 5.3} Interaction breakdowns by category and condition "
+     "(N = 12 per condition).",
+     "\\textbf{Table 5.3} Interaction breakdowns by category and condition. "
+     "Counts cover N = 12 participants per condition."),
+    ("\\textbf{Table 5.4} First-pass calibration success: two-by-two "
+     "contingency of first-attempt outcomes in the fragmented and unified "
+     "conditions, with the exact McNemar test (N = 12; six discordant "
+     "pairs).",
+     "\\textbf{Table 5.4} First-pass calibration success. Two-by-two "
+     "contingency of first-attempt outcomes in the fragmented and unified "
+     "conditions, with the exact McNemar test (N = 12; six discordant "
+     "pairs)."),
+    ("\\textbf{Table 5.5} Paired comparisons between conditions, with exact "
+     "p-values, effect sizes and their 95 percent confidence intervals, "
+     "family-wise thresholds, and outcomes after per-hypothesis Bonferroni "
+     "correction (N = 12).",
+     "\\textbf{Table 5.5} Paired comparisons between conditions. Reported "
+     "are exact p-values, effect sizes with 95 percent confidence "
+     "intervals, family-wise thresholds, and the outcomes after "
+     "per-hypothesis Bonferroni correction (N = 12)."),
+]
+
+
+def apply_text_edits(text):
+    """Small content edits requested on the thesis text. Each is keyed on the
+    docx wording, so it applies cleanly after every re-conversion and simply
+    no-ops once the docx itself is updated."""
+    for old, new in CAPTION_REWRITES:
+        text = text.replace(old, new)
+    # Figure 5.4: drop the author's leftover note from the caption.
+    text = text.replace("{[}add a line dash for 68?{]}", "")
+    # Chapter 7.1: bold the research-question lead-ins.
+    for i in "1234":
+        text = re.sub(r"(?m)^For RQ%s," % i,
+                      r"\\textbf{For RQ%s,}" % i, text)
+    return text
+
+
+def move_figure_318(text):
+    """Move Figure 3.18 (image + caption) to after the 3.3.4.5 result-
+    visualisation paragraph, where the text first discusses it."""
+    block_pat = re.compile(
+        r"\n\\includegraphics\[[^\]]*\]\{media/[^}]*\}\n\n"
+        r"\\textbf\{Figure 3\.18\}[^\n]*\n")
+    m = block_pat.search(text)
+    anchor = "visibility of system status (Nielsen, 1994)."
+    if not m or anchor not in text:
+        return text, False
+    block = m.group(0)
+    text = block_pat.sub("\n", text, count=1)
+    pos = text.find(anchor) + len(anchor)
+    return text[:pos] + "\n" + block + text[pos:], True
+
+
+def keep_captions_with_tables(text):
+    """Reserve space before a heading or caption that directly precedes a
+    longtable, so titles like "Inductive codes" (Appendix J) don't strand at
+    the bottom of the previous page."""
+    pat = re.compile(
+        r"((?:\\hypertarget\{[^}]*\}\{%\n"
+        r"\\(?:paragraph|subsubsection)\{[^\n]*\}\}\n|"
+        r"\\textbf\{Table\s[^\n]*\n))"
+        r"(\n\\begin\{longtable\})")
+    return pat.sub(lambda m: "\\Needspace{14\\baselineskip}\n"
+                   + m.group(1) + m.group(2), text)
 
 
 def fix_formulas(text):
@@ -183,7 +294,7 @@ def fix_formulas(text):
 
 
 _CAPTION_RE = re.compile(
-    r"^\\textbf\{(Figure|Table)\s+(\d+\.\d+)[^\n]*", re.MULTILINE)
+    r"^\\textbf\{(Figure|Table)\s+((?:\d+|[A-Z])\.\d+)[^\n]*", re.MULTILINE)
 
 
 def insert_diagrams(text, base_dir):
@@ -209,9 +320,10 @@ def insert_diagrams(text, base_dir):
         if any("includegraphics" in ln for ln in before):
             return m.group(0)
         inserted.append(num)
-        return ("\\begin{center}\\includegraphics[max width=\\linewidth,"
+        width = DIAGRAM_WIDTHS.get(num, "\\linewidth")
+        return ("\\begin{center}\\includegraphics[max width=%s,"
                 "max totalheight=0.85\\textheight]{diagrams/figure-%s.pdf}"
-                "\\end{center}\n\n%s" % (num, m.group(0)))
+                "\\end{center}\n\n%s" % (width, num, m.group(0)))
 
     return _CAPTION_RE.sub(repl, text), inserted
 
@@ -225,7 +337,8 @@ def add_figure_table_lists(text):
         kind, num = m.group(1), m.group(2)
         # first sentence of the caption as plain text (LaTeX-safe for .lof/.lot)
         cap = m.group(0)
-        cap = re.sub(r"^\\textbf\{(Figure|Table)\s+[\d.]+\s*", "", cap)
+        cap = re.sub(r"^\\textbf\{(Figure|Table)\s+(?:\d+|[A-Z])\.\d+\}?\s*",
+                     "", cap)
         cap = cap.split(". ")[0]
         cap = cap.replace("\\%", "%")              # unescape first,
         cap = re.sub(r"\\[a-zA-Z]+\s*", "", cap)   # drop \textbf etc.
@@ -405,10 +518,13 @@ def main():
 
     text = fix_url_breaking(text)
     text = demote_caption_headings(text)
+    text = apply_text_edits(text)
     text = fix_formulas(text)
     text = align_cells_top(text)
     text = resize_images(text, base_dir)
+    text, moved_318 = move_figure_318(text)
     text = shrink_wide_tables(text)
+    text = keep_captions_with_tables(text)
     text, diagrams = insert_diagrams(text, base_dir)
     text, lists_done = add_figure_table_lists(text)
     text, abbr_done = inject_abbreviations(text, base_dir)
@@ -431,6 +547,7 @@ def main():
     print("postprocess: appendix PDFs attached: %s"
           % (", ".join(appendices) or "none"))
     print("postprocess: front matter: %s" % fm_notes)
+    print("postprocess: figure 3.18 moved: %s" % moved_318)
     for p in missing:
         print("postprocess: NOTE - awaiting %s" % p)
 
