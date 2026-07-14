@@ -38,6 +38,10 @@ appended scaffold is off by default (pass `--add-references` to restore it).
 | **References** formatted with APA-7 hanging indent | `postprocess.py` | Formats the docx's own "List of References" section |
 | **Appendix PDFs attached** | `appendix/` + `postprocess.py` | Each "[add PDF]" marker becomes `\includepdf` of `appendix/appendix-<letter>.pdf`; a visible placeholder note appears until the file exists |
 | Long URLs/DOIs break across lines | `postprocess.py` | Converts Word's underlined self-links to `\url{}` |
+| **Thesis front matter**: title page, live TOC (indented levels), roman→arabic page numbers, chapter/appendix page breaks | `postprocess.py` | Word's static TOC is replaced by `\tableofcontents`; front matter numbered i, ii, …; Introduction restarts at arabic 1 |
+| Formulas set as display math | `postprocess.py` | The accuracy/precision equations in Chapter 3 |
+| Very wide tables rotated to landscape | `postprocess.py` + `pdflscape` | 10+ column tables (Appendix K) with their captions |
+| Table cells top-aligned | `postprocess.py` | Stops wrapped text floating above its row (Appendix J) |
 
 ## Files
 

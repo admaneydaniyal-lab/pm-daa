@@ -18,7 +18,7 @@
   % ---- Signal check loop ---------------------------------------------------
   \node[blue]    (step3) at (14.2,-4)  {Step 3: Check and Verify Signal Quality};
   \node[decision](live)  at (9.6,-4)   {Is live sensor data and waveform being displayed?};
-  \node[gray]    (rerun) at (5.4,-4)   {Rerun Signal Check};
+  \node[gray]    (rerun) at (4.2,-4)   {Rerun Signal Check};
 
   \draw[flow] (plug) -- (step3);
   \draw[flow] (step3) -- node[elabel,above]{} (live);
@@ -32,7 +32,7 @@
 
   \node[gray]    (rec30) at (14.2,-10.8) {Record a 30 second baseline recording};
   \node[decision](meaneda) at (9.6,-10.8){Mean EDA is computed with positive signal indicators?};
-  \node[gray]    (again) at (5.4,-10.8)  {Record Again};
+  \node[gray]    (again) at (4.2,-10.8)  {Record Again};
   \node[green]   (done)  at (14.2,-14)   {EDA Sensor successfully calibrated};
 
   \draw[flow] (step4) -- (rec30);
