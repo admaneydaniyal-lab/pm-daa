@@ -62,6 +62,17 @@ if compgen -G "diagrams/*.tex" >/dev/null; then
 fi
 
 echo ">> Converting $SRC with Pandoc ..."
+# Preserve any manually-updated images: Pandoc re-extracts the whole media
+# folder from the .docx, so without this it would overwrite hand-edited
+# screenshots. We snapshot the current media/media, let Pandoc regenerate it,
+# then restore the snapshot on top — so edited images always win and any
+# brand-new image from the .docx is still added.
+PRESERVE=""
+if [[ -d "media/media" ]]; then
+  PRESERVE="$(mktemp -d)"
+  cp -a media/media/. "$PRESERVE/"
+fi
+
 PANDOC_ARGS=(
   "$SRC"
   --standalone
@@ -74,6 +85,12 @@ if [[ "$INCLUDE_REFS" -eq 1 ]]; then
   PANDOC_ARGS+=(-A pandoc/references.tex)
 fi
 pandoc "${PANDOC_ARGS[@]}"
+
+if [[ -n "$PRESERVE" ]]; then
+  cp -a "$PRESERVE/." media/media/
+  rm -rf "$PRESERVE"
+  echo ">> Restored manually-updated images (edited images preserved)."
+fi
 
 echo ">> Post-processing (image sizing, wide-table handling) ..."
 python3 postprocess.py document.tex

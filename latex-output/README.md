@@ -77,3 +77,7 @@ The pipeline handles the common cases. A table with genuinely pathological
 proportions (many wide columns that can't all fit even at `\footnotesize`) may
 still need a manual width nudge in `document.tex`; that's the only case that
 isn't fully automatic.
+
+## Manually-updated images
+
+`convert.sh` snapshots `media/media/` before Pandoc re-extracts it and restores the snapshot afterwards, so any image you edit by hand there is preserved across pipeline runs (and brand-new images from an updated .docx are still added). To pull a fresh copy of a specific image back from the .docx, delete your edited file first, then re-run. `media/media - backup/` is your own pristine backup and is not used by the build.
