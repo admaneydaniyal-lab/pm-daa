@@ -373,6 +373,201 @@ def restructure_table_5_1(text):
     return text[:target.start()] + new_table + text[target.end():], True
 
 
+def _k_table_latex(number, title, col_labels, rows, landscape):
+    """Build one Appendix K longtable (Participant + given metric columns)."""
+    ncols = len(col_labels) + 1
+    # Column widths must leave headroom for tabcolsep gaps between columns
+    # (not subtracted from \columnwidth here, unlike Pandoc's own
+    # "(\columnwidth - N\tabcolsep) * \real{X}" columns), or the row overflows
+    # the margin by roughly (ncols-1) * 2*tabcolsep.
+    total = 0.99 - 0.012 * (ncols - 1)
+    p_frac = 0.24 if not landscape else 0.065
+    p_w = total * p_frac
+    rest_w = total - p_w
+    per_col = rest_w / (ncols - 1)
+    widths = [p_w] + [per_col] * (ncols - 1)
+    colspec = "".join(
+        r">{\raggedright\arraybackslash}p{%.4f\columnwidth}" % w for w in widths)
+    header_cells = " & ".join([r"\textbf{Participant}"] +
+                               [r"\textbf{%s}" % c for c in col_labels])
+    body = "\n".join(" & ".join(row) + r" \\" for row in rows)
+    table = (
+        r"\begin{longtable}[]{@{}" + colspec + r"@{}}" "\n"
+        r"\toprule\noalign{}" "\n" + header_cells + r" \\" "\n"
+        r"\midrule\noalign{}" "\n"
+        r"\endhead" "\n"
+        r"\bottomrule\noalign{}" "\n"
+        r"\endlastfoot" "\n" + body + "\n"
+        r"\end{longtable}")
+    # Deliberately no \phantomsection\addcontentsline here: add_figure_table_
+    # lists() adds that uniformly for every "\textbf{Table X.Y}" caption
+    # later in the pipeline. Adding it here too would duplicate the LoT entry.
+    caption = r"\textbf{Table K.%s} %s" % (number, title)
+    if landscape:
+        # pdflscape forces a page break at \end{landscape}: anything after it
+        # lands on a different (portrait) page. Keep the caption INSIDE the
+        # landscape block, right after the table, so both stay together on
+        # the same rotated page.
+        return "\\Needspace{%d\\baselineskip}\n\\begin{landscape}\n" \
+               "\\begingroup\\let\\small\\footnotesize" \
+               "\\setlength{\\tabcolsep}{4pt}\n%s\n\n%s\n" \
+               "\\endgroup\n\\end{landscape}" % (
+                   min(10 + len(rows), 34), table, caption)
+    return "\\Needspace{%d\\baselineskip}\n%s\n\n%s" % (
+        min(10 + len(rows), 34), table, caption)
+
+
+def restructure_appendix_k(text):
+    """Regroup Appendix K's three per-participant tables into four, splitting
+    K.1 (efficiency+subjective+eye-tracking mixed together) by measure type:
+
+      K.1 Efficiency & breakdowns:  Setup time, Calibration time, Breakdowns
+      K.2 Subjective measures:      NASA-TLX, SUS, Confidence
+      K.3 Eye-tracking calibration: Gaze accuracy, precision, valid data
+                                     yield, first-pass success
+      K.4 EDA baseline:             unchanged, renumbered from K.3
+
+    Parsed from the three original longtables (by header fingerprint) rather
+    than hand-copied, so the 12 participants' actual values flow through
+    unchanged; only the grouping and captions change. No-ops once the docx's
+    own Appendix K is restructured to match.
+    """
+    k_open = re.search(
+        r"\\hypertarget\{appendix-k[^}]*\}\{%\n\\subsection\b", text)
+    if not k_open:
+        return text, False
+    tables = list(re.finditer(
+        r"\\begin\{longtable\}.*?\\end\{longtable\}", text, re.DOTALL))
+    tables = [m for m in tables if m.start() > k_open.start()]
+    parsed = []
+    for m in tables:
+        block = m.group(0)
+        ncols = block.count(r"\arraybackslash}p{")
+        if ncols < 2:
+            continue
+        cells = [c.strip() for c in _CELL_RE.findall(block)]
+        if len(cells) < ncols:
+            continue
+        header = [re.sub(r"\\textbf\{([^{}]*)\}", r"\1", c)
+                  for c in cells[:ncols]]
+        if header[0] != "Participant":
+            continue
+        body = cells[ncols:]
+        if len(body) % ncols:
+            continue
+        rows = [body[i:i + ncols] for i in range(0, len(body), ncols)]
+        parsed.append((m, header, rows))
+
+    def find(*required):
+        for entry in parsed:
+            if all(r in entry[1] for r in required):
+                return entry
+        return None
+
+    t1 = find("Setup time (s) F", "Confidence (1-7) U")
+    t2 = find("Breakdowns F", "First-pass U")
+    t3 = find(r"EDA baseline (uS) F")
+    if not (t1 and t2 and t3):
+        return text, False
+
+    def col(entry, name):
+        _, header, rows = entry
+        idx = header.index(name)
+        return [row[idx] for row in rows]
+
+    participants = col(t1, "Participant")
+
+    def pick(entry, names):
+        cols = [col(entry, n) for n in names]
+        return [list(vals) for vals in zip(participants, *cols)]
+
+    k1_labels = ["Setup time (s) F", "Setup time (s) U",
+                 "Calibration time (s) F", "Calibration time (s) U",
+                 "Breakdowns F", "Breakdowns U"]
+    k1_rows = pick(t1, ["Setup time (s) F", "Setup time (s) U",
+                        "Calibration time (s) F", "Calibration time (s) U"])
+    k1_bd = pick(t2, ["Breakdowns F", "Breakdowns U"])
+    k1_rows = [r + b[1:] for r, b in zip(k1_rows, k1_bd)]
+
+    k2_labels = ["NASA-TLX F", "NASA-TLX U", "SUS F", "SUS U",
+                 "Confidence (1-7) F", "Confidence (1-7) U"]
+    k2_rows = pick(t1, k2_labels)
+
+    k3_labels = ["Gaze accuracy (deg) F", "Gaze accuracy (deg) U",
+                 "Gaze precision (deg) F", "Gaze precision (deg) U",
+                 r"Valid data yield (\%) F", r"Valid data yield (\%) U",
+                 "First-pass F", "First-pass U"]
+    k3_rows = pick(t2, k3_labels)
+
+    k4_labels = [r"EDA baseline (uS) F", r"EDA baseline (uS) U"]
+    k4_rows = pick(t3, k4_labels)
+
+    new_tables = "\n\n".join([
+        _k_table_latex("1",
+            "Per-participant efficiency and interaction breakdowns. Setup "
+            "time, calibration time, and interaction breakdown counts for "
+            "each participant (N = 12) in both conditions.",
+            k1_labels, k1_rows, landscape=True),
+        _k_table_latex("2",
+            "Per-participant subjective measures. Raw NASA-TLX, System "
+            "Usability Scale, and calibration confidence for each "
+            "participant (N = 12) in both conditions.",
+            k2_labels, k2_rows, landscape=True),
+        _k_table_latex("3",
+            "Per-participant eye-tracking calibration quality. Gaze "
+            "accuracy, gaze precision, valid data yield, and first-pass "
+            "calibration success for each participant (N = 12) in both "
+            "conditions.",
+            k3_labels, k3_rows, landscape=True),
+        _k_table_latex("4",
+            "Per-participant mean resting EDA baseline. Mean resting "
+            "electrodermal activity in microsiemens for each participant "
+            "(N = 12) in both conditions.",
+            k4_labels, k4_rows, landscape=False),
+    ])
+
+    start = t1[0].start()
+    # the span to replace runs from t1's table through t3's trailing caption
+    t3_end = t3[0].end()
+    tail = text[t3_end:]
+    cap_m = re.match(r"\n\n\\textbf\{Table[^\n]*\n", tail)
+    end = t3_end + (cap_m.end() if cap_m else 0)
+
+    return text[:start] + new_tables + "\n" + text[end:], True
+
+
+def add_appendix_k_reference(text):
+    """Point readers at the four (post-restructure) Appendix K tables from
+    its own intro paragraph. No-ops if that paragraph no longer matches
+    (e.g. the docx has since been edited to include its own reference)."""
+    anchor = ("First-pass calibration success is recorded as pass or fail.")
+    addition = (
+        " Tables K.1 to K.4 report this dataset grouped by measure type: "
+        "K.1 covers setup and calibration efficiency together with "
+        "interaction breakdown counts; K.2 covers the subjective measures "
+        "(NASA-TLX, SUS, and calibration confidence); K.3 covers "
+        "eye-tracking calibration quality; and K.4 covers the EDA baseline.")
+    if anchor not in text or addition in text:
+        return text, False
+    return text.replace(anchor, anchor + addition, 1), True
+
+
+def frame_appendix_info_blocks(text):
+    """Draw a rule above and below the reproduced-form header block (title,
+    Study title/Researcher/Supervisor) that opens Appendix C and D, so it
+    reads as a distinct letterhead rather than blending into the form body.
+    """
+    pat = re.compile(
+        r"(\\textbf\{(?:Participant Information Sheet|Informed Consent Form)"
+        r"\}\n\n"
+        r"\\textbf\{Study title:\}[^\n]*\n\n"
+        r"\\textbf\{Researcher:\}[^\n]*\n\n"
+        r"\\textbf\{Supervisor:\}[^\n]*)")
+    rule = r"\noindent\rule{\linewidth}{0.4pt}"
+    return pat.subn(lambda m: "%s\n\n%s\n\n%s" % (rule, m.group(1), rule),
+                     text)
+
+
 def demote_appendix_subheaders(text):
     """Flatten internal headings inside each appendix artefact (A1, A2, B, C,
     D, E, F, H, I, K) to plain bold text, since these are reproduced forms/
@@ -389,7 +584,7 @@ def demote_appendix_subheaders(text):
         return text, 0
     header_re = re.compile(
         r"\\hypertarget\{[^}]*\}\{%\n"
-        r"\\(subsection|subsubsection|paragraph)\{"
+        r"\\(section|subsection|subsubsection|paragraph)\{"
         r"(?:\\texorpdfstring\{([^{}]*)\}\{[^{}]*\}|([^{}]*))"
         r"\}\\label\{[^}]*\}\}")
     count = 0
@@ -711,6 +906,9 @@ def main():
     text = fix_formulas(text)
     text = align_cells_top(text)
     text, table_5_1_done = restructure_table_5_1(text)
+    text, table_k_done = restructure_appendix_k(text)
+    text, k_ref_added = add_appendix_k_reference(text)
+    text, appendix_blocks_framed = frame_appendix_info_blocks(text)
     text = resize_images(text, base_dir)
     text, moved_318 = move_figure_318(text)
     text = keep_captions_with_tables(text)
@@ -742,6 +940,10 @@ def main():
     print("postprocess: appendix sub-headers demoted: %d"
           % appendix_headers_demoted)
     print("postprocess: table 5.1 restructured: %s" % table_5_1_done)
+    print("postprocess: appendix K restructured (K.1-K.4): %s" % table_k_done)
+    print("postprocess: appendix K body reference added: %s" % k_ref_added)
+    print("postprocess: appendix C/D info blocks framed: %d"
+          % appendix_blocks_framed)
     for p in missing:
         print("postprocess: NOTE - awaiting %s" % p)
 
