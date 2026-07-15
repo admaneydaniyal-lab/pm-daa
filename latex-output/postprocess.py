@@ -257,6 +257,8 @@ def apply_text_edits(text):
         text = text.replace(old, new)
     # Figure 5.4: drop the author's leftover note from the caption.
     text = text.replace("{[}add a line dash for 68?{]}", "")
+    # Figure 3.26: drop the "[NEED TO UPDATE IMAGE]" author tag.
+    text = text.replace("{[}NEED TO UPDATE IMAGE{]} ", "")
     # Chapter 7.1: bold the research-question lead-ins.
     for i in "1234":
         text = re.sub(r"(?m)^For RQ%s," % i,
@@ -328,6 +330,20 @@ def update_disclosure_declaration(text):
     if not pat.search(text):
         return text, False
     return pat.sub(lambda _: _AI_DISCLOSURE, text), True
+
+
+def replace_figure_326_image(text, base_dir):
+    """Point Figure 3.26 at assets/figure-3.26.png when that file exists (the
+    updated Calibration Overview screenshot, supplied separately from the
+    docx). Matches the \\includegraphics that immediately precedes the
+    "Figure 3.26" caption, so it tracks whichever media file Pandoc assigned."""
+    if not os.path.exists(os.path.join(base_dir, "assets", "figure-3.26.png")):
+        return text, False
+    pat = re.compile(
+        r"(\\includegraphics\[[^\]]*\]\{)[^}]+(\}\s*\n\s*\n"
+        r"\\textbf\{Figure 3\.26\})")
+    text, n = pat.subn(r"\1assets/figure-3.26.png\2", text)
+    return text, bool(n)
 
 
 def move_figure_318(text):
@@ -1080,6 +1096,7 @@ def main():
     text, appendix_blocks_framed = frame_appendix_info_blocks(text)
     text = resize_images(text, base_dir)
     text, moved_318 = move_figure_318(text)
+    text, fig326_replaced = replace_figure_326_image(text, base_dir)
     text = shrink_wide_tables(text)
     text = reserve_table_units(text)
     text, diagrams = insert_diagrams(text, base_dir)
@@ -1106,6 +1123,7 @@ def main():
           % (", ".join(appendices) or "none"))
     print("postprocess: front matter: %s" % fm_notes)
     print("postprocess: figure 3.18 moved: %s" % moved_318)
+    print("postprocess: figure 3.26 image replaced: %s" % fig326_replaced)
     print("postprocess: appendix sub-headers demoted: %d"
           % appendix_headers_demoted)
     print("postprocess: table 5.1 restructured: %s" % table_5_1_done)
