@@ -273,6 +273,13 @@ def apply_text_edits(text):
         "the descriptive experience data reported in Chapter 4.2; the contact "
         "and availability items were used for scheduling only and did not "
         "inform analysis.", "")
+    # Appendix C/D study title: match the canonical thesis title (the docx's
+    # consent/info-sheet copy used an older, shorter wording).
+    text = text.replace(
+        "Designing and Evaluating Usability-Centred Calibration Workflows in "
+        "Multi-Modal Physiological Research Platforms",
+        "Designing and Evaluating Usability-Centred Onboarding and Calibration "
+        "Workflows in Multi-Modal Research Platforms")
     return text
 
 
