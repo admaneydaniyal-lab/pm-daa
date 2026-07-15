@@ -139,31 +139,17 @@ def align_cells_top(text):
 # A table+caption reservation bigger than this many lines is skipped: forcing
 # it would either fail outright (content taller than a page) or just push a
 # near-empty page for no benefit, so genuinely huge tables are left to flow.
-MAX_TABLE_NEEDSPACE_LINES = 36
-
-
-def _table_needspace(block, cap_above, cap_below, ncols):
-    """Estimate a \\Needspace reservation covering a table plus its caption,
-    so document-wide, a caption is never stranded on a different page than
-    its table. Returns "" when the estimate is too large to be worth forcing.
-    """
-    cells = _CELL_RE.findall(block)
-    nrows = len(cells) // ncols if ncols else 0
-    cap_text = (cap_above or "") + (cap_below or "")
-    plain_cap = re.sub(r"\\[a-zA-Z]+|[{}]", "", cap_text)
-    cap_lines = max(1.0, len(plain_cap) / (95 if ncols < 10 else 150))
-    body_lines = nrows * 1.55 + 1.6  # body rows + header/rule allowance
-    total = body_lines + cap_lines + 1.5  # small buffer
-    if total > MAX_TABLE_NEEDSPACE_LINES:
-        return ""
-    return "\\Needspace{%.1f\\baselineskip}\n" % total
+# A portrait table with at least this many rows is dropped to \footnotesize so
+# it (plus its heading and caption) has a chance of fitting on a single page.
+TALL_TABLE_ROWS = 22
 
 
 def shrink_wide_tables(text):
-    """Rebalance every longtable's column widths by content; step wide tables
-    down in size, rotate the very widest (10+ columns) onto landscape pages,
-    and reserve enough space that each table stays on one page with its
-    caption wherever that's a reasonable amount of space to reserve."""
+    """Rebalance every longtable's column widths by content and step dense
+    tables down in size: 10+ columns rotate onto landscape pages, 6+ columns
+    (or 22+ rows) drop to \\footnotesize. Reservation to keep a table with its
+    caption/heading on one page is handled separately by reserve_table_units,
+    which runs afterwards on the transformed text."""
     lt_re = re.compile(
         r"(?:(\\textbf\{Table\s[^\n]*)\n\n)?"          # caption above (opt.)
         r"(\\begin\{longtable\}.*?\\end\{longtable\})"  # the table
@@ -173,32 +159,21 @@ def shrink_wide_tables(text):
     def repl(m):
         cap_above, block, cap_below = m.group(1), m.group(2), m.group(3)
         ncols = block.count(r"\arraybackslash}p{")  # one per Pandoc p-column
-        needspace = ""
         if ncols >= 2:
-            # landscape pages are wider, so a character eats a smaller
-            # fraction of the line there
             block = _rebalance_columns(
                 block, ncols, char_frac=0.0075 if ncols >= 10 else 0.0095)
-            # Skip reservation if a heading immediately above (e.g. Appendix
-            # J's "Deductive codes...") already reserved space via
-            # keep_captions_with_tables — avoid double-reserving right after
-            # a heading and forcing it (rather than just the table tail)
-            # onto a fresh page.
-            already_reserved = ("\\Needspace{" in
-                                 text[max(0, m.start() - 400):m.start()])
-            if not already_reserved:
-                needspace = _table_needspace(block, cap_above, cap_below, ncols)
+        nrows = len(_CELL_RE.findall(block)) // ncols if ncols else 0
         if ncols >= 10:  # per-participant data tables: rotate to landscape
             inner = "\n\n".join(p for p in (cap_above, block, cap_below) if p)
-            return (needspace + "\\begin{landscape}\n"
+            return ("\\begin{landscape}\n"
                     "\\begingroup\\let\\small\\footnotesize"
                     "\\setlength{\\tabcolsep}{4pt}\n" + inner +
                     "\n\\endgroup\n\\end{landscape}")
-        if ncols >= WIDE_TABLE_COLS:
+        if ncols >= WIDE_TABLE_COLS or nrows >= TALL_TABLE_ROWS:
             block = ("\\begingroup\\let\\small\\footnotesize"
                      "\\setlength{\\tabcolsep}{4pt}\n" + block + "\n\\endgroup")
         parts = [p for p in (cap_above, block, cap_below) if p]
-        return needspace + "\n\n".join(parts)
+        return "\n\n".join(parts)
 
     return lt_re.sub(repl, text)
 
@@ -221,8 +196,11 @@ def demote_caption_headings(text):
     convention — so they don't pollute the generated table of contents."""
     pat = re.compile(
         r"\\hypertarget\{[^}]*\}\{%\n"
-        r"\\(?:(?:sub)+section|paragraph)\{(Table\s+[A-Z0-9]+\.\d+)"
-        r"([^{}]*)\}\\label\{[^}]*\}\}")
+        r"\\(?:(?:sub)+section|paragraph)\{"
+        r"(?:\\texorpdfstring\{)?"          # optional Word linebreak wrapper
+        r"(Table\s+[A-Z0-9]+\.\d+)([^{}]*)"
+        r"(?:\}\{[^{}]*\})?"                # ...its second (PDF-bookmark) arg
+        r"\}\\label\{[^}]*\}\}")
     text = pat.sub(
         lambda m: "\\textbf{%s}%s" % (m.group(1), m.group(2).rstrip()), text)
     # Word sometimes indents a caption, which Pandoc turns into a quote
@@ -282,7 +260,57 @@ def apply_text_edits(text):
     text = re.sub(
         r"(?m)^The (first|second|third|fourth) contribution is ([^:\n]+):",
         r"\\textbf{The \1 contribution is \2:}", text)
+    # Appendix B: drop the sentence about which items informed analysis.
+    text = text.replace(
+        " The prior-experience items (questions 8 and 9) are the source of "
+        "the descriptive experience data reported in Chapter 4.2; the contact "
+        "and availability items were used for scheduling only and did not "
+        "inform analysis.", "")
     return text
+
+
+_AI_DISCLOSURE = r"""\clearpage
+\phantomsection\addcontentsline{toc}{section}{Information on the use of AI-based tools}
+\section*{Information on the use of AI-based tools}
+
+In accordance with the Guidelines on How to Handle AI in Teaching and Learning at Rhine-Waal University of Applied Sciences (November 2024), this section discloses all uses of AI tools as aids in this thesis. In each case the author defined the objectives, verified the outputs, and retains full responsibility for the work. No AI tool generated the research data, statistical results, or findings. The quantitative analysis was performed by the author in JASP, and the qualitative data are participants' own written responses, analysed by the author.
+
+\textbf{Consensus (Consensus NLP Inc.)} was used as an aid for concept-based literature searching (Chapter 2.1). All results were screened, read, and selected by the author. No output was reproduced without verification against the primary source.
+
+\textbf{Claude Code (Anthropic)} was used as an aid for pair-programming of the author's own contributions to the prototype. These were the eye-tracking validation layer and the electrodermal-activity signal-quality indicators within the onboarding and calibration workflow (Chapters 3.3 and 3.3.4.4). The methods were designed by the author and verified against the literature and the hardware output. The tool assisted with code, not with method design.
+
+\textbf{Claude (Anthropic)} was used as an aid during the qualitative analysis (reflexive thematic analysis). It helped organise and document the codes and surface candidate groupings for the author's consideration (Chapter 4.6.2.3). The author generated the codes and themes through their own reflexive engagement with the data and made all final decisions. Where the tool suggested a grouping or framing, the author evaluated it, accepted or rejected it, and reworked it rather than adopting it as given.
+
+\textbf{Claude (Anthropic)} was also used as an aid for editing and revising the text. This included assistance in restructuring passages for clarity, reducing repetition, and checking APA 7 formatting and cross-chapter consistency. Where the tool helped draft specific passages, these were guided, reviewed, revised, and integrated by the author. The content, arguments, results, and conclusions are the author's own.
+
+The tools were used interactively throughout the project rather than through a fixed set of prompts.
+
+\clearpage
+\phantomsection\addcontentsline{toc}{section}{Declaration}
+\section*{Declaration}
+
+I, Daniyal Admany, declare that the research work presented here is from the best of my knowledge and belief, original and the result of my own investigations. The cooperation I got for this research work is clearly acknowledged. To the best of my knowledge, it does not contain any materials that are written by others or published already except mentioned with due references in the text as well as with the quotation marks. This work has not been published, submitted, either in part or whole intended for reward, degree at this or any other University.
+
+\vspace{1.5\baselineskip}
+Daniyal Admany
+
+Duisburg, 15.07.2026
+
+"""
+
+
+def update_disclosure_declaration(text):
+    """Replace DRAFT_10's placeholder AI-disclosure/declaration block (an
+    empty "AI Usage Disclosure" section and a "Please attach the following
+    text..." stub) with the author's finalised content from the separately
+    supplied docx, each on its own page. Keyed on the placeholder wording, so
+    it no-ops once the main docx carries the final text itself."""
+    pat = re.compile(
+        r"\\hypertarget\{ai-usage-disclosure\}.*?(?=\\end\{document\})",
+        re.DOTALL)
+    if not pat.search(text):
+        return text, False
+    return pat.sub(lambda _: _AI_DISCLOSURE, text), True
 
 
 def move_figure_318(text):
@@ -376,18 +404,21 @@ def restructure_table_5_1(text):
 def _k_table_latex(number, title, col_labels, rows, landscape):
     """Build one Appendix K longtable (Participant + given metric columns)."""
     ncols = len(col_labels) + 1
-    # Column widths must leave headroom for tabcolsep gaps between columns
-    # (not subtracted from \columnwidth here, unlike Pandoc's own
-    # "(\columnwidth - N\tabcolsep) * \real{X}" columns), or the row overflows
-    # the margin by roughly (ncols-1) * 2*tabcolsep.
-    total = 0.99 - 0.012 * (ncols - 1)
-    p_frac = 0.24 if not landscape else 0.065
-    p_w = total * p_frac
-    rest_w = total - p_w
-    per_col = rest_w / (ncols - 1)
-    widths = [p_w] + [per_col] * (ncols - 1)
+    # Fractions sum to 1.0 and the tabcolsep gaps are subtracted from
+    # \columnwidth first (as Pandoc does), so rows never overrun the margin.
+    if landscape:
+        p_frac = 0.065
+    elif ncols <= 3:
+        p_frac = 0.24          # 2-metric table (K.4): give participant room
+    else:
+        p_frac = 0.11          # multi-metric portrait table (K.1, K.2)
+    per_col = (1.0 - p_frac) / (ncols - 1)
+    fracs = [p_frac] + [per_col] * (ncols - 1)
+    gaps = 2 * ncols
     colspec = "".join(
-        r">{\raggedright\arraybackslash}p{%.4f\columnwidth}" % w for w in widths)
+        r">{\raggedright\arraybackslash}"
+        r"p{(\columnwidth - %d\tabcolsep) * \real{%.4f}}" % (gaps, f)
+        for f in fracs)
     header_cells = " & ".join([r"\textbf{Participant}"] +
                                [r"\textbf{%s}" % c for c in col_labels])
     body = "\n".join(" & ".join(row) + r" \\" for row in rows)
@@ -403,18 +434,22 @@ def _k_table_latex(number, title, col_labels, rows, landscape):
     # lists() adds that uniformly for every "\textbf{Table X.Y}" caption
     # later in the pipeline. Adding it here too would duplicate the LoT entry.
     caption = r"\textbf{Table K.%s} %s" % (number, title)
-    if landscape:
-        # pdflscape forces a page break at \end{landscape}: anything after it
-        # lands on a different (portrait) page. Keep the caption INSIDE the
-        # landscape block, right after the table, so both stay together on
-        # the same rotated page.
-        return "\\Needspace{%d\\baselineskip}\n\\begin{landscape}\n" \
-               "\\begingroup\\let\\small\\footnotesize" \
-               "\\setlength{\\tabcolsep}{4pt}\n%s\n\n%s\n" \
-               "\\endgroup\n\\end{landscape}" % (
-                   min(10 + len(rows), 34), table, caption)
-    return "\\Needspace{%d\\baselineskip}\n%s\n\n%s" % (
-        min(10 + len(rows), 34), table, caption)
+    if not landscape:
+        # portrait multi-column data tables need footnotesize to fit
+        body_wrap = (r"\begingroup\let\small\footnotesize"
+                     r"\setlength{\tabcolsep}{4pt}" "\n" + table +
+                     "\n\\endgroup") if ncols > 3 else table
+        return "\\Needspace{%d\\baselineskip}\n%s\n\n%s" % (
+            min(10 + len(rows), 40), body_wrap, caption)
+    # pdflscape forces a page break at \end{landscape}: anything after it
+    # lands on a different (portrait) page. Keep the caption INSIDE the
+    # landscape block, right after the table, so both stay together on the
+    # same rotated page.
+    return "\\Needspace{%d\\baselineskip}\n\\begin{landscape}\n" \
+           "\\begingroup\\let\\small\\footnotesize" \
+           "\\setlength{\\tabcolsep}{4pt}\n%s\n\n%s\n" \
+           "\\endgroup\n\\end{landscape}" % (
+               min(10 + len(rows), 34), table, caption)
 
 
 def restructure_appendix_k(text):
@@ -507,12 +542,12 @@ def restructure_appendix_k(text):
             "Per-participant efficiency and interaction breakdowns. Setup "
             "time, calibration time, and interaction breakdown counts for "
             "each participant (N = 12) in both conditions.",
-            k1_labels, k1_rows, landscape=True),
+            k1_labels, k1_rows, landscape=False),
         _k_table_latex("2",
             "Per-participant subjective measures. Raw NASA-TLX, System "
             "Usability Scale, and calibration confidence for each "
             "participant (N = 12) in both conditions.",
-            k2_labels, k2_rows, landscape=True),
+            k2_labels, k2_rows, landscape=False),
         _k_table_latex("3",
             "Per-participant eye-tracking calibration quality. Gaze "
             "accuracy, gaze precision, valid data yield, and first-pass "
@@ -550,6 +585,18 @@ def add_appendix_k_reference(text):
     if anchor not in text or addition in text:
         return text, False
     return text.replace(anchor, anchor + addition, 1), True
+
+
+def tighten_list_quotes(text):
+    """Collapse the "\\item\\n \\begin{quote} ... \\end{quote}" pattern that
+    Word's list indentation produces back into a plain list item. The nested
+    quote doubles the vertical space around every item, which (e.g.) pushed
+    the consent-form signature block (Appendix D) onto an orphan page."""
+    pat = re.compile(r"\\item\n\s*\\begin\{quote\}\n(.*?)\n\s*\\end\{quote\}",
+                     re.DOTALL)
+    text, n = pat.subn(
+        lambda m: "\\item\n  " + m.group(1).strip(), text)
+    return text, n
 
 
 def frame_appendix_info_blocks(text):
@@ -632,25 +679,74 @@ def wrap_figures_with_captions(text):
     return unit_re.subn(repl, text)
 
 
-def keep_captions_with_tables(text):
-    """Reserve space before a heading that directly precedes a longtable, so
-    titles like "Inductive codes" (Appendix J) don't strand at the bottom of
-    the previous page.
+# Usable text lines on a page (letter, 1in margins). A unit estimated at or
+# under this many normalsize-line-equivalents is forced to stay together.
+PAGE_LINES = 43
 
-    Deliberately does NOT match a "\\textbf{Table X.Y}" caption here: for
-    back-to-back tables with no heading between them (e.g. Appendix K's
-    K.1/K.2/K.3), table N's own trailing caption sits immediately before
-    table N+1's \\begin{longtable} — matching it here would misread table N's
-    caption as a heading for table N+1, breaking the adjacency that
-    shrink_wide_tables relies on to pair each table with its own caption
-    (its own general Needspace logic already covers the caption case).
+
+def _plain_lines(latex, width=95):
+    """Rough number of text lines a LaTeX paragraph occupies."""
+    plain = re.sub(r"\\[a-zA-Z]+\s*|[{}\\]", "", latex).strip()
+    return max(1, -(-len(plain) // width)) if plain else 0
+
+
+def reserve_table_units(text):
+    """Keep each portrait table on one page together with its heading, intro
+    sentence and caption. Runs after shrink_wide_tables, so a table already
+    dropped to \\footnotesize is measured at that smaller size. Landscape
+    tables are skipped — pdflscape already isolates them on their own page.
+
+    For each portrait longtable it estimates the height of the whole unit
+    (optional heading block + optional one-line intro paragraph immediately
+    above + table + caption below). If that fits on a page, a single
+    \\Needspace covering the unit is inserted at its top so the group moves to
+    the next page as a whole rather than splitting across a page break.
     """
-    pat = re.compile(
-        r"(\\hypertarget\{[^}]*\}\{%\n"
-        r"\\(?:paragraph|subsubsection)\{[^\n]*\}\}\n)"
-        r"(\n\\begin\{longtable\})")
-    return pat.sub(lambda m: "\\Needspace{14\\baselineskip}\n"
-                   + m.group(1) + m.group(2), text)
+    lt_re = re.compile(r"\\begin\{longtable\}.*?\\end\{longtable\}", re.DOTALL)
+    # process last-to-first so earlier match offsets stay valid after inserts
+    for m in reversed(list(lt_re.finditer(text))):
+        tstart, tend = m.start(), m.end()
+        if "\\begin{landscape}" in text[max(0, tstart - 200):tstart]:
+            continue
+        block = m.group(0)
+        ncols = block.count(r"\arraybackslash}p{")
+        if ncols < 2:
+            continue
+        nrows = len(_CELL_RE.findall(block)) // ncols
+        footnote = ("\\let\\small\\footnotesize"
+                    in text[max(0, tstart - 120):tstart])
+        row_factor = 1.05 if footnote else 1.28  # incl. \arraystretch
+        # caption directly below
+        after = text[tend:tend + 500]
+        cap_m = re.match(r"\n\n(\\textbf\{Table\s[^\n]*)", after)
+        cap_lines = _plain_lines(cap_m.group(1)) + 0.5 if cap_m else 0
+        # Grab the maximal prefix directly above the table: an optional
+        # heading block, an optional one-line intro paragraph, and the
+        # optional \footnotesize wrapper. \Z anchors it to the table's start.
+        # (?<=\n) forces every candidate start to sit at a line boundary, so
+        # search can't begin mid-token (e.g. just after the backslash of a
+        # \textbf heading, which would split it and corrupt the file).
+        prefix_re = re.compile(
+            r"(?<=\n)"
+            r"(?P<head>\\hypertarget\{[^}]*\}\{%\n"
+            r"\\(?:paragraph|subsubsection)\{[^\n]*\}\}\n\n)?"
+            r"(?P<intro>(?!\\)[^\n]+\n\n)?"
+            r"(?P<wrap>\\begingroup\\let\\small\\footnotesize[^\n]*\n)?\Z")
+        pm = prefix_re.search(text[:tstart])
+        if pm is None:
+            continue
+        extra = 0.0
+        if pm.group("head"):
+            extra += 2.6
+        if pm.group("intro"):
+            extra += _plain_lines(pm.group("intro")) + 0.3
+        unit_start = pm.start()
+        total = nrows * row_factor + 3.0 + cap_lines + extra + 1.0
+        if total > PAGE_LINES:
+            continue
+        text = (text[:unit_start] + "\\Needspace{%.0f\\baselineskip}\n"
+                % round(total) + text[unit_start:])
+    return text
 
 
 def fix_formulas(text):
@@ -900,9 +996,11 @@ def main():
         text = fh.read()
 
     text = fix_url_breaking(text)
+    text, disclosure_done = update_disclosure_declaration(text)
     text = demote_caption_headings(text)
     text, appendix_headers_demoted = demote_appendix_subheaders(text)
     text = apply_text_edits(text)
+    text, list_quotes_tightened = tighten_list_quotes(text)
     text = fix_formulas(text)
     text = align_cells_top(text)
     text, table_5_1_done = restructure_table_5_1(text)
@@ -911,8 +1009,8 @@ def main():
     text, appendix_blocks_framed = frame_appendix_info_blocks(text)
     text = resize_images(text, base_dir)
     text, moved_318 = move_figure_318(text)
-    text = keep_captions_with_tables(text)
     text = shrink_wide_tables(text)
+    text = reserve_table_units(text)
     text, diagrams = insert_diagrams(text, base_dir)
     text, lists_done = add_figure_table_lists(text)
     text = wrap_figures_with_captions(text)[0]
@@ -944,6 +1042,10 @@ def main():
     print("postprocess: appendix K body reference added: %s" % k_ref_added)
     print("postprocess: appendix C/D info blocks framed: %d"
           % appendix_blocks_framed)
+    print("postprocess: AI disclosure/declaration updated: %s"
+          % disclosure_done)
+    print("postprocess: list-quote wrappers collapsed: %d"
+          % list_quotes_tightened)
     for p in missing:
         print("postprocess: NOTE - awaiting %s" % p)
 
