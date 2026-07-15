@@ -300,6 +300,15 @@ def apply_text_edits(text):
     # in front of the descriptive title (the numbering already conveys order).
     text = re.sub(
         r"(\\paragraph\{4\.6\.1\.\d+ )Step \d+: ", r"\1", text)
+    # Chapter 4.1.1/4.1.2 (and any other) headings: the docx bolded the title
+    # text with \textbf, which also renders the heading's ToC entry bold. The
+    # heading font already carries the weight, so strip \textbf inside heading
+    # commands only (body-text bold is untouched, since this is scoped to the
+    # single-line \section/\subsection/\paragraph heading argument).
+    text = re.sub(
+        r"\\(?:sub)*(?:section|paragraph)\{[^\n]*\}",
+        lambda m: re.sub(r"\\textbf\{([^{}]*)\}", r"\1", m.group(0)),
+        text)
     return text
 
 
