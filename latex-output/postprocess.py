@@ -994,7 +994,7 @@ def attach_appendix_pdfs(text, base_dir):
 # Figure L.1 is a tall portrait screenshot; scale it down so it and L.2 share a
 # page. The other Appendix L screenshots are landscape and take a taller box.
 _APPENDIX_L_SIZE = {
-    "L.1": r"height=0.30\textheight,max width=\linewidth,keepaspectratio",
+    "L.1": r"height=0.36\textheight,max width=\linewidth,keepaspectratio",
 }
 _APPENDIX_L_DEFAULT = r"height=0.34\textheight,max width=\linewidth,keepaspectratio"
 
@@ -1003,9 +1003,11 @@ def format_appendix_l(text):
     """Appendix L is a run of screenshots that the docx glues inline to their
     captions, so captions don't sit under the images, most are missing from the
     List of Figures, and the figures don't break across pages cleanly. Rebuild
-    every Appendix L figure as a centred figure[H] with the caption underneath,
-    a List-of-Figures entry, and breathing room between figures. Figure L.1 (a
-    tall portrait screenshot) is scaled down so it and L.2 share a page."""
+    every Appendix L figure as a figure[H] with the image centred and the
+    caption underneath it left-aligned (matching every other figure caption in
+    the thesis), a List-of-Figures entry, and breathing room between figures.
+    Figure L.1 (a tall portrait screenshot) is scaled up ~20% over the other L
+    figures while still sharing a page with L.2."""
     start = text.find(r"\textbf{Appendix L:")
     if start == -1:
         return text, 0
@@ -1014,18 +1016,24 @@ def format_appendix_l(text):
         end = len(text)
     block = text[start:end]
 
-    # 1. Collapse L.1's existing figure[H] wrapper back to the inline form the
-    #    other L figures use, so a single pass can rebuild them all uniformly.
+    # 1. Collapse any existing rebuilt figure[H] wrapper (from an earlier run,
+    #    either the \centering form or the \begin{center} form) back to the
+    #    inline form the other L figures use, so a single pass can rebuild
+    #    them all uniformly.
     block = re.sub(
-        r"\\begin\{figure\}\[H\]\s*\\begin\{center\}"
-        r"\\includegraphics\[[^\]]*\]\{(media/media/image\d+\.png)\}"
-        r"\\end\{center\}\s*"
+        r"\\begin\{figure\}\[H\]\s*"
+        r"(?:\\centering\s*\\includegraphics\[[^\]]*\]\{(media/media/image\d+\.png)\}"
+        r"|\\begin\{center\}\\includegraphics\[[^\]]*\]\{(media/media/image\d+\.png)\}"
+        r"\\end\{center\})\s*"
         r"\\phantomsection\\addcontentsline\{lof\}[^\n]*\n"
         r"(\\textbf\{Figure L\.\d+\}[^\n]*)\n\\end\{figure\}",
-        lambda m: "\\includegraphics{%s}%s" % (m.group(1), m.group(2)),
+        lambda m: "\\includegraphics{%s}%s" % (m.group(1) or m.group(2), m.group(3)),
         block, flags=re.DOTALL)
 
-    # 2. Rebuild each inline "image + caption" pair as a centred figure[H].
+    # 2. Rebuild each inline "image + caption" pair as a figure[H] with the
+    #    image centred (via a {center} environment around the image only) and
+    #    the caption left-aligned underneath, matching every other figure in
+    #    the thesis.
     fig_re = re.compile(
         r"\\includegraphics(?:\[[^\]]*\])?\{(media/media/image\d+\.png)\}"
         r"\\textbf\{Figure (L\.\d+)\}([^\n]*)")
@@ -1039,8 +1047,8 @@ def format_appendix_l(text):
         short = re.sub(r"[{}]", "", short).strip(" .") + "."
         count[0] += 1
         return (
-            "\\begin{figure}[H]\n\\centering\n"
-            "\\includegraphics[%s]{%s}\n\n"
+            "\\begin{figure}[H]\n"
+            "\\begin{center}\\includegraphics[%s]{%s}\\end{center}\n\n"
             "\\phantomsection\\addcontentsline{lof}{figure}"
             "{\\protect\\numberline{%s}%s}%%\n"
             "\\textbf{Figure %s}%s\n"
@@ -1054,23 +1062,29 @@ def format_appendix_l(text):
 def sectionize_backmatter(text):
     """The docx leaves four back-matter headings as plain \\textbf{} paragraphs
     (Appendix L, Appendix M, the AI-tools disclosure, and the Declaration).
-    Promote each to a real \\subsection so it starts on its own page and gets a
-    Table-of-Contents entry, matching Appendices A-K. Also push the
-    Declaration's signature (name + date) to the foot of its page."""
+    Appendix L/M are promoted to \\subsection, matching Appendices A-K (they
+    nest under the "Appendices" \\section). The AI-tools disclosure and the
+    Declaration are standalone back-matter chapters, not appendices, so they
+    are promoted to \\section instead, matching Acknowledgements/Abstract/the
+    numbered chapters/List of References/Appendices in both weight and Table
+    of Contents indent. Also push the Declaration's signature (name + date)
+    to the foot of its page."""
     headings = [
         (r"\textbf{Appendix L: Screenshots of Fragmented workflow tools}",
-         "appendix-l", "Appendix L: Screenshots of Fragmented workflow tools"),
+         "subsection", "appendix-l",
+         "Appendix L: Screenshots of Fragmented workflow tools"),
         (r"\textbf{Appendix M: Google Doc Study Documentation template}",
-         "appendix-m", "Appendix M: Google Doc Study Documentation template"),
+         "subsection", "appendix-m",
+         "Appendix M: Google Doc Study Documentation template"),
         (r"\textbf{Information on the use of AI-based tools}",
-         "information-on-the-use-of-ai-based-tools",
+         "section", "information-on-the-use-of-ai-based-tools",
          "Information on the use of AI-based tools"),
-        (r"\textbf{Declaration}", "declaration-final", "Declaration"),
+        (r"\textbf{Declaration}", "section", "declaration-final", "Declaration"),
     ]
     n = 0
-    for bold, tag, title in headings:
-        repl = ("\\clearpage\n\\hypertarget{%s}{%%\n\\subsection{%s}"
-                "\\label{%s}}" % (tag, title, tag))
+    for bold, level, tag, title in headings:
+        repl = ("\\clearpage\n\\hypertarget{%s}{%%\n\\%s{%s}"
+                "\\label{%s}}" % (tag, level, title, tag))
         new = text.replace(bold, repl, 1)
         if new != text:
             n += 1
@@ -1204,21 +1218,29 @@ def restructure_front_matter(text):
 
     def title_repl(m):
         body = m.group(2).strip()
-        # Shrink the university logo to 40% of the text width.
+        # Shrink the university logo to 32% of the text width (20% smaller
+        # than the previous 40%), and add breathing room before the faculty/
+        # supervisor lines that follow it.
         body = re.sub(
             r"\\includegraphics\[[^\]]*\]\{(media/media/image\d+\.png)\}",
-            r"\\includegraphics[width=0.4\\linewidth]{\1}", body, count=1)
+            r"\\includegraphics[width=0.32\\linewidth]{\1}\n\n\\vspace{0.8cm}",
+            body, count=1)
         # Give the thesis title breathing room above and below, and set it
         # larger than the surrounding lines.
         body = re.sub(
             r"\\textbf\{([^}]+)\}",
             r"\\vspace{1.6cm}\n\n{\\Large\\bfseries \1\\par}\n\n\\vspace{1.6cm}",
             body, count=1)
+        # Add breathing room before the "by <author>" / matriculation /
+        # submission-date block at the foot of the title page.
+        body = re.sub(
+            r"\n\n(by Daniyal Admany)",
+            r"\n\n\\vspace{0.8cm}\n\n\1", body, count=1)
         return (m.group(1)
                 + "\n\\begin{titlepage}\n\\centering\n\\vspace*{\\fill}\n\n"
                 + body
                 + "\n\n\\vspace*{\\fill}\n\\end{titlepage}\n\n"
-                + "\\pagenumbering{roman}\n\\setcounter{tocdepth}{3}\n")
+                + "\\pagenumbering{roman}\n\\setcounter{tocdepth}{4}\n")
 
     text, n = title_pat.subn(title_repl, text)
     notes.append("title page: %s" % bool(n))
