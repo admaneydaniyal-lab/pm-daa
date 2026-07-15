@@ -1,0 +1,42 @@
+% Shared draw.io-matching colours and node styles for the thesis flowcharts.
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+
+% Keep words whole inside boxes (no ugly mid-word hyphenation)
+\hyphenpenalty=10000\exhyphenpenalty=10000\tolerance=2000
+
+% draw.io standard palette (fill + stroke)
+\definecolor{dioBlueF}{HTML}{DAE8FC}\definecolor{dioBlueS}{HTML}{6C8EBF}
+\definecolor{dioOrangeF}{HTML}{FFE6CC}\definecolor{dioOrangeS}{HTML}{D79B00}
+\definecolor{dioGrayF}{HTML}{F5F5F5}\definecolor{dioGrayS}{HTML}{666666}
+\definecolor{dioGreenF}{HTML}{D5E8D4}\definecolor{dioGreenS}{HTML}{82B366}
+\definecolor{dioPurpleF}{HTML}{E1D5E7}\definecolor{dioPurpleS}{HTML}{9673A6}
+\definecolor{dioRedF}{HTML}{F8CECC}\definecolor{dioRedS}{HTML}{B85450}
+\definecolor{dioYellowF}{HTML}{FFF2CC}\definecolor{dioYellowS}{HTML}{D6B656}
+\definecolor{dioTealF}{HTML}{CFE2E5}\definecolor{dioTealS}{HTML}{4D7C87}
+
+\tikzset{
+  >={Stealth[length=2.4mm]},
+  fnode/.style={rounded corners=5pt, draw, line width=0.8pt,
+    minimum width=2.7cm, minimum height=1.15cm, align=center,
+    font=\small, text width=2.5cm, inner xsep=4pt, inner ysep=7pt},
+  blue/.style ={fnode, fill=dioBlueF,   draw=dioBlueS},
+  orange/.style={fnode, fill=dioOrangeF, draw=dioOrangeS},
+  gray/.style ={fnode, fill=dioGrayF,   draw=dioGrayS},
+  green/.style={fnode, fill=dioGreenF,  draw=dioGreenS},
+  purple/.style={fnode, fill=dioPurpleF, draw=dioPurpleS},
+  decision/.style={diamond, draw, line width=0.8pt, aspect=1.7,
+    align=center, font=\small, text width=1.9cm, inner sep=0pt,
+    fill=dioGrayF, draw=dioGrayS, minimum width=3cm, minimum height=2.3cm},
+  bdecision/.style={decision, fill=dioBlueF, draw=dioBlueS},
+  red/.style   ={fnode, fill=dioRedF,    draw=dioRedS},
+  yellow/.style={fnode, fill=dioYellowF, draw=dioYellowS},
+  teal/.style  ={fnode, fill=dioTealF,   draw=dioTealS},
+  % sharp-cornered square node (Figure 3.1 system overview)
+  sq/.style={draw, line width=1pt, minimum width=2.2cm, minimum height=2.2cm,
+    align=center, font=\small, text width=2cm, inner sep=2pt},
+  circ/.style={circle, draw=black!70, line width=0.8pt, fill=dioGrayF,
+    minimum size=2.1cm, align=center, font=\small, text width=1.8cm, inner sep=0pt},
+  flow/.style={->, line width=0.8pt, draw=black!75},
+  elabel/.style={font=\footnotesize, inner sep=1.5pt, fill=none},
+}

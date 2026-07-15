@@ -1,0 +1,97 @@
+% ============================================================================
+% Custom preamble injected via `pandoc -H pandoc/preamble.tex`.
+% This is added to whatever Pandoc generates, so all of the formatting below
+% is re-applied automatically every time a new .docx is converted.
+% ============================================================================
+
+% --- Wider text block so figures and wide tables have room to breathe --------
+\usepackage[letterpaper,margin=1in]{geometry}
+
+% --- Never let a figure overflow the margins --------------------------------
+% Caps images to the text area, preserving aspect ratio. postprocess.py also
+% sizes images explicitly by type, but this is a belt-and-braces safety net.
+\usepackage[export]{adjustbox}
+
+% --- Attach whole external PDFs (Appendix H/I source documents) --------------
+\usepackage{pdfpages}
+
+% --- Landscape pages for very wide data tables (Appendix K) ------------------
+\usepackage{pdflscape}
+
+% --- Live table of contents titling ------------------------------------------
+\renewcommand{\contentsname}{Table of Contents}
+
+% --- Keep table titles/captions on the same page as their table --------------
+\usepackage{needspace}
+
+% --- Keep figures/tables and their captions on one page ----------------------
+\usepackage{float}
+
+% --- APA-7 URL/DOI line breaking ----------------------------------------------
+% Pandoc's template loads xurl.sty, which allows a break at almost any
+% character (including inside a DOI's digits, e.g. "10" / ".1145"). APA-7
+% expects breaks at natural points instead — chiefly before a slash — so
+% restrict \UrlBreaks to slash and hyphen, overriding xurl's aggressive set.
+\makeatletter
+\g@addto@macro\document{%
+  \def\UrlBreaks{\do\/\do\-}%
+}
+\makeatother
+
+% --- List of Figures / List of Tables titles ---------------------------------
+\renewcommand{\listfigurename}{List of Figures}
+\renewcommand{\listtablename}{List of Tables}
+
+% --- Ease dense tables: smaller font + a little more row spacing -------------
+% Applies to every longtable Pandoc emits. Extra-wide tables (6+ columns) are
+% dropped a further step to \footnotesize by postprocess.py.
+\usepackage{etoolbox}
+% Row spacing is read from \longtablestretch so a single table can widen its
+% rows (postprocess wraps text-heavy tables in a group that raises it) despite
+% this hook running at every longtable's start.
+\newcommand{\longtablestretch}{1.25}
+\AtBeginEnvironment{longtable}{%
+  \small
+  \setlength{\tabcolsep}{5pt}%
+  \renewcommand{\arraystretch}{\longtablestretch}%
+}
+
+% --- Let pdfLaTeX render Unicode math/Greek symbols found in the text --------
+\ifPDFTeX
+  \usepackage{newunicodechar}
+  \newunicodechar{α}{\ensuremath{\alpha}}
+  \newunicodechar{β}{\ensuremath{\beta}}
+  \newunicodechar{γ}{\ensuremath{\gamma}}
+  \newunicodechar{δ}{\ensuremath{\delta}}
+  \newunicodechar{Δ}{\ensuremath{\Delta}}
+  \newunicodechar{ε}{\ensuremath{\varepsilon}}
+  \newunicodechar{η}{\ensuremath{\eta}}
+  \newunicodechar{θ}{\ensuremath{\theta}}
+  \newunicodechar{λ}{\ensuremath{\lambda}}
+  \newunicodechar{μ}{\ensuremath{\mu}}
+  \newunicodechar{π}{\ensuremath{\pi}}
+  \newunicodechar{ρ}{\ensuremath{\rho}}
+  \newunicodechar{σ}{\ensuremath{\sigma}}
+  \newunicodechar{Σ}{\ensuremath{\Sigma}}
+  \newunicodechar{τ}{\ensuremath{\tau}}
+  \newunicodechar{φ}{\ensuremath{\varphi}}
+  \newunicodechar{χ}{\ensuremath{\chi}}
+  \newunicodechar{ψ}{\ensuremath{\psi}}
+  \newunicodechar{ω}{\ensuremath{\omega}}
+  \newunicodechar{Ω}{\ensuremath{\Omega}}
+  \newunicodechar{×}{\ensuremath{\times}}
+  \newunicodechar{÷}{\ensuremath{\div}}
+  \newunicodechar{±}{\ensuremath{\pm}}
+  \newunicodechar{∓}{\ensuremath{\mp}}
+  \newunicodechar{≤}{\ensuremath{\leq}}
+  \newunicodechar{≥}{\ensuremath{\geq}}
+  \newunicodechar{≠}{\ensuremath{\neq}}
+  \newunicodechar{≈}{\ensuremath{\approx}}
+  \newunicodechar{−}{\ensuremath{-}}
+  \newunicodechar{→}{\ensuremath{\rightarrow}}
+  \newunicodechar{∞}{\ensuremath{\infty}}
+  \newunicodechar{∑}{\ensuremath{\sum}}
+  \newunicodechar{√}{\ensuremath{\surd}}
+  \newunicodechar{☐}{\ensuremath{\square}}
+  \newunicodechar{☒}{\ensuremath{\boxtimes}}
+\fi
