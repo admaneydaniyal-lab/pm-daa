@@ -259,6 +259,20 @@ def apply_text_edits(text):
     text = text.replace("{[}add a line dash for 68?{]}", "")
     # Figure 3.26: drop the "[NEED TO UPDATE IMAGE]" author tag.
     text = text.replace("{[}NEED TO UPDATE IMAGE{]} ", "")
+    # Section 2.6: fill the "[For bio sensors...]" placeholder.
+    text = text.replace(
+        "{[}For bio sensors\\ldots{]}",
+        "For biosensors, a comparable dependence on setup quality applies, "
+        "though it is handled differently. Biosignal quality is not fixed once "
+        "a sensor is attached: it depends on operator-performed steps such as "
+        "skin preparation, correct electrode placement, and stable skin "
+        "contact, and it must be verified per channel before recording begins "
+        "rather than assumed (Aloi et al., 2024, p. 3). In practice this "
+        "verification is performed through the sensor's own acquisition "
+        "software, which may report a per-channel quality indicator; Aloi et "
+        "al. (2024, p. 3), for example, assessed EEG electrode quality through "
+        "a dedicated indicator and verified GSR acquisition quality separately "
+        "before recording.")
     # Chapter 7.1: bold the research-question lead-ins.
     for i in "1234":
         text = re.sub(r"(?m)^For RQ%s," % i,
