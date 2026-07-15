@@ -296,6 +296,10 @@ def apply_text_edits(text):
         "Multi-Modal Physiological Research Platforms",
         "Designing and Evaluating Usability-Centred Onboarding and Calibration "
         "Workflows in Multi-Modal Research Platforms")
+    # Chapter 4.6.1.1-4.6.1.4 headings: drop the "Step N: " prefix Word left
+    # in front of the descriptive title (the numbering already conveys order).
+    text = re.sub(
+        r"(\\paragraph\{4\.6\.1\.\d+ )Step \d+: ", r"\1", text)
     return text
 
 
@@ -1122,7 +1126,7 @@ def insert_figure_318(text, base_dir):
         "points detected, recalibration attempts, the pass threshold, and the "
         "overall result.")
     block = (
-        "\n\n\\begin{figure}[H]\n\\centering\n"
+        "\n\n\\begin{figure}[H]\n"
         "\\includegraphics[max width=\\linewidth,max totalheight=0.78"
         "\\textheight]{%s}\n\n"
         "\\phantomsection\\addcontentsline{lof}{figure}"

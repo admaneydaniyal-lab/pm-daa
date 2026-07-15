@@ -1026,6 +1026,13 @@ The author defined the methodological decisions behind this process (live distan
 
 The validation results are shown in a two-dimensional scatter plot in normalised display coordinates (Figures 3.18 and 3.19). The plot shows the five target positions and their corresponding mean gaze positions, with dashed lines indicating the offset between each target and the recorded gaze. The length of each offset line is the visual representation of the accuracy error. Elements are colour-coded against the pass threshold, shown in green when within the predefined acceptance limit and in red when exceeding it. This lets the operator see at a glance both the magnitude and the spatial pattern of any systematic offset, for example a consistent downward displacement indicating a vertical bias. A target passes if its accuracy is within the pass threshold (3 degrees of visual angle by default, as defined in Section 3.3.4.4). The session passes if a sufficient number of targets are valid and the mean accuracy across valid targets is within the threshold.Presenting the measurement outcome visibly and immediately follows established usability guidance on visibility of system status (Nielsen, 1994).
 
+\begin{figure}[H]
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{assets/figure-3.18.png}
+
+\phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.18}Eye-tracking calibration, Step 4: Validation, showing a successful calibration.}%
+\textbf{Figure 3.18} Eye-tracking calibration, Step 4: Validation, showing a successful calibration. A green success banner sits above a scatter plot of the five-point grid, showing the intended gaze target against the computed gaze position for each point. A collapsible table below reports the colour-coded metrics: gaze accuracy, gaze precision, valid data yield, points detected, recalibration attempts, the pass threshold, and the overall result.
+\end{figure}
+
 This is why, post validation, the user is presented with a colour coded banner message at the top indicating whether the calibration quality was good (green) or prompts the user to perform calibration again (red) above the scatter plot.
 
 Underneath the scatter plot, the user is also presented with numerical outputs for each calibration-quality metric, namely: gaze accuracy and gaze precision in degrees, valid data yield as a percentage, the number of points detected, whether the calibration succeeded on the first attempt, the number of recalibration attempts, the pass threshold, and the overall calibration status (pass or fail), as seen Figure 3.18 and Figure 3.19, along with a colour coded banner message at the top indicating success or failure of the validation.
@@ -1631,23 +1638,23 @@ One constraint shapes how every statistical result in this thesis should be read
 The quantitative analysis followed a predefined sequence covering test selection, effect sizes, the binary outcome, multiple-comparison correction, and the interpretation of H5 and the EDA check
 
 \hypertarget{step-1-normality-screening-and-the-choice-of-test}{%
-\paragraph{4.6.1.1 Step 1: Normality screening and the choice of test}\label{step-1-normality-screening-and-the-choice-of-test}}
+\paragraph{4.6.1.1 Normality screening and the choice of test}\label{step-1-normality-screening-and-the-choice-of-test}}
 
 For each continuous or interval dependent variable defined in Chapter 4.5, the within-participant difference scores were first screened for normality using the Shapiro--Wilk test. Normally distributed differences were analysed using a paired-samples t-test; otherwise, the Wilcoxon signed-rank test was used. The difference scores for setup time, calibration time, SUS, NASA-TLX, calibration confidence, interaction breakdowns, valid-data yield, and the EDA baseline were approximately normally distributed. These measures were therefore analysed using paired-samples t-tests. The differences for gaze accuracy and gaze precision departed from normality and were compared with the Wilcoxon signed-rank test, which does not assume normally distributed differences. Because of the small sample size, exact p-values were calculated where possible instead of relying on approximations intended for larger samples.
 
 \hypertarget{step-2-reporting-the-effect-sizes}{%
-\paragraph{4.6.1.2 Step 2: Reporting the effect sizes}\label{step-2-reporting-the-effect-sizes}}
+\paragraph{4.6.1.2 Reporting the effect sizes}\label{step-2-reporting-the-effect-sizes}}
 
 An effect size and its 95\% confidence interval are reported for each test: Cohen's (d\_z) for paired-samples t-tests and matched-pairs rank-biserial correlation for Wilcoxon signed-rank tests. These estimates are considered alongside the significance tests because, with only twelve participants, a binary decision based on the corrected significance threshold provides limited information about the magnitude and uncertainty of an effect. Accordingly, large estimated effects that do not meet the family-wise threshold, such as those for calibration time and gaze precision, are interpreted as potentially meaningful differences that remain statistically uncertain because of the small sample and conservative correction.
 
 \hypertarget{step-3-analysing-the-binary-outcome-using-mcnemars-test}{%
-\paragraph{4.6.1.3 Step 3: Analysing the binary outcome using McNemar's test}\label{step-3-analysing-the-binary-outcome-using-mcnemars-test}}
+\paragraph{4.6.1.3 Analysing the binary outcome using McNemar's test}\label{step-3-analysing-the-binary-outcome-using-mcnemars-test}}
 
 One measure, first-pass calibration success, could not be analysed with the tests above because it is not a score but a paired yes-or-no outcome: in each condition, a participant\textquotesingle s calibration either passed validation on the first attempt or it did not. The standard test for this situation is McNemar\textquotesingle s test. The test considers only participants whose outcome differed between conditions and examines whether more participants changed from failure to success than from success to failure. Because only a small number of participants showed such a change, the corresponding counts are reported alongside the test result to make the underlying pattern transparent.
 
 \Needspace{24\baselineskip}
 \hypertarget{step-4-controlling-for-multiple-comparisons}{%
-\paragraph{4.6.1.4 Step 4: Controlling for multiple comparisons}\label{step-4-controlling-for-multiple-comparisons}}
+\paragraph{4.6.1.4 Controlling for multiple comparisons}\label{step-4-controlling-for-multiple-comparisons}}
 
 A separate Bonferroni correction was applied to the tests belonging to each hypothesis. Tests of different constructs, such as setup time, workload, usability, interaction breakdowns, and calibration quality, were not combined into one correction family because they address different research questions. Applying one correction across all tests would therefore be unnecessarily strict and would reduce the likelihood of detecting genuine effects. Table 4.3 summarises the resulting families and their adjusted thresholds.
 
