@@ -303,6 +303,153 @@ def apply_text_edits(text):
     return text
 
 
+# Oxford British spelling normalisation (Job 1). -ise verbs flip to -ize while
+# -our/-re/-ce stay British; the -yse family (analyse...) is deliberately NOT
+# listed and stays as-is. Case-sensitive with sentence-start capital preserved.
+_SPELLING_PAIRS = [
+    ("normalises", "normalizes"), ("normalised", "normalized"),
+    ("organised", "organized"), ("organise", "organize"),
+    ("realised", "realized"), ("realise", "realize"),
+    ("realisation", "realization"),
+    ("emphasise", "emphasize"), ("emphasises", "emphasizes"),
+    ("emphasised", "emphasized"),
+    ("standardised", "standardized"), ("standardising", "standardizing"),
+    ("visualisation", "visualization"), ("visualisations", "visualizations"),
+    ("summarises", "summarizes"), ("summarised", "summarized"),
+    ("categorised", "categorized"), ("maximises", "maximizes"),
+    ("behavioral", "behavioural"), ("behaviors", "behaviours"),
+    ("behavior", "behaviour"),
+    ("centered", "centred"), ("center", "centre"),
+    ("artifacts", "artefacts"), ("artifactual", "artefactual"),
+    ("artifact", "artefact"),
+]
+
+# Spans inside the body that must never be touched by a spelling replacement:
+# LaTeX centring environments/commands (so "center" the environment is not
+# turned into an invalid "centre"), URLs, semantic anchors (kept byte-stable
+# since nothing \ref/\hyperlink's them), image/PDF include paths, and the
+# documented literature-search string "(artifact)" (Golden Rule 4).
+_SPELLING_PROTECT = "|".join([
+    r"\\begin\{center\}", r"\\end\{center\}", r"\\centering",
+    r"\\url\{[^}]*\}", r"\\href\{[^}]*\}",
+    r"\\hypertarget\{[^}]*\}", r"\\label\{[^}]*\}",
+    r"\\includegraphics(?:\[[^\]]*\])?\{[^}]*\}",
+    r"\\includepdf(?:\[[^\]]*\])?\{[^}]*\}",
+    r"\(artifact\)",
+])
+
+
+def _replace_word_case(text, old, new):
+    """Case-sensitive whole-word replace that also matches a capitalised first
+    letter at a sentence start and preserves the capital."""
+    pat = re.compile(
+        r"(?<![A-Za-z])([%s%s])%s(?![A-Za-z])"
+        % (old[0].upper(), old[0].lower(), re.escape(old[1:])))
+    return pat.sub(
+        lambda m: (new[0].upper() if m.group(1).isupper() else new[0]) + new[1:],
+        text)
+
+
+def normalize_spelling(text):
+    """Job 1: normalise the main-body prose to Oxford British spelling. Scoped
+    strictly to the body region (Introduction ... List of References) so the
+    abstract, front matter, references, and all appendices are left untouched,
+    per the author's instruction. Within the body, protected spans (LaTeX
+    centring, URLs, anchors, include paths, the "(artifact)" search string) are
+    stashed out before replacing and restored after."""
+    intro = text.find(r"\hypertarget{introduction}")
+    refs = text.find(r"\hypertarget{list-of-references}")
+    if intro == -1 or refs == -1 or intro >= refs:
+        return text, 0
+    head, body, tail = text[:intro], text[intro:refs], text[refs:]
+
+    saved = []
+
+    def stash(m):
+        saved.append(m.group(0))
+        return "\x00%d\x00" % (len(saved) - 1)
+
+    body = re.sub(_SPELLING_PROTECT, stash, body)
+    before = len(body)
+    for old, new in _SPELLING_PAIRS:
+        body = _replace_word_case(body, old, new)
+    # towards: unify the three bare "toward" with the existing "towards".
+    body = re.sub(r"(?<![A-Za-z])([Tt])oward(?![A-Za-z])",
+                  lambda m: m.group(1) + "owards", body)
+    body = re.sub("\x00(\\d+)\x00", lambda m: saved[int(m.group(1))], body)
+    # crude change count for the status line: residual American look-alikes.
+    return head + body + tail, 1
+
+
+def reorder_appendices(text):
+    """Job 2: physically reorder the appendices to the author's target sequence
+    and relabel every letter (headers, in-text references, appendix figure/
+    table numbers, and their List-of-Figures/Tables entries). Cross-references
+    are literal text in this document (no \\ref to appendix labels), so this is
+    the collision-safe two-pass ("sentinel") letter rename.
+
+    Runs LAST, after every letter-keyed step (format_appendix_l,
+    restructure_appendix_k, attach_appendix_pdfs, sectionize_backmatter), so
+    those operate on the original lettering and only the final visible letters
+    change here. \\hypertarget/\\label anchor slugs and appendix-<L>.pdf include
+    paths are intentionally left on their original letters (nothing references
+    them, and the PDF filenames on disk are fixed)."""
+    # Old letters in the new physical order, and the old->new letter map.
+    new_order = ["L", "A", "B", "C", "D", "E", "F", "G", "M", "H", "I", "J", "K"]
+    amap = {"L": "A", "A": "B", "B": "C", "C": "D", "D": "E", "E": "F",
+            "F": "G", "G": "H", "M": "I", "H": "J", "I": "K", "J": "L", "K": "M"}
+
+    m_end = re.search(
+        r"\\clearpage\n\\hypertarget\{information-on-the-use-of-ai-based-tools\}",
+        text)
+    if not m_end:
+        return text, "reorder: back-matter terminator not found"
+    region_end = m_end.start()
+    starts = [(mm.start(), mm.group(1)) for mm in re.finditer(
+        r"\\clearpage\n\\hypertarget\{(appendix-[^}]*)\}", text)
+        if mm.start() < region_end]
+    if not starts:
+        return text, "reorder: no appendix blocks found"
+    region_start = starts[0][0]
+
+    blocks = {}
+    for i, (s, slug) in enumerate(starts):
+        e = starts[i + 1][0] if i + 1 < len(starts) else region_end
+        rest = slug[len("appendix-"):]
+        letter = rest[0].upper()
+        sub = rest[1] if len(rest) > 1 and rest[1].isdigit() else ""
+        blocks.setdefault(letter, []).append((sub, text[s:e]))
+
+    new_region = "".join(
+        b for L in new_order
+        for _, b in sorted(blocks.get(L, []), key=lambda x: x[0]))
+    text = text[:region_start] + new_region + text[region_end:]
+
+    # Sentinel two-pass relabel across the whole document (headers now in the
+    # reordered region, plus body cross-references and fig/table numbers).
+    #
+    # (a) Appendix letter references (headers + prose). All such references in
+    #     this document are single-letter (verified: no "Appendices A and B"
+    #     style ranges), so a single-letter rule is complete. Covers A1/A2 too,
+    #     since "Appendix A1" -> "Appendix @@B@@1".
+    for old, new in amap.items():
+        text = re.sub(r"(Append(?:ix|ices)[~ ])" + old + r"(?=\d|\b)",
+                      r"\1@@" + new + "@@", text)
+    # (b) Appendix figure/table NUMBER tokens, matched as the whole "<L>.<n>"
+    #     token regardless of the preceding word, so plural and range forms are
+    #     caught too ("Figure A.1", "Figures L.1 to L.6", "Tables K.1 to K.4",
+    #     the bare "K.2"/"K.3" continuations, and every \numberline{L.1}). Only
+    #     the three appendices that carry numbered figures/tables are remapped
+    #     (old L figures -> A, old J tables -> L, old K tables -> M); "\.\d"
+    #     never matches an appendix-<L>.pdf include path or a lowercase slug.
+    for old, new in {"L": "A", "J": "L", "K": "M"}.items():
+        text = re.sub(r"(?<![A-Za-z0-9])" + old + r"(?=\.\d)", "@@" + new + "@@",
+                      text)
+    text = re.sub(r"@@([A-M])@@", r"\1", text)
+    return text, "reordered %d blocks; sentinels left: %d" % (
+        len(starts), text.count("@@"))
+
+
 _AI_DISCLOSURE = r"""\clearpage
 \phantomsection\addcontentsline{toc}{section}{Information on the use of AI-based tools}
 \section*{Information on the use of AI-based tools}
@@ -1321,6 +1468,10 @@ def main():
     text, appendices, missing = attach_appendix_pdfs(text, base_dir)
     text, backmatter_sections = sectionize_backmatter(text)
     text, fm_notes = restructure_front_matter(text)
+    # Job 1 and Job 2 run last: spelling on the settled body prose, then the
+    # appendix reorder/relabel after every letter-keyed step above.
+    text, spelling_done = normalize_spelling(text)
+    text, reorder_note = reorder_appendices(text)
 
     with open(tex, "w", encoding="utf-8") as fh:
         fh.write(text)
@@ -1353,6 +1504,9 @@ def main():
           % disclosure_done)
     print("postprocess: list-quote wrappers collapsed: %d"
           % list_quotes_tightened)
+    print("postprocess: spelling normalized (Oxford British, body only): %s"
+          % bool(spelling_done))
+    print("postprocess: appendix reorder: %s" % reorder_note)
     for p in missing:
         print("postprocess: NOTE - awaiting %s" % p)
 
