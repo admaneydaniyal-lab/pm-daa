@@ -48,7 +48,8 @@ edits will be lost. All formatting lives in `postprocess.py` and
 | `pandoc/preamble.tex` | LaTeX injected into every conversion (global formatting). |
 | `pandoc/abbreviations.tex` | List of Abbreviations table (edit to add entries). |
 | `postprocess.py` | All content-driven fixes (see below). |
-| `document.tex`, `document.pdf`, `media/` | **Build outputs** — regenerated, do not edit by hand. |
+| `document.tex`, `document.pdf` | **Build outputs** — regenerated, do not edit by hand. |
+| `media/media/` | Images extracted from the docx. Regenerated each run, **but hand-edited images committed here survive**: `convert.sh` snapshots the folder before pandoc and restores it afterwards, so a cropped/replaced screenshot committed to `media/media/` wins over the docx original and reproduces on any machine. Brand-new images from an updated docx are still added. |
 
 ## What `postprocess.py` does (the finalization rules)
 
