@@ -305,6 +305,20 @@ def apply_text_edits(text):
         "Multi-Modal Physiological Research Platforms",
         "Designing and Evaluating Usability-Centred Onboarding and Calibration "
         "Workflows in Multi-Modal Research Platforms")
+    # Chapter 3.3: add the year-lettered citation for the two AI-tool mentions
+    # that name Claude Code without a year, so they resolve to the new
+    # Anthropic (2026b) reference entry.
+    text = text.replace(
+        "the assistance of an AI-based coding tool, Claude Code (Anthropic).",
+        "the assistance of an AI-based coding tool, Claude Code (Anthropic, 2026b).")
+    text = text.replace(
+        "with the assistance of Claude Code (Anthropic). The conversion",
+        "with the assistance of Claude Code (Anthropic, 2026b). The conversion")
+    # Chapter 4.6.2.3: same for the Claude (analysis-assistant) mention, citing
+    # the new Anthropic (2026a) reference entry.
+    text = text.replace(
+        "An AI assistant (Claude) was used to support the process",
+        "An AI assistant (Claude Anthropic, 2026a) was used to support the process")
     # Chapter 4.6.1.1-4.6.1.4 headings: drop the "Step N: " prefix Word left
     # in front of the descriptive title (the numbering already conveys order).
     text = re.sub(
@@ -1108,6 +1122,28 @@ def inject_abbreviations(text, base_dir):
     return text[:pos] + "\n" + table.strip() + "\n" + text[pos:], True
 
 
+def insert_missing_references(text):
+    """Add the two Anthropic AI-tool reference entries cited in Chapter 3.3
+    ("Claude Code (Anthropic, 2026b)") and Chapter 4.6.2.3 ("Claude Anthropic,
+    2026a"), alphabetically between Amani et al. (2024) and Bangor et al.
+    (2008), matching the docx's own reference-entry style (\\emph product name,
+    bracketed medium, \\url). No-ops if the entries are already present, so a
+    re-run stays idempotent."""
+    if "Anthropic. (2026a)." in text:
+        return text, False
+    anchor = re.search(
+        r"(Amani, S\.,[^\n]*doi\.org/10\.54941/ahfe1005662\}\n)", text)
+    if not anchor:
+        return text, False
+    pos = anchor.end()
+    entries = (
+        "\nAnthropic. (2026a). \\emph{Claude} (4.8 Opus) {[}Large language "
+        "model{]}. \\url{https://claude.ai}\n"
+        "\nAnthropic. (2026b). \\emph{Claude Code} (4.8 Opus) {[}AI coding "
+        "assistant{]}. \\url{https://www.anthropic.com/claude-code}\n")
+    return text[:pos] + entries + text[pos:], True
+
+
 def format_references(text):
     """Give the docx's own "List of References" section an APA-7 hanging
     indent by wrapping its body in a group."""
@@ -1482,6 +1518,7 @@ def main():
     text, fig318_inserted = insert_figure_318(text, base_dir)
     text, appendix_l_figs = format_appendix_l(text)
     text, abbr_done = inject_abbreviations(text, base_dir)
+    text, refs_added = insert_missing_references(text)
     text, refs_done = format_references(text)
     text, appendices, missing = attach_appendix_pdfs(text, base_dir)
     text, backmatter_sections = sectionize_backmatter(text)
@@ -1504,6 +1541,7 @@ def main():
     print("postprocess: LoF/LoT placeholder replaced: %s" % bool(lists_done))
     print("postprocess: abbreviations injected: %s" % abbr_done)
     print("postprocess: references hanging indent: %s" % refs_done)
+    print("postprocess: Anthropic references added: %s" % refs_added)
     print("postprocess: appendix PDFs attached: %s"
           % (", ".join(appendices) or "none"))
     print("postprocess: front matter: %s" % fm_notes)
