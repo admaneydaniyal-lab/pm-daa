@@ -296,12 +296,16 @@ The tools were used interactively throughout the project rather than through a f
 \phantomsection\addcontentsline{toc}{section}{Declaration}
 \section*{Declaration}
 
-I, Daniyal Admany, declare that the research work presented here is from the best of my knowledge and belief, original and the result of my own investigations. The cooperation I got for this research work is clearly acknowledged. To the best of my knowledge, it does not contain any materials that are written by others or published already except mentioned with due references in the text as well as with the quotation marks. This work has not been published, submitted, either in part or whole intended for reward, degree at this or any other University.
+I, Daniyal Admany, hereby declare that the work submitted is the result of my own independent work. No sources or aids other than those explicitly mentioned have been used in its preparation. All materials, ideas, and statements taken from the works of others have been properly cited and acknowledged in the reference list. Direct quotations have been clearly indicated as such, and all other references have been appropriately identified according to their relevance and contribution to this study.
 
-\vspace{1.5\baselineskip}
+This work has neither been published nor submitted previously for evaluation in the same or substantially similar form.
+
+\vfill
+\noindent Duisburg, 15.07.2026
+\\[1.6cm]
+\noindent\rule{7cm}{0.4pt}\\
 Daniyal Admany
-
-Duisburg, 15.07.2026
+\vspace{1cm}
 
 """
 
@@ -935,6 +939,36 @@ def attach_appendix_pdfs(text, base_dir):
     return "".join(out), attached, missing
 
 
+_TITLE_PAGE = r"""
+\begin{titlepage}
+\centering
+{\includegraphics[width=6cm]{assets/hsrw-logo.png}\par}
+\vspace{0.6cm}
+{\large Hochschule Rhein-Waal\par}
+{\large Rhine-Waal University of Applied Sciences\par}
+\vspace{0.3cm}
+{\large Faculty of Communication and Environment\par}
+\vspace{1.4cm}
+{\large Prof. Dr. Kai Essig\par}
+{\large André Frank Krause\par}
+\vspace{1.6cm}
+{\LARGE\bfseries %(title)s\par}
+\vspace{1.6cm}
+{\large Master Thesis\par}
+\vspace{0.3cm}
+{\large Submitted to the Degree of Master of Science\par}
+{\large in\par}
+{\large Usability Engineering\par}
+\vspace{1.4cm}
+{\large by Daniyal Admany\par}
+{\large Matriculation number: 35795\par}
+\vspace{0.3cm}
+{\large Submission Date: 15.07.2026\par}
+\vfill
+\end{titlepage}
+"""
+
+
 _ACKNOWLEDGEMENTS = r"""\clearpage
 \hypertarget{acknowledgements}{}%
 \section{Acknowledgements}
@@ -977,14 +1011,8 @@ def restructure_front_matter(text):
         re.DOTALL)
 
     def title_repl(m):
-        return (m.group(1) +
-                "\n\\begin{titlepage}\n\\centering\n\\vspace*{4cm}\n"
-                "{\\Large\\textbf{Masters Thesis}}\\\\[2cm]\n"
-                "{\\huge\\bfseries " + m.group(2).strip() + "\\par}\n"
-                "\\vspace{2.5cm}\n"
-                "{\\large " + m.group(3).strip() + "}\\\\[1cm]\n"
-                + m.group(4).strip() + "\n"
-                "\\vfill\n\\end{titlepage}\n")
+        title = m.group(2).strip().rstrip(".")
+        return (m.group(1) + _TITLE_PAGE % {"title": title})
 
     text, n = title_pat.subn(title_repl, text)
     notes.append("title page: %s" % bool(n))
