@@ -5,7 +5,21 @@ with images and tables preserved and the project's formatting re-applied
 automatically. You never have to redo images or tables when the content changes
 — just re-run the pipeline on the new `.docx`.
 
+## Reproducible build (one command)
+
+The manuscript is committed to the repo at `source/thesis.docx`, so the build is
+fully reproducible: clone, then
+
+```sh
+./convert.sh
+```
+
+builds `document.pdf` from `source/thesis.docx` with no arguments. See
+`CLAUDE.md` for the full rules, current state, and pending items.
+
 ## Regenerate from an updated .docx
+
+Replace `source/thesis.docx` and run `./convert.sh`, or point it at any file:
 
 ```sh
 ./convert.sh path/to/new_version.docx

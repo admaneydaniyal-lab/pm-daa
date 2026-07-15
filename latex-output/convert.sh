@@ -31,12 +31,15 @@ for arg in "$@"; do
   esac
 done
 
+# With no argument, build from the manuscript committed to the repo. This is
+# what makes the build reproducible: clone, run ./convert.sh, get this PDF.
 if [[ -z "$SRC" ]]; then
-  echo "usage: ./convert.sh path/to/file.docx [--no-references]" >&2
-  exit 1
+  SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/source/thesis.docx"
 fi
 if [[ ! -f "$SRC" ]]; then
   echo "error: no such file: $SRC" >&2
+  echo "usage: ./convert.sh [path/to/file.docx] [--add-references]" >&2
+  echo "       (with no path, builds from source/thesis.docx)" >&2
   exit 1
 fi
 SRC="$(cd "$(dirname "$SRC")" && pwd)/$(basename "$SRC")"  # absolute path

@@ -969,7 +969,7 @@ def attach_appendix_pdfs(text, base_dir):
     The letter comes from the closest preceding "Appendix X" heading. When the
     file isn't in appendix/ yet, leave a visible note saying what to drop in.
     """
-    marker = re.compile(r"\{\[\}add PDF\s*\{\]\}")
+    marker = re.compile(r"\{\[\}add PDF\s*\{\]\}", re.IGNORECASE)
     out, last, attached, missing = [], 0, [], []
     for m in marker.finditer(text):
         head = None
@@ -989,6 +989,132 @@ def attach_appendix_pdfs(text, base_dir):
         last = m.end()
     out.append(text[last:])
     return "".join(out), attached, missing
+
+
+# Figure L.1 is a tall portrait screenshot; scale it down so it and L.2 share a
+# page. The other Appendix L screenshots are landscape and take a taller box.
+_APPENDIX_L_SIZE = {
+    "L.1": r"height=0.30\textheight,max width=\linewidth,keepaspectratio",
+}
+_APPENDIX_L_DEFAULT = r"height=0.34\textheight,max width=\linewidth,keepaspectratio"
+
+
+def format_appendix_l(text):
+    """Appendix L is a run of screenshots that the docx glues inline to their
+    captions, so captions don't sit under the images, most are missing from the
+    List of Figures, and the figures don't break across pages cleanly. Rebuild
+    every Appendix L figure as a centred figure[H] with the caption underneath,
+    a List-of-Figures entry, and breathing room between figures. Figure L.1 (a
+    tall portrait screenshot) is scaled down so it and L.2 share a page."""
+    start = text.find(r"\textbf{Appendix L:")
+    if start == -1:
+        return text, 0
+    end = text.find(r"\textbf{Appendix M:", start)
+    if end == -1:
+        end = len(text)
+    block = text[start:end]
+
+    # 1. Collapse L.1's existing figure[H] wrapper back to the inline form the
+    #    other L figures use, so a single pass can rebuild them all uniformly.
+    block = re.sub(
+        r"\\begin\{figure\}\[H\]\s*\\begin\{center\}"
+        r"\\includegraphics\[[^\]]*\]\{(media/media/image\d+\.png)\}"
+        r"\\end\{center\}\s*"
+        r"\\phantomsection\\addcontentsline\{lof\}[^\n]*\n"
+        r"(\\textbf\{Figure L\.\d+\}[^\n]*)\n\\end\{figure\}",
+        lambda m: "\\includegraphics{%s}%s" % (m.group(1), m.group(2)),
+        block, flags=re.DOTALL)
+
+    # 2. Rebuild each inline "image + caption" pair as a centred figure[H].
+    fig_re = re.compile(
+        r"\\includegraphics(?:\[[^\]]*\])?\{(media/media/image\d+\.png)\}"
+        r"\\textbf\{Figure (L\.\d+)\}([^\n]*)")
+    count = [0]
+
+    def rebuild(m):
+        img, num, rest = m.group(1), m.group(2), m.group(3)
+        size = _APPENDIX_L_SIZE.get(num, _APPENDIX_L_DEFAULT)
+        short = rest.strip().split(". ")[0]
+        short = re.sub(r"\\[a-zA-Z]+\s*", "", short)
+        short = re.sub(r"[{}]", "", short).strip(" .") + "."
+        count[0] += 1
+        return (
+            "\\begin{figure}[H]\n\\centering\n"
+            "\\includegraphics[%s]{%s}\n\n"
+            "\\phantomsection\\addcontentsline{lof}{figure}"
+            "{\\protect\\numberline{%s}%s}%%\n"
+            "\\textbf{Figure %s}%s\n"
+            "\\end{figure}\n\n\\vspace{1.5em}\n"
+            % (size, img, num, short, num, rest.rstrip()))
+
+    block = fig_re.sub(rebuild, block)
+    return text[:start] + block + text[end:], count[0]
+
+
+def sectionize_backmatter(text):
+    """The docx leaves four back-matter headings as plain \\textbf{} paragraphs
+    (Appendix L, Appendix M, the AI-tools disclosure, and the Declaration).
+    Promote each to a real \\subsection so it starts on its own page and gets a
+    Table-of-Contents entry, matching Appendices A-K. Also push the
+    Declaration's signature (name + date) to the foot of its page."""
+    headings = [
+        (r"\textbf{Appendix L: Screenshots of Fragmented workflow tools}",
+         "appendix-l", "Appendix L: Screenshots of Fragmented workflow tools"),
+        (r"\textbf{Appendix M: Google Doc Study Documentation template}",
+         "appendix-m", "Appendix M: Google Doc Study Documentation template"),
+        (r"\textbf{Information on the use of AI-based tools}",
+         "information-on-the-use-of-ai-based-tools",
+         "Information on the use of AI-based tools"),
+        (r"\textbf{Declaration}", "declaration-final", "Declaration"),
+    ]
+    n = 0
+    for bold, tag, title in headings:
+        repl = ("\\clearpage\n\\hypertarget{%s}{%%\n\\subsection{%s}"
+                "\\label{%s}}" % (tag, title, tag))
+        new = text.replace(bold, repl, 1)
+        if new != text:
+            n += 1
+            text = new
+
+    # Declaration signature to the bottom of the page.
+    text = text.replace(
+        "\nDaniyal Admany\n\nDuisburg, 15.07.2026\n",
+        "\n\\vfill\n\nDaniyal Admany\n\nDuisburg, 15.07.2026\n\\vspace{2cm}\n",
+        1)
+    return text, n
+
+
+def insert_figure_318(text, base_dir):
+    """Insert Figure 3.18 (the successful-validation screenshot, supplied
+    separately as assets/figure-3.18.png) with its caption after the paragraph
+    that introduces Figures 3.18 and 3.19. The docx references 3.18 but omits
+    the figure. No-ops until the asset is present."""
+    asset = "assets/figure-3.18.png"
+    if not os.path.exists(os.path.join(base_dir, asset)):
+        return text, False
+    anchor = "visibility of system status (Nielsen, 1994)."
+    idx = text.find(anchor)
+    if idx == -1:
+        return text, False
+    pos = idx + len(anchor)
+    short = ("Eye-tracking calibration, Step 4: Validation, showing a "
+             "successful calibration.")
+    caption = (
+        "Eye-tracking calibration, Step 4: Validation, showing a successful "
+        "calibration. A green success banner sits above a scatter plot of the "
+        "five-point grid, showing the intended gaze target against the computed "
+        "gaze position for each point. A collapsible table below reports the "
+        "colour-coded metrics: gaze accuracy, gaze precision, valid data yield, "
+        "points detected, recalibration attempts, the pass threshold, and the "
+        "overall result.")
+    block = (
+        "\n\n\\begin{figure}[H]\n\\centering\n"
+        "\\includegraphics[max width=\\linewidth,max totalheight=0.78"
+        "\\textheight]{%s}\n\n"
+        "\\phantomsection\\addcontentsline{lof}{figure}"
+        "{\\protect\\numberline{3.18}%s}%%\n"
+        "\\textbf{Figure 3.18} %s\n\\end{figure}" % (asset, short, caption))
+    return text[:pos] + block + text[pos:], True
 
 
 _TITLE_PAGE = r"""
@@ -1078,6 +1204,16 @@ def restructure_front_matter(text):
 
     def title_repl(m):
         body = m.group(2).strip()
+        # Shrink the university logo to 40% of the text width.
+        body = re.sub(
+            r"\\includegraphics\[[^\]]*\]\{(media/media/image\d+\.png)\}",
+            r"\\includegraphics[width=0.4\\linewidth]{\1}", body, count=1)
+        # Give the thesis title breathing room above and below, and set it
+        # larger than the surrounding lines.
+        body = re.sub(
+            r"\\textbf\{([^}]+)\}",
+            r"\\vspace{1.6cm}\n\n{\\Large\\bfseries \1\\par}\n\n\\vspace{1.6cm}",
+            body, count=1)
         return (m.group(1)
                 + "\n\\begin{titlepage}\n\\centering\n\\vspace*{\\fill}\n\n"
                 + body
@@ -1146,16 +1282,18 @@ def main():
     text, k_ref_added = add_appendix_k_reference(text)
     text, appendix_blocks_framed = frame_appendix_info_blocks(text)
     text = resize_images(text, base_dir)
-    text, moved_318 = move_figure_318(text)
     text, fig326_replaced = replace_figure_326_image(text, base_dir)
     text = shrink_wide_tables(text)
     text = reserve_table_units(text)
     text, diagrams = insert_diagrams(text, base_dir)
     text, lists_done = add_figure_table_lists(text)
     text = wrap_figures_with_captions(text)[0]
+    text, fig318_inserted = insert_figure_318(text, base_dir)
+    text, appendix_l_figs = format_appendix_l(text)
     text, abbr_done = inject_abbreviations(text, base_dir)
     text, refs_done = format_references(text)
     text, appendices, missing = attach_appendix_pdfs(text, base_dir)
+    text, backmatter_sections = sectionize_backmatter(text)
     text, fm_notes = restructure_front_matter(text)
 
     with open(tex, "w", encoding="utf-8") as fh:
@@ -1174,7 +1312,9 @@ def main():
     print("postprocess: appendix PDFs attached: %s"
           % (", ".join(appendices) or "none"))
     print("postprocess: front matter: %s" % fm_notes)
-    print("postprocess: figure 3.18 moved: %s" % moved_318)
+    print("postprocess: figure 3.18 inserted: %s" % fig318_inserted)
+    print("postprocess: appendix L figures reformatted: %d" % appendix_l_figs)
+    print("postprocess: back-matter sections promoted: %d" % backmatter_sections)
     print("postprocess: figure 3.26 image replaced: %s" % fig326_replaced)
     print("postprocess: appendix sub-headers demoted: %d"
           % appendix_headers_demoted)
