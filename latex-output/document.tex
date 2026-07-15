@@ -117,10 +117,14 @@
 % Applies to every longtable Pandoc emits. Extra-wide tables (6+ columns) are
 % dropped a further step to \footnotesize by postprocess.py.
 \usepackage{etoolbox}
+% Row spacing is read from \longtablestretch so a single table can widen its
+% rows (postprocess wraps text-heavy tables in a group that raises it) despite
+% this hook running at every longtable's start.
+\newcommand{\longtablestretch}{1.25}
 \AtBeginEnvironment{longtable}{%
   \small
   \setlength{\tabcolsep}{5pt}%
-  \renewcommand{\arraystretch}{1.25}%
+  \renewcommand{\arraystretch}{\longtablestretch}%
 }
 
 % --- Let pdfLaTeX render Unicode math/Greek symbols found in the text --------
@@ -190,7 +194,6 @@
 
 \pagenumbering{roman}
 \setcounter{tocdepth}{3}
-\tableofcontents
 
 \clearpage
 \hypertarget{abstract}{%
@@ -203,6 +206,19 @@ A within-subjects, counterbalanced study was conducted with twelve participants,
 The unified workflow substantially reduced perceived workload and interaction breakdowns and raised perceived usability from below to above the established benchmark, all with large effects. Setup and calibration times were shorter but did not reach the corrected significance threshold. Calibration quality showed no significant differences in gaze accuracy, valid data yield, or first-pass success, while gaze precision was poorer in the unified condition, concentrated in two low-yield sessions. The qualitative findings indicate that visible system state reduced the uncertainty driving breakdowns in fragmented setups. The study shows that guided integration can improve setup usability without detectable loss of calibration quality.
 
 \textbf{Keywords}: usability engineering; multi-sensor research platforms; eye-tracking validation; biosensor setup; eda baseline; guided onboarding workflows; reflexive thematic analysis; interaction breakdowns; within-subjects evaluation
+
+\clearpage
+\hypertarget{acknowledgements}{}%
+\section{Acknowledgements}
+
+I would like to thank my supervisor, Prof. Dr. Kai Essig, whose guidance and feedback shaped this work at every stage and consistently pushed it to be clearer and more rigorous than I would have managed alone. And to my second supervisor, Dr. André Frank Krause, for his time and considered input.
+
+Big thanks to Sarthak and Shilton, without whose efforts, the Sensa prototype would not have been built. Running from the campus to the bus stop to catch the last SB30 back to Duisburg has been a core part of my experience during this programme, and it was apt that the last few months reflected that. And to Renu for her help, snacks, and company in the lab. And of course to the twelve participants, whose patience and honesty made this study possible.
+
+To my family, thank you for everything. To my mother especially, who always wanted me to do a Master's: this one is for you. And to my friends, thank you for always (trying to) keeping me grounded.
+
+\clearpage
+\tableofcontents
 
 \clearpage
 \hypertarget{list-of-abbreviations}{%
@@ -2709,9 +2725,10 @@ You are a research assistant preparing to run a short physiological study sessio
 
 \textbf{Step 1: Study documentation}
 
-\Needspace{19\baselineskip}
+\Needspace{23\baselineskip}
 Open the provided Google Docs template and record the following study parameters manually. For fields not mentioned:
 
+\begingroup\renewcommand{\longtablestretch}{1.6}
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3369}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6431}}@{}}
@@ -2771,6 +2788,7 @@ We will conduct usability tests with participants to identify pain points and me
 \bottomrule\noalign{}
 \endlastfoot
 \end{longtable}
+\endgroup
 
 \textbf{Step 2: Eye-tracking calibration}
 
@@ -2871,7 +2889,8 @@ Using Sensa, complete the full study setup and sensor calibration process so tha
   Use the following parameters to set up your study:
 \end{enumerate}
 
-\Needspace{17\baselineskip}
+\Needspace{20\baselineskip}
+\begingroup\renewcommand{\longtablestretch}{1.6}
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3369}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6431}}@{}}
@@ -2931,6 +2950,7 @@ We will conduct usability tests with participants to identify pain points and me
 \bottomrule\noalign{}
 \endlastfoot
 \end{longtable}
+\endgroup
 
 \textbf{Step 2: Readiness check}
 
@@ -3337,6 +3357,7 @@ Requests for clarification
 
 \textbf{Researcher overall notes:}
 
+\clearpage
 \textbf{Session Observation Sheet (Unified)}
 
 Participant ID\textbf{:} \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
@@ -3635,7 +3656,7 @@ This is the printed reference extract available to participants during eye-track
 
 \includepdf[pages=-,width=\textwidth,pagecommand={}]{appendix/appendix-H.pdf}
 
-\textbf{\hfill\break}
+
 
 \clearpage
 \hypertarget{appendix-i-eda-sensor-reference-datasheet}{%
@@ -3645,7 +3666,7 @@ This is the printed electrode-placement reference sheet available to participant
 
 \includepdf[pages=-,width=\textwidth,pagecommand={}]{appendix/appendix-I.pdf}
 
-\textbf{\hfill\break}
+
 
 \clearpage
 \hypertarget{appendix-j-full-thematic-coding}{%
@@ -4757,10 +4778,11 @@ P02, P04, P06, P07
 
 The pattern is directional and consistent with the quantitative results: the fragmented-heavy codes cluster around disconnected tools and hidden state (I1, I2, I3, I4, I13, D2, D6), while the unified-heavy codes cluster around visible feedback and guidance (I5, I6, I7, I8, D5, D8). Several codes are genuinely cross-cutting (I10, I11, I15, I16), and these are the residual problems that the unified workflow did not resolve.
 
-\Needspace{17\baselineskip}
+\Needspace{16\baselineskip}
 \hypertarget{part-d.-consolidation-into-the-five-themes}{%
 \subsubsection{Part D. Consolidation into the five themes}\label{part-d.-consolidation-into-the-five-themes}}
 
+\begingroup\renewcommand{\longtablestretch}{1.6}
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3358}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2124}}
@@ -4813,6 +4835,7 @@ Familiarity and self-reliance: ease partly from having done the other condition 
 \bottomrule\noalign{}
 \endlastfoot
 \end{longtable}
+\endgroup
 
 \phantomsection\addcontentsline{lot}{table}{\protect\numberline{J.4}Consolidation into themes.}%
 \textbf{Table J.4} Consolidation into themes. The codes constituting each of the final five themes, with the rationale for grouping.

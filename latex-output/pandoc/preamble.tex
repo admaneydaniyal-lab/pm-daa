@@ -46,10 +46,14 @@
 % Applies to every longtable Pandoc emits. Extra-wide tables (6+ columns) are
 % dropped a further step to \footnotesize by postprocess.py.
 \usepackage{etoolbox}
+% Row spacing is read from \longtablestretch so a single table can widen its
+% rows (postprocess wraps text-heavy tables in a group that raises it) despite
+% this hook running at every longtable's start.
+\newcommand{\longtablestretch}{1.25}
 \AtBeginEnvironment{longtable}{%
   \small
   \setlength{\tabcolsep}{5pt}%
-  \renewcommand{\arraystretch}{1.25}%
+  \renewcommand{\arraystretch}{\longtablestretch}%
 }
 
 % --- Let pdfLaTeX render Unicode math/Greek symbols found in the text --------

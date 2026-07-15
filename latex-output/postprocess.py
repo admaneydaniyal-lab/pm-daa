@@ -162,7 +162,9 @@ def shrink_wide_tables(text):
         if ncols >= 2:
             block = _rebalance_columns(
                 block, ncols, char_frac=0.0075 if ncols >= 10 else 0.0095)
-        nrows = len(_CELL_RE.findall(block)) // ncols if ncols else 0
+        cells = _CELL_RE.findall(block)
+        nrows = len(cells) // ncols if ncols else 0
+        longest_cell = max((_visual_len(c) for c in cells), default=0)
         if ncols >= 10:  # per-participant data tables: rotate to landscape
             inner = "\n\n".join(p for p in (cap_above, block, cap_below) if p)
             return ("\\begin{landscape}\n"
@@ -172,6 +174,11 @@ def shrink_wide_tables(text):
         if ncols >= WIDE_TABLE_COLS or nrows >= TALL_TABLE_ROWS:
             block = ("\\begingroup\\let\\small\\footnotesize"
                      "\\setlength{\\tabcolsep}{4pt}\n" + block + "\n\\endgroup")
+        elif longest_cell >= 120:
+            # text-heavy tables (e.g. J.4's Rationale column): widen the row
+            # gaps so the walls of text are easier to read.
+            block = ("\\begingroup\\renewcommand{\\longtablestretch}{1.6}\n"
+                     + block + "\n\\endgroup")
         parts = [p for p in (cap_above, block, cap_below) if p]
         return "\n\n".join(parts)
 
@@ -646,10 +653,17 @@ def demote_appendix_subheaders(text):
             def sub(mm):
                 nonlocal count
                 title = (mm.group(2) or mm.group(3) or "").strip()
-                if not title:
+                # Word spacer headings hold only a line break (\hfill\break):
+                # dropping them avoids a stray empty paragraph that forces a
+                # blank page (e.g. after the Appendix H/I attached PDFs).
+                if not re.sub(r"\\hfill|\\break|\\newline|\\\\|\s", "", title):
                     return ""
                 count += 1
-                return "\\textbf{%s}" % title
+                # Start the Unified session-observation sheet on a fresh page.
+                prefix = ("\\clearpage\n"
+                          if "Session Observation Sheet (Unified)" in title
+                          else "")
+                return "%s\\textbf{%s}" % (prefix, title)
             body = header_re.sub(sub, body)
         out.append(body)
     return "".join(out), count
@@ -713,9 +727,10 @@ def reserve_table_units(text):
         if ncols < 2:
             continue
         nrows = len(_CELL_RE.findall(block)) // ncols
-        footnote = ("\\let\\small\\footnotesize"
-                    in text[max(0, tstart - 120):tstart])
-        row_factor = 1.05 if footnote else 1.28  # incl. \arraystretch
+        pre120 = text[max(0, tstart - 120):tstart]
+        footnote = "\\let\\small\\footnotesize" in pre120
+        wide_rows = "\\renewcommand{\\longtablestretch}" in pre120
+        row_factor = 1.05 if footnote else (1.65 if wide_rows else 1.28)
         # caption directly below
         after = text[tend:tend + 500]
         cap_m = re.match(r"\n\n(\\textbf\{Table\s[^\n]*)", after)
@@ -731,7 +746,9 @@ def reserve_table_units(text):
             r"(?P<head>\\hypertarget\{[^}]*\}\{%\n"
             r"\\(?:paragraph|subsubsection)\{[^\n]*\}\}\n\n)?"
             r"(?P<intro>(?!\\)[^\n]+\n\n)?"
-            r"(?P<wrap>\\begingroup\\let\\small\\footnotesize[^\n]*\n)?\Z")
+            r"(?P<wrap>\\begingroup"
+            r"(?:\\let\\small\\footnotesize|\\renewcommand\{\\longtablestretch\})"
+            r"[^\n]*\n)?\Z")
         pm = prefix_re.search(text[:tstart])
         if pm is None:
             continue
@@ -918,6 +935,18 @@ def attach_appendix_pdfs(text, base_dir):
     return "".join(out), attached, missing
 
 
+_ACKNOWLEDGEMENTS = r"""\clearpage
+\hypertarget{acknowledgements}{}%
+\section{Acknowledgements}
+
+I would like to thank my supervisor, Prof. Dr. Kai Essig, whose guidance and feedback shaped this work at every stage and consistently pushed it to be clearer and more rigorous than I would have managed alone. And to my second supervisor, Dr. André Frank Krause, for his time and considered input.
+
+Big thanks to Sarthak and Shilton, without whose efforts, the Sensa prototype would not have been built. Running from the campus to the bus stop to catch the last SB30 back to Duisburg has been a core part of my experience during this programme, and it was apt that the last few months reflected that. And to Renu for her help, snacks, and company in the lab. And of course to the twelve participants, whose patience and honesty made this study possible.
+
+To my family, thank you for everything. To my mother especially, who always wanted me to do a Master's: this one is for you. And to my friends, thank you for always (trying to) keeping me grounded.
+"""
+
+
 def restructure_front_matter(text):
     """Thesis layout: standalone title page; live LaTeX TOC replacing Word's
     static one; roman page numbers for the front matter; arabic numbering
@@ -960,17 +989,25 @@ def restructure_front_matter(text):
     text, n = title_pat.subn(title_repl, text)
     notes.append("title page: %s" % bool(n))
 
-    # 4. Replace Word's static TOC (stale page numbers) with a live one.
+    # 4. Drop Word's static TOC block; the live TOC is placed after the
+    #    Abstract and Acknowledgements below.
     toc_pat = re.compile(
         r"\\hypertarget\{table-of-contents\}\{%\n"
         r"\\section\{[^\n]*\}\\label\{table-of-contents\}\}\n"
         r".*?(?=\\hypertarget\{abstract\})",
         re.DOTALL)
     text, n = toc_pat.subn(
-        "\\\\pagenumbering{roman}\n"
-        "\\\\setcounter{tocdepth}{3}\n"
-        "\\\\tableofcontents\n\n", text)
+        "\\\\pagenumbering{roman}\n\\\\setcounter{tocdepth}{3}\n\n", text)
     notes.append("live TOC: %s" % bool(n))
+
+    # 4b. Front matter order: Abstract, then Acknowledgements, then the live
+    #     Table of Contents (inserted just before the List of Abbreviations,
+    #     which already follows the Abstract in the source).
+    ack_toc = (_ACKNOWLEDGEMENTS + "\n\\clearpage\n\\tableofcontents\n\n")
+    text, n = re.subn(
+        r"(?=\\hypertarget\{list-of-abbreviations\})",
+        lambda _: ack_toc, text, count=1)
+    notes.append("acknowledgements + TOC placed: %s" % bool(n))
 
     # 5. Arabic page numbers from the Introduction onwards.
     text, n = re.subn(
