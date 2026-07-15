@@ -318,7 +318,7 @@ def apply_text_edits(text):
     # the new Anthropic (2026a) reference entry.
     text = text.replace(
         "An AI assistant (Claude) was used to support the process",
-        "An AI assistant (Claude Anthropic, 2026a) was used to support the process")
+        "An AI assistant (Claude, Anthropic, 2026a) was used to support the process")
     # Chapter 4.6.1.1-4.6.1.4 headings: drop the "Step N: " prefix Word left
     # in front of the descriptive title (the numbering already conveys order).
     text = re.sub(
