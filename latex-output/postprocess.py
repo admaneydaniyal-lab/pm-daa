@@ -308,10 +308,9 @@ I, Daniyal Admany, hereby declare that the work submitted is the result of my ow
 This work has neither been published nor submitted previously for evaluation in the same or substantially similar form.
 
 \vfill
+\noindent Daniyal Admany
+\\[0.4cm]
 \noindent Duisburg, 15.07.2026
-\\[1.6cm]
-\noindent\rule{7cm}{0.4pt}\\
-Daniyal Admany
 \vspace{1cm}
 
 """
