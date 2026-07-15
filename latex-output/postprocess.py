@@ -28,6 +28,14 @@ SCREENSHOT_MAX_HEIGHT = r"0.78\textheight"
 WIDE_TABLE_COLS = 6
 # Per-diagram display width overrides (default \linewidth).
 DIAGRAM_WIDTHS = {"3.20": "0.85\\linewidth"}
+# Per-image width overrides for figures classified as "plots" by resize_images
+# (i.e. sized at PLOT_WIDTH by default). Keyed by media path; scale relative to
+# PLOT_WIDTH's 0.62 so the reasoning ("scale up 25%") stays legible here.
+# Figure 3.4 (image25.png) and Figure 3.9 (image3.png): scaled up 25%.
+_PLOT_WIDTH_OVERRIDE = {
+    "media/media/image25.png": r"0.775\linewidth",  # Figure 3.4: 0.62 * 1.25
+    "media/media/image3.png": r"0.775\linewidth",   # Figure 3.9: 0.62 * 1.25
+}
 
 
 def png_width(path):
@@ -55,8 +63,9 @@ def resize_images(text, base_dir):
             return m.group(0)  # leave Pandoc's commented example line alone
         width = png_width(os.path.join(base_dir, path))
         if width is not None and width < SMALL_IMAGE_PX:
+            plot_width = _PLOT_WIDTH_OVERRIDE.get(path, PLOT_WIDTH)
             return (r"\begin{center}\includegraphics[width=%s]{%s}\end{center}"
-                    % (PLOT_WIDTH, path))
+                    % (plot_width, path))
         return (r"\includegraphics[max width=\linewidth,"
                 r"max totalheight=%s]{%s}" % (SCREENSHOT_MAX_HEIGHT, path))
 
