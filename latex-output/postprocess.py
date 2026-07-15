@@ -864,6 +864,22 @@ def insert_diagrams(text, base_dir):
     return _CAPTION_RE.sub(repl, text), inserted
 
 
+def normalize_caption_bold(text):
+    """Word sometimes bolds more than the figure/table label in a caption, e.g.
+    ``\\textbf{Figure 3.21 EDA calibration, Step 1:}`` (the whole prefix) or a
+    mid-word ``\\textbf{Figure 5.1 S}etup`` (a stray bold run). Restrict the
+    bold to just the "Figure X.Y" / "Table X.Y" label so caption styling is
+    uniform and the keep-together wrapper (which keys on ``\\textbf{Figure
+    X.Y}``) recognises the caption. Runs before the caption lists are built."""
+    pat = re.compile(
+        r"^\\textbf\{(Figure|Table) ((?:\d+|[A-Z])\.\d+)( [^}\n]*?)\}",
+        re.MULTILINE)
+    text, n = pat.subn(
+        lambda m: "\\textbf{%s %s}%s" % (m.group(1), m.group(2), m.group(3)),
+        text)
+    return text, n
+
+
 def add_figure_table_lists(text):
     """Feed every Figure/Table caption into the .lof/.lot files and replace
     the docx's empty "List of Figures / List of Tables" placeholder section
@@ -1018,12 +1034,19 @@ To my family, thank you for everything. To my mother especially, who always want
 
 
 def restructure_front_matter(text):
-    """Thesis layout: standalone title page; live LaTeX TOC replacing Word's
-    static one; roman page numbers for the front matter; arabic numbering
-    restarting at the Introduction; every chapter/appendix on a new page."""
+    """Thesis layout for the self-contained docx front matter: wrap the opening
+    block (logo, faculty, supervisors, title, degree) in a real title page;
+    replace Word's static TOC with a live one; roman page numbers for the front
+    matter; arabic numbering restarting at the Introduction; drop the
+    "[added in Latex]" placeholders and empty spacer sections; every
+    chapter/appendix on a new page.
+
+    The docx now carries its own title page, Acknowledgements, Abstract and a
+    static Table of Contents, so this step re-styles what the author supplied
+    rather than synthesising front matter from scratch."""
     notes = []
 
-    # 1. Drop Word's empty spacer headings (they'd become blank TOC entries).
+    # 1. Drop Word's empty numbered spacer headings (blank TOC entries).
     text, n = re.subn(
         r"\\hypertarget\{section-\d+\}\{%\n"
         r"\\(?:sub)*(?:section|paragraph)\{(?:\\texorpdfstring\{\\hfill\\break"
@@ -1037,41 +1060,54 @@ def restructure_front_matter(text):
         r"\{\s*([^{}]*?)\s*\}\}",
         lambda m: "\\section{%s}" % m.group(2).strip(), text)
 
-    # 3. Turn the opening block into a real title page.
+    # 2b. Drop the bare empty section Word leaves before the Introduction
+    #     (now that step 2 has reduced it to an empty \section{}).
+    text, n = re.subn(
+        r"\\hypertarget\{section\}\{%\n"
+        r"\\section\{\s*\}\\label\{section\}\}\n?",
+        "", text)
+    notes.append("%d empty sections removed" % n)
+
+    # 3. The docx supplies its own title page (logo, faculty, supervisors,
+    #    title, degree) as the block between \begin{document} and the
+    #    Acknowledgements. Wrap it in a centred {titlepage} and start roman
+    #    page numbering for the rest of the front matter.
     title_pat = re.compile(
-        r"(\\begin\{document\}\n)\n?"
-        r"\\textbf\{Masters Thesis\}\n\n"
-        r"([^\n]+)\n\n"
-        r"([^\n]+)\n\n"
-        r"(\{\[\}Citation standard[^\n]*)\n",
+        r"(\\begin\{document\})\n+(.*?)\n+(?=\\hypertarget\{acknowledgements\})",
         re.DOTALL)
 
     def title_repl(m):
-        title = m.group(2).strip().rstrip(".")
-        return (m.group(1) + _TITLE_PAGE % {"title": title})
+        body = m.group(2).strip()
+        return (m.group(1)
+                + "\n\\begin{titlepage}\n\\centering\n\\vspace*{\\fill}\n\n"
+                + body
+                + "\n\n\\vspace*{\\fill}\n\\end{titlepage}\n\n"
+                + "\\pagenumbering{roman}\n\\setcounter{tocdepth}{3}\n")
 
     text, n = title_pat.subn(title_repl, text)
     notes.append("title page: %s" % bool(n))
 
-    # 4. Drop Word's static TOC block; the live TOC is placed after the
-    #    Abstract and Acknowledgements below.
+    # 4. Replace Word's static TOC (heading + hyperlinked entries) with a live
+    #    \tableofcontents. Roman numbering is already set by step 3 above.
     toc_pat = re.compile(
         r"\\hypertarget\{table-of-contents\}\{%\n"
         r"\\section\{[^\n]*\}\\label\{table-of-contents\}\}\n"
-        r".*?(?=\\hypertarget\{abstract\})",
+        r".*?(?=\\hypertarget\{list-of-abbreviations\})",
         re.DOTALL)
     text, n = toc_pat.subn(
-        "\\\\pagenumbering{roman}\n\\\\setcounter{tocdepth}{3}\n\n", text)
+        "\\\\clearpage\n\\\\tableofcontents\n\\\\clearpage\n\n", text)
     notes.append("live TOC: %s" % bool(n))
 
-    # 4b. Front matter order: Abstract, then Acknowledgements, then the live
-    #     Table of Contents (inserted just before the List of Abbreviations,
-    #     which already follows the Abstract in the source).
-    ack_toc = (_ACKNOWLEDGEMENTS + "\n\\clearpage\n\\tableofcontents\n\n")
+    # 4b. Drop the "[added in Latex]" placeholder heading the author left where
+    #     the generated lists go, and the stray "[added in latex]" note that
+    #     sits under the List of Figures / List of Tables lists.
     text, n = re.subn(
-        r"(?=\\hypertarget\{list-of-abbreviations\})",
-        lambda _: ack_toc, text, count=1)
-    notes.append("acknowledgements + TOC placed: %s" % bool(n))
+        r"(?:\\clearpage\n)?\\hypertarget\{added-in-latex\}\{%\n"
+        r"\\section\{.*?\}\\label\{added-in-latex\}\}\n?",
+        "", text, flags=re.DOTALL)
+    notes.append("added-in-latex heading removed: %s" % bool(n))
+    text, n = re.subn(r"\n\{\[\}added in latex\{\]\}\n", "\n", text)
+    notes.append("added-in-latex note removed: %s" % bool(n))
 
     # 5. Arabic page numbers from the Introduction onwards.
     text, n = re.subn(
@@ -1101,6 +1137,7 @@ def main():
     text = demote_caption_headings(text)
     text, appendix_headers_demoted = demote_appendix_subheaders(text)
     text = apply_text_edits(text)
+    text, captions_normalized = normalize_caption_bold(text)
     text, list_quotes_tightened = tighten_list_quotes(text)
     text = fix_formulas(text)
     text = align_cells_top(text)
@@ -1130,6 +1167,7 @@ def main():
     print("postprocess: %d plots shrunk, %d screenshots capped, "
           "%d wide tables set to footnotesize" % (n_plots, n_shots, n_wide))
     print("postprocess: diagrams inserted: %s" % (", ".join(diagrams) or "none"))
+    print("postprocess: caption bold normalized: %d" % captions_normalized)
     print("postprocess: LoF/LoT placeholder replaced: %s" % bool(lists_done))
     print("postprocess: abbreviations injected: %s" % abbr_done)
     print("postprocess: references hanging indent: %s" % refs_done)

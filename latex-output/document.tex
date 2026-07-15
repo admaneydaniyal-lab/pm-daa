@@ -180,36 +180,52 @@
 \date{}
 
 \begin{document}
-
 \begin{titlepage}
 \centering
-{\includegraphics[width=6cm]{assets/hsrw-logo.png}\par}
-\vspace{0.6cm}
-{\large Hochschule Rhein-Waal\par}
-{\large Rhine-Waal University of Applied Sciences\par}
-\vspace{0.3cm}
-{\large Faculty of Communication and Environment\par}
-\vspace{1.4cm}
-{\large Prof. Dr. Kai Essig\par}
-{\large André Frank Krause\par}
-\vspace{1.6cm}
-{\LARGE\bfseries Designing and Evaluating Usability-Centred Onboarding and Calibration Workflows in Multi-Modal Research Platforms\par}
-\vspace{1.6cm}
-{\large Master Thesis\par}
-\vspace{0.3cm}
-{\large Submitted to the Degree of Master of Science\par}
-{\large in\par}
-{\large Usability Engineering\par}
-\vspace{1.4cm}
-{\large by Daniyal Admany\par}
-{\large Matriculation number: 35795\par}
-\vspace{0.3cm}
-{\large Submission Date: 15.07.2026\par}
-\vfill
+\vspace*{\fill}
+
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image37.png}
+
+Hochschule Rhein-Waal
+
+Rhine-Waal University of Applied Sciences
+
+Faculty of Communication and Environment
+
+Prof. Dr. Kai Essig
+
+André Frank Krause
+
+\textbf{Designing and Evaluating Usability-Centred Onboarding and Calibration Workflows in Multi-Modal Research Platforms}
+
+Master Thesis
+
+Submitted to the Degree of Master of Science
+
+in
+
+Usability Engineering
+
+by Daniyal Admany
+
+Matriculation number: 35795
+
+Submission Date: 15.07.2026
+
+\vspace*{\fill}
 \end{titlepage}
 
 \pagenumbering{roman}
 \setcounter{tocdepth}{3}
+\clearpage
+\hypertarget{acknowledgements}{%
+\section{Acknowledgements}\label{acknowledgements}}
+
+I would like to thank my supervisor, Prof. Dr. Kai Essig, whose guidance and feedback shaped this work at every stage and consistently pushed it to be clearer and more rigorous than I would have managed alone. And to my second supervisor, Dr. André Frank Krause, for his time and considered input.
+
+Big thanks to Sarthak and Shilton, without whose efforts, the Sensa prototype would not have been built. Running from the campus to the bus stop to catch the last SB30 back to Duisburg has been a core part of my experience during this programme, and it was apt that the last few months reflected that. And to Renu for her help, snacks, and company in the lab. And of course to the twelve participants, whose patience and honesty made this study possible.
+
+To my family, thank you for everything. To my mother especially, who always wanted me to do a Master\textquotesingle s: this one is for you. And to my friends, thank you for always (trying to) keeping me grounded.
 
 \clearpage
 \hypertarget{abstract}{%
@@ -224,17 +240,8 @@ The unified workflow substantially reduced perceived workload and interaction br
 \textbf{Keywords}: usability engineering; multi-sensor research platforms; eye-tracking validation; biosensor setup; eda baseline; guided onboarding workflows; reflexive thematic analysis; interaction breakdowns; within-subjects evaluation
 
 \clearpage
-\hypertarget{acknowledgements}{}%
-\section{Acknowledgements}
-
-I would like to thank my supervisor, Prof. Dr. Kai Essig, whose guidance and feedback shaped this work at every stage and consistently pushed it to be clearer and more rigorous than I would have managed alone. And to my second supervisor, Dr. André Frank Krause, for his time and considered input.
-
-Big thanks to Sarthak and Shilton, without whose efforts, the Sensa prototype would not have been built. Running from the campus to the bus stop to catch the last SB30 back to Duisburg has been a core part of my experience during this programme, and it was apt that the last few months reflected that. And to Renu for her help, snacks, and company in the lab. And of course to the twelve participants, whose patience and honesty made this study possible.
-
-To my family, thank you for everything. To my mother especially, who always wanted me to do a Master's: this one is for you. And to my friends, thank you for always (trying to) keeping me grounded.
-
-\clearpage
 \tableofcontents
+\clearpage
 
 \clearpage
 \hypertarget{list-of-abbreviations}{%
@@ -270,6 +277,8 @@ UX & User Experience \\
 \listoffigures
 \phantomsection\addcontentsline{toc}{section}{List of Tables}
 \listoftables
+
+
 
 
 \clearpage
@@ -712,7 +721,7 @@ For eye tracking specifically, empirically measured accuracy and precision frequ
 
 Consumer eye trackers expose a recurring version of this problem: a device such as the Tobii 4C produces a gaze model through its bundled software but reports no numeric accuracy or precision to the user, leaving calibration quality unquantified at the point of use.
 
-For biosensors, a comparable dependence on setup quality applies, though it is handled differently. Biosignal quality is not fixed once a sensor is attached: it depends on operator-performed steps such as skin preparation, correct electrode placement, and stable skin contact, and it must be verified per channel before recording begins rather than assumed (Aloi et al., 2024, p. 3). In practice this verification is performed through the sensor's own acquisition software, which may report a per-channel quality indicator; Aloi et al. (2024, p. 3), for example, assessed EEG electrode quality through a dedicated indicator and verified GSR acquisition quality separately before recording.
+For biosensors, a comparable dependence on setup quality applies, though it is handled differently. Biosignal quality is not fixed once a sensor is attached: it depends on operator-performed steps such as skin preparation, correct electrode placement, and stable skin contact, and it must be verified per channel before recording begins rather than assumed (Aloi et al., 2024, p. 3). In practice this verification is performed through the sensor\textquotesingle s own acquisition software, which may report a per-channel quality indicator; Aloi et al. (2024, p. 3), for example, assessed EEG electrode quality through a dedicated indicator and verified GSR acquisition quality separately before recording.
 
 This work investigates whether a usability-centred onboarding and calibration workflow, implemented as the initial stage of the Sensa platform (study setup and sensor onboarding, guided eye-tracking calibration with eye-tracking validation, and guided biosignal sensor preparation and obtaining a baseline recording), can reduce setup time, lower cognitive workload, and improve perceived usability in multi-sensor research environments without degrading calibration quality, and can thereby make complex sensor-based UX research more accessible.
 
@@ -762,7 +771,7 @@ The prototype also integrates separately developed Sensa components that are not
 
 As seen in Figure 3.2, the user is initially prompted to define the study goal, the interface type (web or mobile application), the test environment (laboratory or remote setup), and the available hardware. The selectable study goals are: user effort and workload, emotional engagement/arousal, decision-making behavior, and usability friction/interaction difficulty. These four goals were selected because they represent typical constructs in usability and user experience research that can be investigated through combinations of eye-tracking and physiological sensors (Aloi et al., 2024; Zhu \& Lv, 2023). They are the complete set of study goals supported by the current prototype; additional goals such as trust, learnability, aesthetic preference may be added in future development. These inputs collectively inform the sensor and metric recommendation that follows, as seen in Figure 3.3. For the purposes of this thesis, the focus is on the User Effort and Workload study goal and the user flow that stems from it. This goal was chosen to demonstrate the workflow because it is a common target in usability and HCI research and because it draws on multiple sensor types and on both behavioural and physiological indicators (for example fixation behaviour together with electrodermal arousal), which exercises the platform\textquotesingle s multimodal recommendation and calibration path more fully than a single-signal goal would.
 
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image5.png}\\
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image12.png}\\
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.2}Study Setup screen.}%
 \textbf{Figure 3.2} Study Setup screen. The user enters study details for documentation, which the system then uses to recommend appropriate sensors.
 
@@ -775,7 +784,7 @@ For the User Effort and Workload goal used in this evaluation, workload is not o
 The empirical evaluation in this thesis was limited to eye tracking and EDA, in order to keep the within-subjects sessions manageable and to test two distinct calibration procedures: spatial calibration for eye tracking and resting-baseline recording for EDA. EEG and ECG remain selectable interface options, reflecting the platform\textquotesingle s intended multimodal scope and demonstrating how the same goal-to-metric mapping extends across it, but they were not connected or measured during the evaluation (see Chapter 4.3). Sensor selection can also be performed manually if the researcher prefers to override the recommendation, as seen in Figure 3.4.
 
 \begin{figure}[H]
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image2.png}
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image5.png}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.3}Recommended Sensors screen.}%
 \textbf{Figure 3.3} Recommended Sensors screen. Based on the study goal selected during Study Setup, the system recommends a set of sensors and the metrics to track for each, together with a plain-language message explaining why those sensors were recommended and what to watch for.
@@ -790,7 +799,7 @@ The recommendation logic is a predefined rule-based mapping between study goals,
 In the current prototype the recommendation screen is implemented as a static demonstration: it is pinned to the User Effort and Workload goal used throughout the evaluation, and the same recommendation is shown irrespective of which goal is selected. Making the recommendation conditional on the selected study goal and the available hardware is the intended behaviour and remains to be implemented.
 
 \begin{figure}[H]
-\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image20.png}\end{center}
+\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image25.png}\end{center}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.4}Manual Sensor Selection screen.}%
 \textbf{Figure 3.4} Manual Sensor Selection screen. The user can customise which sensors to use and which metrics to track in their study.
@@ -813,7 +822,7 @@ Figure 3.5 showcases the user's journey from the study setup to the readiness ch
 The session begins with a screen (Figure 3.6) displaying the study configuration and a prompt for the researcher to confirm the project name, participant count, and study objective (e.g: \emph{Identify usability issues in the checkout flow} or \emph{Measure participant cognitive and emotional responses during a task)} before proceeding to a readiness check.
 
 \begin{figure}[H]
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image8.png}
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image9.png}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.6}Project Details screen.}%
 \textbf{Figure 3.6} Project Details screen. The editable Study Configuration defined earlier sits at the top, followed by a form for documenting project-related details, with mandatory fields gated by inline error messages.
@@ -833,7 +842,7 @@ A readiness checklist is presented, requiring the researcher to confirm the foll
 \end{itemize}
 
 \begin{figure}[H]
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image14.png}
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image6.png}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.7}Environment and Participant Readiness screen.}%
 \textbf{Figure 3.7} Environment and Participant Readiness screen. The "Start Sensor Calibration" button is gated and remains disabled until every item in the checklist is checked off.
@@ -851,7 +860,7 @@ The readiness checklist is the first of two preparatory phases; sensor-specific 
 To support users without prior experience in verifying compliance with each condition, each checklist item includes an inline description and a clickable tooltip providing the relevant reference standard. For example, the seating item specifies the 60 cm viewing distance recommended for Tobii eye trackers, and the lighting item describes adequate ambient conditions for biosensor and eye-tracking detection. This approach embeds the domain knowledge required for self-assessment directly at the point of decision, reducing reliance on external manuals or prior training.
 
 \begin{figure}[H]
-\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image7.png}\end{center}
+\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image3.png}\end{center}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.9}Calibration Overview screen.}%
 \textbf{Figure 3.9} Calibration Overview screen. The "Proceed to Recording" button stays gated and disabled until all required sensors have been calibrated and set up.
@@ -874,7 +883,7 @@ As shown in Figure 3.10, eye-tracker calibration is presented as a guided four-s
 \textbf{Step 1: Instructions:} Calibration begins with a set of instructions accompanied by an illustration that informs the user to position themselves directly in front of the screen, at a distance of 60 cm while looking straight at the screen (Figure 3.11). This is used to prepare the user with guidance for the next step.
 
 \begin{figure}[H]
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image17.png}
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image36.png}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.11}Eye-tracking calibration, Step 1: Instructions.}%
 \textbf{Figure 3.11} Eye-tracking calibration, Step 1: Instructions. An illustrated set of instructions directs the user to sit directly in front of the screen, at 60 cm, looking straight ahead, preparing them for the positioning step.
@@ -883,14 +892,14 @@ As shown in Figure 3.10, eye-tracker calibration is presented as a guided four-s
 \textbf{Step 2: Positioning:} Calibration begins with a positioning screen that provides live track-box feedback. The track box is the three-dimensional volume in front of the tracker within which the Tobii 4C can see both eyes; the screen shows the participant\textquotesingle s eyes as points inside this volume in real time (Figure 3.12 and Figure 3.13), confirming that the participant is seated within the optimal detection range before any calibration targets are displayed before moving on to the actual calibration. Correct head position is a precondition for a usable calibration, since a participant who sits too close, too far, or off-axis can produce degraded tracking regardless of how the calibration itself proceeds. The screen guides the participant through two states: an out-of-range state that prompts the participant to correct their position (Figure 3.13), and an in-range confirmation that enables progression to calibration (Figure 3.14). Gating progression on correct positioning is another instance of error prevention (see Chapter 3.6): the participant cannot begin calibration from an invalid starting position. Additionally, the live eye-tracker status card underneath the live-track box (see lower part of Figure 3.13) keeps the user informed about the connection status of the eye-tracker.
 
 \begin{figure}[H]
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image15.png}
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image18.png}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.12}Eye-tracking calibration, Step 2: Positioning, with the user outside the optimal range.}%
 \textbf{Figure 3.12} Eye-tracking calibration, Step 2: Positioning, with the user outside the optimal range. The live track box shows the user seated outside the recommended 60 cm range, so the "Go to Calibration" button is disabled and the current distance to the eye tracker is displayed in millimetres. The status card below reports the connection state (Device Connected or Not Connected), the eye-tracker model and serial number, and the live distance.
 \end{figure}
 
 \begin{figure}[H]
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image12.png}
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image14.png}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.13}Eye-tracking calibration, Step 2: Positioning, with the user within the optimal range.}%
 \textbf{Figure 3.13} Eye-tracking calibration, Step 2: Positioning, with the user within the optimal range. The user is seated within the recommended 60 cm range, so the "Go to Calibration" button is enabled. The status card below reports the connection state (Device Connected or Not Connected), the eye-tracker model and serial number, and the live distance.
@@ -899,7 +908,7 @@ As shown in Figure 3.10, eye-tracker calibration is presented as a guided four-s
 \textbf{Step 3: Calibration routine:} Once positioning is confirmed, the participant is shown a pre-calibration screen that explains what is about to happen (Figure 3.14). Due to hardware availability limitations and being restricted to using a Tobii 4C Eye-tracker which is not compatible with the Tobii Pro SDK required to implement calibration directly within Sensa, the calibration layer could not run natively in Sensa, and hence the screen directs the user to Tobii's native calibration sequence. Sensa does not reimplement gaze estimation; the calibration routine is run through the Tobii, which builds and stores the gaze model. The rationale for this boundary, and what it means for how calibration quality is then measured, is set out in Chapter 3.3.4.
 
 \begin{figure}[H]
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image11.png}
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image30.png}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.14}Eye-tracking calibration, Step 3: Calibration, pre-calibration screen.}%
 \textbf{Figure 3.14} Eye-tracking calibration, Step 3: Calibration, pre-calibration screen. The screen directs the user to Tobii Core's native calibration routine, sets out instructions for the upcoming step, and lets the user set the pass threshold for the validation layer.
@@ -913,9 +922,11 @@ After calibration, the system prompts the user to run a validation check and, if
 \hypertarget{rationale}{%
 \paragraph{3.3.4.1 Rationale}\label{rationale}}
 
-A calibration routine maps (in this case, routed through Tobii's Core software) a participant\textquotesingle s eye images five points on the screen (center, and on the four edges). This data is used to interpolate the gaze coordinates for the other points on screen. However, completing a calibration does not by itself guarantee that the resulting gaze estimates are accurate. Calibration quality varies with eye physiology, ambient lighting, head position, and the calibration procedure itself, and must therefore be measured, through an explicit validation step carried out before any data collection begins, rather than assumed (Nyström et al., 2013, p. 286). A separate validation step, in which targets are presented at known locations and the recorded gaze is compared against them, is the standard way to obtain an objective, reportable statement of data quality, and empirically measured accuracy frequently diverges from manufacturer-stated figures (Dalrymple et al., 2018, p. 9).
+A calibration routine maps (in this case, routed through Tobii's Core software) a participant\textquotesingle s eye images five points on the screen (center, and on the four edges). This data is used to interpolate the gaze coordinates for the other points on screen. However, completing a calibration does not by itself guarantee that the resulting gaze estimates are accurate. Calibration quality varies with eye physiology, ambient lighting, head position, and the calibration procedure itself, and must therefore be measured, through an explicit validation step carried out before any data collection begins (Nyström et al., 2013, p. 286). A separate validation step, in which targets are presented at known locations and the recorded gaze is compared against them, is the standard method for obtaining an objective, reportable measure of data quality. In practice, empirically measured accuracy often differs from manufacturer-reported specifications (Dalrymple et al., 2018, p. 9).
 
-This need is sharpened by the choice of a consumer-grade tracker. The Tobii 4C builds and stores its gaze model through the manufacturer\textquotesingle s own runtime and reports no numeric accuracy or precision back to the operator (Dell Inc., 2016, p. 6). Meanwhile, its native validation is a qualitative gaze-trace visualisation (Dell Inc., 2016, p. 9). An operator using the device alone therefore has no objective measure of how good a given calibration is. The validation layer described here was built to close that gap: a transparent, hardware-grounded measurement that quantifies the quality of whatever calibration the Tobii runtime has produced, and reports it in the units conventional to the field.
+The validation layer described here was designed to address this gap by providing a transparent, hardware-grounded assessment of the calibration produced by the Tobii runtime. The use of a consumer-grade eye tracker further reinforces the need for this validation step. It quantifies calibration quality and reports the results using the standard metrics and units employed in the eye-tracking literature.
+
+The Tobii 4C builds and stores its gaze model through the manufacturer\textquotesingle s own runtime and reports no numeric accuracy or precision back to the operator (Dell Inc., 2016, p. 6). Meanwhile, its native validation is a qualitative gaze-trace visualisation (Dell Inc., 2016, p. 9). An operator using the device alone therefore has no objective measure of how good a given calibration is. The validation layer described here was built to close that gap: a transparent, hardware-grounded measurement that quantifies the quality of whatever calibration the Tobii runtime has produced, and reports it in the units conventional to the field.
 
 \hypertarget{measured-quantities}{%
 \paragraph{3.3.4.2 Measured quantities}\label{measured-quantities}}
@@ -937,7 +948,7 @@ Both are reported in degrees of visual angle, which normalises the measurement f
 During validation the five targets are presented one at a time as an overlay on the display, following the introductory prompt shown in Figure 3.15. Each target appears as a highlighted point that the participant is asked to look at, and a live gaze trace follows the participant\textquotesingle s eyes across the screen throughout, providing continuous feedback that the eyes are being tracked (Figure 3.16). Each target is held for approximately two seconds, comprising a brief settling period that allows the eye to reach the new location followed by approximately 1.5 seconds during which the binocular gaze samples for that target are collected, with an on-screen countdown indicating the remaining dwell time.
 
 \begin{figure}[H]
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image19.png}
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image34.png}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.15}Eye-tracking calibration, Step 4: Validation, instructions overlay.}%
 \textbf{Figure 3.15} Eye-tracking calibration, Step 4: Validation, instructions overlay. The overlay tells the user what to expect (a bright dot appearing at five points around the screen) and what to do (follow the dot and hold their gaze on it until it turns red or green).
@@ -946,29 +957,29 @@ During validation the five targets are presented one at a time as an overlay on 
 The five targets are presented at fixed, normalised display coordinates: the four corners of the usable display area, inset slightly from the edges, and the centre. Only samples that contain a valid estimate from both eyes are used for the position estimate; samples in which neither eye returns a valid estimate are discarded and counted toward the valid-data yield rather than toward the position estimate.
 
 \begin{figure}[H]
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image6.png}
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image22.png}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.16}Eye-tracking calibration, Step 4: Validation, five-point grid.}%
 \textbf{Figure 3.16} Eye-tracking calibration, Step 4: Validation, five-point grid. The five targets are presented one at a time while a live gaze trace follows the user\textquotesingle s eyes across the screen. Holding gaze on a target for two seconds turns it green for success; red indicates failure.
 \end{figure}
 
-As soon as a target\textquotesingle s collection window closes, the point changes colour to communicate its outcome: it turns green when the mean recorded gaze for that target falls within the pass threshold, and red when the gaze falls outside the threshold or too few valid samples were captured. This per-target colour feedback accumulates as the sequence proceeds, so that by the end of the grid the user can see which locations were tracked successfully. Providing an immediate, visible outcome for each target is a further application of the visibility-of-system-status principle (Nielsen, 1994), and it also motivates the recalibration decision, since a grid containing one or more red targets signals that the calibration should be repeated before proceeding.
+As soon as a target\textquotesingle s collection window closes, the point changes colour to communicate its outcome: it turns green when the mean recorded gaze for that target falls within the pass threshold (explored further in Chapter 3.3.4.4), and red when the gaze falls outside the threshold or too few valid samples were captured. By the end of the procedure, the complete set of colour-coded results provides an immediate visual summary of calibration quality. This immediate, visible feedback is a further application of the visibility-of-system-status principle (Nielsen, 1994) and supports the decision of whether recalibration is necessary, as the presence of one or more red targets indicates that the calibration should be repeated before proceeding.
 
-\hypertarget{measuring-accuracy-and-precision}{%
-\paragraph{3.3.4.4 Measuring accuracy and precision}\label{measuring-accuracy-and-precision}}
+\hypertarget{measuring-accuracy-and-prescions}{%
+\paragraph{\texorpdfstring{3.3.4.4 Measuring accuracy and prescions }{3.3.4.4 Measuring accuracy and prescions }}\label{measuring-accuracy-and-prescions}}
 
-The main methodological improvement of this layer concerns how gaze accuracy and precision are obtained and calculated during validation, converting the on-screen error into an angle at the eye rather than reporting a raw screen distance.
+The main methodological improvement in this layer is the calculation of gaze accuracy and precision during validation: on-screen error is converted into visual angle at the eye rather than reported as raw screen distance.
 
-As shown in Figure 3.17, for each target, the individual gaze samples collected during its window are first reduced to a single mean recorded gaze position. Each raw sample that contains a valid estimate from both eyes is reduced to a single binocular gaze point by averaging the left and right on-screen coordinates; the per-sample binocular points are then averaged across the collection window to give the mean recorded gaze for that target. During validation the system then compares this mean recorded gaze position with the known position of the target, producing an on-screen error (for example in pixels or millimetres).
+As shown in Figure 3.17, the gaze samples collected for each target are first averaged to obtain a single recorded gaze position. Each raw sample that contains a valid estimate from both eyes is reduced to a single binocular gaze point by averaging the left and right on-screen coordinates. These points are then averaged over the collection window to obtain the mean recorded gaze position for the target. During validation the system then compares this mean recorded gaze position with the known position of the target, producing an on-screen error (for example in pixels or millimetres).
 
 \begin{figure}[H]
 \begin{center}\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{diagrams/figure-3.17.pdf}\end{center}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.17}Eye-tracking measurement pipeline.}%
-\textbf{Figure 3.17} Eye-tracking measurement pipeline. The system measures the user\textquotesingle s viewing distance live from the eye-position stream, presents the five targets and collects binocular gaze at each, and computes the per-target on-screen error. It converts this error to degrees of visual angle as the inverse tangent of the error over the measured distance, then reports accuracy, precision, and valid data yield and scores each target as pass or fail against the threshold.
+\textbf{Figure 3.17} Eye-tracking measurement pipeline. The system measures the user\textquotesingle s viewing distance live from the eye-position stream, presents the five targets and collects binocular gaze at each, and computes the per-target on-screen error. It converts this error to degrees of visual angle as the inverse tangent of the error over the measured distance, then reports accuracy, precision, and valid data yield and scores each target as pass or fail against the pass threshold (maximum permissible mean accuracy).
 \end{figure}
 
-This screen-space error alone is not sufficient, because its meaning depends on viewing distance: the same on-screen distance corresponds to a larger visual angle when the participant sits close to the monitor and a smaller one when they sit farther away. The validation method therefore does not assume a fixed field of view. Instead, it uses the eye tracker\textquotesingle s live eye-position data to estimate the participant\textquotesingle s actual viewing distance and converts the on-screen error into degrees of visual angle as the inverse tangent of the error over that measured distance. This replaces an earlier fallback that used hardcoded values or a fixed field-of-view constant, which would assign the same accuracy to participants sitting at different distances.
+On-screen error alone is not enough, because the same distance on screen corresponds to a larger visual angle when the participant sits closer to the monitor and a smaller one when they sit further away. To account for this, the system does not assume a fixed viewing distance. It reads the participant\textquotesingle s eye position live from the tracker, uses this to estimate their actual distance from the screen, and converts the on-screen error into degrees of visual angle as the inverse tangent of the error over that distance.
 
 \textbf{Accuracy} is computed per target as the angular offset between the mean recorded gaze and the known target position. The normalised error is scaled to a physical on-screen distance using the known display width and then converted to a visual angle by taking the inverse tangent of that distance over the measured viewing distance:
 
@@ -978,46 +989,41 @@ This screen-space error alone is not sufficient, because its meaning depends on 
 
 where W is the physical display width in millimetres and d is the participant\textquotesingle s viewing distance in millimetres, measured live as described above. The overall accuracy for a session is the mean of the per-target values across the valid targets. Defining accuracy as the offset of the recorded gaze location from the target, averaged over the targets, follows Nyström et al. (2013, p. 280). Its decomposition from precision and its expression in degrees of visual angle follows the standard treatment in the eye-tracking methodology literature (Holmqvist et al., 2012, p. 48).
 
-\textbf{Precision} captures the dispersion of the individual gaze samples about their own mean, independently of the accuracy offset. It is computed as the spatial standard deviation of the N valid binocular samples for a target, converted to a visual angle by the same inverse-tangent relation:
+\textbf{Precision} describes how closely the individual gaze samples cluster around their mean, independently of how far that mean lies from the target. For each target, precision is calculated as the root-mean-square distance of the (N) valid binocular gaze samples from their mean position:
 
 \[ \text{spread} = \sqrt{\frac{1}{N} \sum \left((\text{sampleX} - \text{meanGazeX})^{2} + (\text{sampleY} - \text{meanGazeY})^{2}\right)} \]
 
+The resulting spread is then converted into degrees of visual angle using the same relationship as for accuracy:
+
 \[ \text{precision}\,(^{\circ}) = \arctan\!\left(\frac{\text{spread} \times W}{d}\right) \]
 
-where the summation Σ runs over the N valid binocular samples collected for the target. This standard-deviation form is one of the two dispersion estimators recommended for spatial precision; the alternative expresses precision as the root-mean-square of the distances between temporally successive samples as used by Nyström et al. (2013, p. 280) and described by Holmqvist et al. (2012, p. 48). The standard-deviation estimator is used here because it summarises the overall stability of the fixation rather than sample-to-sample jitter.
+Here, (W) is the physical display width, (d) is the measured viewing distance, and the summation includes all valid binocular samples collected for the target. The summation Σ runs over the N valid binocular samples collected for the target. This standard-deviation form is one of the two dispersion estimators recommended for spatial precision; the alternative expresses precision as the root-mean-square of the distances between temporally successive samples as used by Nyström et al. (2013, p. 280) and described by Holmqvist et al. (2012, p. 48). This measure is used because it captures the overall spatial stability of the fixation rather than the variation between consecutive gaze samples.
 
 Reporting accuracy, precision, and valid-data yield together follows the standardised data-quality report proposed by the latter authors (Holmqvist et al., 2012, p. 49). Valid data yield is the proportion of collection samples containing a valid binocular estimate, N\_valid/N\_all (Nyström et al., 2013, p. 280).
 
+\textbf{The pass threshold} is a maximum permissible mean accuracy, expressed in degrees of visual angle and set to 3 degrees by default. This threshold is configurable by the user (Figure 3.14) during Step 3 of eye-tracker calibration and reported together with the result in Step 4. The 3 degrees is pragmatic default rather than a fixed standard. Acceptance criteria in eye tracking are study- and hardware-dependent: research-grade systems are typically validated to below one degree, whereas consumer trackers such as the Tobii 4C realistically achieve coarser accuracy under non-laboratory seating and lighting. Mikalef et al. (2023, p .4) set a validation-accuracy threshold of 2.5 degrees for a consumer eye tracker, describing it as an acceptable error margin corresponding to fewer than ten pixels at a viewing distance of 50 to 70 cm. The 3-degree default adopted here sits slightly above that value, providing a usable readiness gate for a consumer device operated by a non-expert rather than a research-grade acceptance criterion. Since the threshold is user-configurable and reported alongside every result, the pass criterion is explicit and can be tightened for stricter applications.
+
+The pass/fail decision is based on angular accuracy alone. A target passes if it returns valid gaze data and its accuracy is within the defined threshold, and the session passes if all five targets return valid data and the mean accuracy across them is within the threshold. Precision and valid-data yield are reported to help interpret the result but do not contribute to the pass/fail outcome.
+
 Two simplifications of this real-time implementation should be stated.
 
-First, the metrics are computed over all valid samples in each collection window rather than over an algorithmically detected fixation. Holmqvist et al. (2012, p. 50) note that data-quality values computed from fixation samples are directly dependent on the fixation-detection algorithm used, and that different algorithms produce markedly different results from the same data; they raise the omission of the fixation-detection stage as an open question rather than a settled convention. Computing over recorded samples avoids that dependency at the cost of including any saccade samples present, and it distinguishes the present procedure from Nyström et al. (2013, p. 280), who apply fixation detection and additional sample-selection criteria before computing the same quantities.
+First, the metrics are computed over all valid samples in each collection window rather than over an algorithmically detected fixation. This avoids dependence on a fixation-detection algorithm, whose choice can materially change the resulting values (Holmqvist et al., 2012, p. 50), but it may include saccadic samples where present. It distinguishes the present procedure from Nyström et al. (2013, p. 280), who apply fixation detection and additional sample-selection criteria before computing the same quantities.
 
-Second, the tracker reports gaze in normalised display coordinates, with the horizontal component normalised by display width and the vertical by display height. The implementation forms a single normalised Euclidean error from the two components and scales it by the display width alone, rather than converting each component to millimetres separately. On a 16:9 display this overestimates any error carrying a vertical component, by a factor of up to 1.78 for a purely vertical error, leaving purely horizontal errors unaffected. Reported accuracy and precision values are therefore inflated by a small, systematic, direction-dependent factor. Because the same instrument and conversion are applied in both conditions during the empirical study, this factor is constant and cancels in the within-participant paired comparison on which H5 is evaluated. It does not affect the relative result, but it reinforces that the reported values are instrument-relative rather than absolute ground truth (Chapters 3.3.4.6, 4.4.3, and 4.7.4).
+Second, the tracker reports gaze in normalised display coordinates, with the horizontal component normalised by display width and the vertical by display height. The implementation forms a single normalised Euclidean error from the two components and scales it by the display width alone, rather than converting each component to millimetres separately. On a 16:9 display this overestimates any error carrying a vertical component, by a factor of up to 1.78 for a purely vertical error, while leaving purely horizontal errors unaffected. Reported accuracy and precision values are therefore inflated by a systematic, direction-dependent factor. Because the same instrument and conversion are applied in both conditions, this inflation is expected to be similar across conditions and to substantially offset in the within-participant paired comparison on which H5 is evaluated. It would cancel exactly only if the distribution of error directions were identical across conditions, which cannot be assumed; the offset is therefore approximate rather than exact. This limitation reinforces that the reported values are instrument-relative rather than absolute ground truth (Chapters 3.3.4.6, 4.4.3, and 4.7.4).
 
-The author defined the methodological decisions behind this process (live distance measurement, binocular data reduction, angular error conversion, and the validation threshold) and verified the outputs against the hardware and the eye-tracking literature. The implementation was developed through AI-assisted pair-programming using Claude Code (Anthropic).
-
-The validation threshold is configurable by the user (Figure 3.14) during Step 3 of eye-tracker calibration and reported together with the result in Step 4. By default it is set to 3 degrees, providing a small tolerance margin relative to the cited realistic upper accuracy range of approximately 2.5 degrees for consumer eye trackers such as the Tobii 4C (Mikalef et al., 2023, p. 4).
+The author defined the methodological decisions behind this process (live distance measurement, binocular data reduction, angular error conversion, and the validation threshold) and verified the outputs against the hardware and the eye-tracking literature.
 
 \hypertarget{result-visualisation-and-pass-criteria}{%
 \paragraph{3.3.4.5 Result visualisation and pass criteria}\label{result-visualisation-and-pass-criteria}}
 
-Validation results are presented as a two-dimensional scatter plot that overlays, in normalised display space, the five target locations and the corresponding mean gaze positions, with a dashed offset line connecting each target to its measured gaze (Figure 3.18 and Figure 3.19). The length of each offset line is the visual representation of the accuracy error, and elements are colour-coded against the pass threshold (within threshold in green, exceeding it in red), so the operator can see at a glance both the magnitude and the spatial pattern of any systematic offset, for example a consistent downward displacement indicating a vertical bias. A target passes if its accuracy is within the pass threshold (3 degrees of visual angle by default, as defined in Chapter 3.3.4.4); the session passes if a sufficient number of targets are valid and the mean accuracy across valid targets is within that threshold. Presenting the measurement outcome visibly and immediately follows established usability guidance on visibility of system status (Nielsen, 1994).
-
-\begin{figure}[H]
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image28.png}
-
-\phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.18}Eye-tracking calibration, Step 4: Validation, showing a successful calibration.}%
-\textbf{Figure 3.18} Eye-tracking calibration, Step 4: Validation, showing a successful calibration. A green success banner sits above a scatter plot of the five-point grid, showing the intended gaze target against the computed gaze position for each point. A collapsible table below reports the colour-coded metrics: gaze accuracy, gaze precision, valid data yield, points detected, recalibration attempts, the pass threshold, and the overall result.
-\end{figure}
-
+The validation results are shown in a two-dimensional scatter plot in normalised display coordinates (Figures 3.18 and 3.19). The plot shows the five target positions and their corresponding mean gaze positions, with dashed lines indicating the offset between each target and the recorded gaze. The length of each offset line is the visual representation of the accuracy error. Elements are colour-coded against the pass threshold, shown in green when within the predefined acceptance limit and in red when exceeding it. This lets the operator see at a glance both the magnitude and the spatial pattern of any systematic offset, for example a consistent downward displacement indicating a vertical bias. A target passes if its accuracy is within the pass threshold (3 degrees of visual angle by default, as defined in Section 3.3.4.4). The session passes if a sufficient number of targets are valid and the mean accuracy across valid targets is within the threshold.Presenting the measurement outcome visibly and immediately follows established usability guidance on visibility of system status (Nielsen, 1994).
 
 This is why, post validation, the user is presented with a colour coded banner message at the top indicating whether the calibration quality was good (green) or prompts the user to perform calibration again (red) above the scatter plot.
 
 Underneath the scatter plot, the user is also presented with numerical outputs for each calibration-quality metric, namely: gaze accuracy and gaze precision in degrees, valid data yield as a percentage, the number of points detected, whether the calibration succeeded on the first attempt, the number of recalibration attempts, the pass threshold, and the overall calibration status (pass or fail), as seen Figure 3.18 and Figure 3.19, along with a colour coded banner message at the top indicating success or failure of the validation.
 
-
 \begin{figure}[H]
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image25.png}
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image31.png}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.19}Eye-tracking calibration, Step 4: Validation, showing a failed calibration.}%
 \textbf{Figure 3.19} Eye-tracking calibration, Step 4: Validation, showing a failed calibration. As in Figure 3.18, but a red error banner reports the failure and prompts recalibration, above the same five-point scatter plot and the same collapsible table of colour-coded metrics.
@@ -1046,15 +1052,17 @@ To ensure consistency in design, as shown in Figure 3.20, the biometric sensor c
 
 Presenting placement as an explicit checklist rather than as normal continuous text written in paragraphs lets the researcher confirm each precondition in turn (clean skin, dry skin, non-dominant hand, correct finger per electrode), while the illustration removes reliance on memory or an external manual. The "Continue to Connect" action stays disabled until every item is checked, gating progression on correct placement.
 
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image23.png}
+\begin{figure}[H]
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image27.png}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.21}EDA calibration, Step 1: Attach and place electrodes.}%
-\textbf{Figure 3.21 EDA calibration, Step 1:} Attach and place electrodes. An anatomical illustration shows the correct electrode sites, alongside two checklists for preparing the skin and placing the electrodes. The "Continue to Connect" action stays disabled until every item is checked.
+\textbf{Figure 3.21} EDA calibration, Step 1: Attach and place electrodes. An anatomical illustration shows the correct electrode sites, alongside two checklists for preparing the skin and placing the electrodes. The "Continue to Connect" action stays disabled until every item is checked.
+\end{figure}
 
 \textbf{Step 2: Connect Electrodes and Set Up Channels:} The second step guides the researcher through connecting the sensor to the Biosignalsplux hub and configuring the acquisition channel (Figure 3.22). A contextual note explains that the EDA sensor must be connected to an analog input port and is not compatible with reference/ground or digital ports. The accompanying hub diagram marks valid ports with a checkmark and invalid ports with a cross, helping the researcher match the instruction to the physical device. The Connect Hardware and Enable Channel checklists guide the researcher through cable connection and channel setup. The system supports these steps by displaying inline confirmations, such as the resolved channel and detected sensor class, for example: Channel 5, EDA sensor (class 4). Beneath these, a Live Hub Status card reports the connected device address, the EDA channel, and whether a sensor is detected on that channel, giving live confirmation that the configuration entered matches what the hardware actually reports. Progression to signal check is gated on these confirmations.
 
 \begin{figure}[H]
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image9.png}
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image4.png}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.22}EDA calibration, Step 2: Connect electrodes and set up channels.}%
 \textbf{Figure 3.22} EDA calibration, Step 2: Connect electrodes and set up channels. A contextual note explains that the EDA sensor must use an analog port, with a hub diagram marking valid and invalid ports. A Live Hub Status card reports the hub\textquotesingle s connectivity, and the user must check every item to enable the action to proceed to Signal Check.
@@ -1067,7 +1075,7 @@ These thresholds were set empirically during development for this specific senso
 The amplitude and noise indicators, their derivation from the live signal, and the thresholds and colour states, were designed and implemented by the author with the assistance of Claude Code (Anthropic). The conversion of the raw signal to microsiemens, which produces the baseline value used as a measure in this study (Chapter 4.5.5), is a separate backend component developed by another contributor.
 
 \begin{figure}[H]
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image30.png}
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image28.png}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.23}EDA calibration, Step 3: Check and verify signal quality.}%
 \textbf{Figure 3.23} EDA calibration, Step 3: Check and verify signal quality. A live waveform preview and a colour-coded Sensor Status card (connection, amplitude, noise) keep the user informed of signal strength and acquisition before a baseline is recorded.
@@ -1076,7 +1084,7 @@ The amplitude and noise indicators, their derivation from the live signal, and t
 \textbf{Step 4: Establish a Baseline Recording:} The final stage records a short resting baseline, the participant-specific baseline against which that participant\textquotesingle s session data is later interpreted (Figure 3.24). The user is told that a resting baseline will be recorded and that the participant should be seated and relaxed; the participant is then directed to focus on an on-screen circle and remain still for 30 seconds. On starting the recording, the circle becomes an animated countdown showing the seconds remaining, giving both researcher and participant a continuously visible indication of how much of the baseline task is left and removing the uncertainty of an untimed "hold still" instruction. Throughout the recording, the Sensor Status card continues to report the connection status, amplitude, and noise level in real time. The Baseline field changes from unknown to recording and finally to completed, reporting the mean EDA value in microsiemens. The same colour-coding used for sensor status also flags any deterioration in signal quality during the recording. A focused instruction list (sit still, keep hands relaxed on a flat surface, avoid finger movement, breathe normally, do not talk or shift position until the timer ends) sets the conditions for a clean baseline. On completion, there is a colour coded success/failure message to indicate to the user whether their EDA sensor has been successfully calibrated. If the user is content with the recording, they may choose to export the baseline recording as a .h5 file (a file used to store, organize, and manage massive or complex datasets) or if the user is not satisfied with their recording, they can choose to record a baseline value again (Figure 3.25).
 
 \begin{figure}[H]
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image26.png}
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image35.png}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.24}EDA calibration, Step 4: Establish a baseline recording, with recording in progress.}%
 \textbf{Figure 3.24} EDA calibration, Step 4: Establish a baseline recording, with recording in progress. A contextual note explains that a short baseline is required. The Sensor Status card reports live signal acquisition and a live waveform confirms data is being recorded, while the instructions ask the user to sit still, breathe normally, and focus on the countdown for 30 seconds.
@@ -1085,7 +1093,7 @@ The amplitude and noise indicators, their derivation from the live signal, and t
 Each biosensor calibration follows a similar 4 step process described above, ending with computing a sensor-specific baseline value, which serves as the signal-stability gate before the researcher proceeds to mark the calibration of that sensor as finished.
 
 \begin{figure}[H]
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image21.png}
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image29.png}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.25}EDA calibration, Step 4: Establish a baseline recording, with recording complete.}%
 \textbf{Figure 3.25} EDA calibration, Step 4: Establish a baseline recording, with recording complete. Once the recording finishes, the Baseline (Mean EDA) value is shown alongside a colour-coded success or failure message. The user can then record the baseline again, export the data as a .h5 file, or finish sensor calibration.
@@ -1094,7 +1102,7 @@ Each biosensor calibration follows a similar 4 step process described above, end
 After all sensors have been calibrated, the researcher confirms device readiness by observing calibration overview with success states and proceeding to the Recording phase by clicking on ``Proceed to Recording Data'', as seen in Figure 3.26.
 
 \begin{figure}[H]
-\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image29.png}
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image1.png}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{3.26}Calibration Overview screen with all sensors in a success state.}%
 \textbf{Figure 3.26} Calibration Overview screen with all sensors in a success state. Once every required sensor has been calibrated, the "Proceed to Recording Data" button is enabled.
@@ -1164,7 +1172,7 @@ The study used a within-subjects, counterbalanced design in which every particip
 \hypertarget{fragmented-workflow-baseline-condition}{%
 \subsubsection{\texorpdfstring{4.1.1 \textbf{Fragmented Workflow (Baseline Condition):} }{4.1.1 Fragmented Workflow (Baseline Condition): }}\label{fragmented-workflow-baseline-condition}}
 
-Participants performed onboarding and calibration using the native software tools of each system separately (\emph{Tobii Core} for eye tracking and \emph{Biosignalsplux OpenSignals} for the EDA sensor). The two systems were operated sequentially and without integration: eye-tracking calibration was completed first in Tobii Core, followed by EDA electrode placement, bluetooth connection, and signal verification in OpenSignals, after which a resting baseline was recorded and the mean EDA value was computed from the exported recording using a provided Python script in Jupyter. No unified interface, shared workflow logic, or cross-system guidance was provided at any stage.
+Participants performed onboarding and calibration using the native software tools of each system separately (\emph{Tobii Core} for eye tracking and \emph{Biosignalsplux OpenSignals} for the EDA sensor). The two systems were operated sequentially and without integration: eye-tracking calibration was completed first in Tobii Core, followed by EDA electrode placement, bluetooth connection, and signal verification in OpenSignals, after which a resting baseline was recorded and the mean EDA value was computed from the exported recording using a provided Python script in Jupyter. No unified interface, shared workflow logic, or cross-system guidance was provided at any stage. Screenshots of each fragmented tool as participants encountered them are provided in Appendix L.
 
 This condition reflected the standard fragmented workflow commonly encountered in multi-sensor research environments, in which researchers must navigate tools with varying interfaces, terminology, and calibration procedures. The eye-tracking calibration step followed the standard operator-led procedure supported by Tobii Core, which presented calibration targets as exploding dots and guided the user with on-screen instructions.
 
@@ -1325,7 +1333,7 @@ The post-task objective questionnaire comprised the SUS, the Raw NASA-TLX, and a
 
 In the fragmented condition the participant used the native software tools of each system separately, Tobii Core for the eye tracker and Biosignalsplux OpenSignals for the EDA sensor, with no unified guidance between them. The printed task prompt (Appendix A1) describes a fictional researcher scenario and the sequential steps to complete. The workflow proceeds in three sequential phases:
 
-\textbf{Study documentation:} The participant records the study parameters manually in a provided Google Docs template (add in appendix ??), reflecting the absence of a unified study-creation interface. The parameters recorded are the same as those Sensa\textquotesingle s Study Setup flow captures in the unified condition: study name, study goal, interface type, test environment, sensors and metrics to use, number of participants, and study objectives. This ensures the documentation step is able to be compared across conditions and that time spent on study documentation is included consistently in the setup-time dependent variable for both conditions.
+\textbf{Study documentation:} The participant records the study parameters manually in a provided Google Docs template (Appendix M), reflecting the absence of a unified study-creation interface. The parameters recorded are the same as those Sensa\textquotesingle s Study Setup flow captures in the unified condition: study name, study goal, interface type, test environment, sensors and metrics to use, number of participants, and study objectives. This ensures the documentation step is able to be compared across conditions and that time spent on study documentation is included consistently in the setup-time dependent variable for both conditions.
 
 \textbf{Eye-tracking calibration:} The participant opens Tobii Core, positions themselves at the recommended viewing distance of approximately 60 cm from the screen-mounted eye tracker, and completes the calibration procedure with themselves as the calibration subject. The participant may refer to the printed extract from the Tobii Eye Tracking software user guide (Appendix H) if needed. They then validate the calibration using Tobii Core\textquotesingle s native gaze-trace visualisation, which provides a qualitative visual check of tracking quality but reports no numeric accuracy or precision values. Recalibration is repeated if the participant judges the result unsatisfactory, based on their own judgement of the qualitative gaze-trace visualisation, which is the only quality information Tobii Core exposes. The numeric calibration-quality data for this condition are not collected here; they are obtained afterwards through Sensa\textquotesingle s validation grid, administered as a separate measurement step (see Chapter 4.4.3).
 
@@ -1605,35 +1613,35 @@ descriptive only
 \hypertarget{data-analysis}{%
 \subsection{\texorpdfstring{4.6 Data Analysis }{4.6 Data Analysis }}\label{data-analysis}}
 
-The study generated two complementary data types. Quantitative data consisted of condition-specific dependent variables measured once per participant, while qualitative data came from written post-task responses and observation logs. Owing to the study using a within-subjects design, each participant contributed data in both conditions. Quantitative comparisons were therefore analysed with paired methods, treating each participant as their own control. Quantitative analyses were carried out in JASP (JASP Team, 2026), with an alpha level of .05 and two-tailed tests throughout. Despite the directional hypotheses, two-tailed tests were retained. This was done to ensure consistency across the hypothesis set and to allow detection of effects in the opposite direction. This was particularly important for the calibration-quality measures in H5, where a result contrary to the predicted direction would also be theoretically and practically relevant.
+The study generated two complementary data types. Quantitative data were derived from the measurements collected in each experimental condition, including system-recorded performance and interaction measures, questionnaire scores, and eye-tracking quality metrics. These measures produced one value per participant for each condition. Quantitative differences between conditions were analysed using paired statistical tests based on each participant's results in both conditions. Quantitative analyses were carried out in JASP (JASP Team, 2026), with an alpha level of .05 and two-tailed tests throughout. Despite the directional hypotheses, two-tailed tests were retained. This was done to ensure consistency across the hypothesis set and to allow detection of effects in the opposite direction. This was particularly important for the calibration-quality measures in H5, because any deterioration in data quality would have been both theoretically significant and practically concerning.
 
 One constraint shapes how every statistical result in this thesis should be read: the small sample size limits statistical power. With twelve participants, the paired comparisons can reliably detect only large effects (approximately dz = 0.9 at 80\% power, α = .05). A large difference between the workflows is therefore likely to reach significance, but a smaller, real difference may not, and this risk is greatest for the subjective measures, where any effect is expected to be more modest. The consequences of this are twofold. First, a non-significant result must not be read as evidence that the two workflows do not differ, or that they are equivalent, on that measure; it may simply mean the study could not detect the difference. Second, effect sizes and their confidence intervals carry particular weight in this study, because they show the estimated size and direction of a difference regardless of whether it crosses a significance threshold. For this reason, an effect size and 95\% confidence interval are reported alongside every test, and the subjective measures are interpreted primarily through them.
 
 \hypertarget{quantitative-analysis}{%
 \subsubsection{4.6.1 Quantitative Analysis}\label{quantitative-analysis}}
 
-The quantitative analysis followed a fixed sequence of decisions, described here in the order they were applied: how the appropriate test was chosen for each measure, how effect sizes were reported, how the one binary outcome was handled, and how the analysis controlled for multiple comparisons, followed by two interpretive notes on H5 and the EDA check.
+The quantitative analysis followed a predefined sequence covering test selection, effect sizes, the binary outcome, multiple-comparison correction, and the interpretation of H5 and the EDA check
 
 \hypertarget{step-1-normality-screening-and-the-choice-of-test}{%
 \paragraph{4.6.1.1 Step 1: Normality screening and the choice of test}\label{step-1-normality-screening-and-the-choice-of-test}}
 
-For each continuous or interval dependent variable defined in Chapter 4.5, the within-participant difference scores were first screened for normality using the Shapiro--Wilk test. The outcome of this screen determined which paired comparison was applied. The differences for setup time, calibration time, SUS, NASA-TLX, calibration confidence, interaction breakdowns, valid data yield, and the EDA baseline met the normality assumption and were compared with paired-samples t-tests. The differences for gaze accuracy and gaze precision departed from normality and were compared with the Wilcoxon signed-rank test, which does not assume normally distributed differences. Given the small sample, exact versions of the tests were used where available, rather than their large-sample approximations.
+For each continuous or interval dependent variable defined in Chapter 4.5, the within-participant difference scores were first screened for normality using the Shapiro--Wilk test. Normally distributed differences were analysed using a paired-samples t-test; otherwise, the Wilcoxon signed-rank test was used. The difference scores for setup time, calibration time, SUS, NASA-TLX, calibration confidence, interaction breakdowns, valid-data yield, and the EDA baseline were approximately normally distributed. These measures were therefore analysed using paired-samples t-tests. The differences for gaze accuracy and gaze precision departed from normality and were compared with the Wilcoxon signed-rank test, which does not assume normally distributed differences. Because of the small sample size, exact p-values were calculated where possible instead of relying on approximations intended for larger samples.
 
 \hypertarget{step-2-reporting-the-effect-sizes}{%
 \paragraph{4.6.1.2 Step 2: Reporting the effect sizes}\label{step-2-reporting-the-effect-sizes}}
 
-An effect size and its 95\% confidence interval are reported alongside every test: Cohen\textquotesingle s dz for the paired t-tests, and the matched-pairs rank-biserial correlation for the Wilcoxon tests. These are given more interpretive weight than the significance decision, because with twelve participants the estimated size of an effect is more informative than a binary verdict at a corrected threshold. In practical terms, a measure showing a large effect that falls short of its family-wise threshold (as is the case for calibration time and gaze precision) is not read as a null result, but as a substantial difference that a conservative correction and a small sample leave short of the adjusted threshold.
+An effect size and its 95\% confidence interval are reported for each test: Cohen's (d\_z) for paired-samples t-tests and matched-pairs rank-biserial correlation for Wilcoxon signed-rank tests. These estimates are considered alongside the significance tests because, with only twelve participants, a binary decision based on the corrected significance threshold provides limited information about the magnitude and uncertainty of an effect. Accordingly, large estimated effects that do not meet the family-wise threshold, such as those for calibration time and gaze precision, are interpreted as potentially meaningful differences that remain statistically uncertain because of the small sample and conservative correction.
 
 \hypertarget{step-3-analysing-the-binary-outcome-using-mcnemars-test}{%
 \paragraph{4.6.1.3 Step 3: Analysing the binary outcome using McNemar's test}\label{step-3-analysing-the-binary-outcome-using-mcnemars-test}}
 
-One measure, first-pass calibration success, could not be analysed with the tests above because it is not a score but a paired yes-or-no outcome: in each condition, a participant\textquotesingle s calibration either passed validation on the first attempt or it did not. The standard test for this situation is McNemar\textquotesingle s test. Its logic is simple: participants with the same outcome in both conditions carry no information about a difference, so the test looks only at the participants whose outcome changed between conditions and asks whether those changes lean in one direction. Because only a handful of participants changed outcome, the result is reported together with those underlying counts, so the pattern behind the statistic remains visible.
+One measure, first-pass calibration success, could not be analysed with the tests above because it is not a score but a paired yes-or-no outcome: in each condition, a participant\textquotesingle s calibration either passed validation on the first attempt or it did not. The standard test for this situation is McNemar\textquotesingle s test. The test considers only participants whose outcome differed between conditions and examines whether more participants changed from failure to success than from success to failure. Because only a small number of participants showed such a change, the corresponding counts are reported alongside the test result to make the underlying pattern transparent.
 
-\Needspace{26\baselineskip}
+\Needspace{24\baselineskip}
 \hypertarget{step-4-controlling-for-multiple-comparisons}{%
 \paragraph{4.6.1.4 Step 4: Controlling for multiple comparisons}\label{step-4-controlling-for-multiple-comparisons}}
 
-Since the study tests several hypotheses mapping to their own distinct research question, the analysis applies a Bonferroni correction within each hypothesis family, as opposed to applying it across the whole set of tests. Correcting across every measure at once would treat conceptually distinct questions like setup speed, workload, usability, breakdowns, and calibration quality all as a single family, and at this sample size would remove almost all statistical power. Correcting within each hypothesis keeps the correction meaningful while respecting that each hypothesis tests a different construct. Table 4.3 summarises the resulting families and their adjusted thresholds.
+A separate Bonferroni correction was applied to the tests belonging to each hypothesis. Tests of different constructs, such as setup time, workload, usability, interaction breakdowns, and calibration quality, were not combined into one correction family because they address different research questions. Applying one correction across all tests would therefore be unnecessarily strict and would reduce the likelihood of detecting genuine effects. Table 4.3 summarises the resulting families and their adjusted thresholds.
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1045}}
@@ -1728,19 +1736,21 @@ Descriptive only
 \phantomsection\addcontentsline{lot}{table}{\protect\numberline{4.3}Hypothesis families for the Bonferroni correction.}%
 \textbf{Table 4.3} Hypothesis families for the Bonferroni correction. The confirmatory tests in each family and the per-family adjusted significance threshold.
 
-Calibration confidence and the mean EDA baseline are, respectively, a secondary measure and a comparability check. Neither is tied to a hypothesis, so both are reported descriptively and sit outside the corrected confirmatory analysis.
+Calibration confidence was included as a secondary outcome, while the mean EDA baseline was used to assess comparability between conditions. Because neither measure was linked to a predefined hypothesis, both were analysed descriptively and excluded from the multiple-comparison correction applied to the confirmatory tests.
 
 \hypertarget{the-interpretive-stance-on-h5}{%
 \paragraph{4.6.1.5 The interpretive stance on H5}\label{the-interpretive-stance-on-h5}}
 
-Hypothesis H5 requires a specific note, because it concerns whether calibration quality differs between the two workflows, rather than predicting a straightforward advantage for one. The same Tobii Core engine performs the calibration in both conditions, and Sensa only scores the result. Gaze accuracy and valid data yield were therefore expected to be similar between conditions by design. Both measures are still tested within the four-dimension H5 family, alongside gaze precision and first-pass success. However, because they are expected to be comparable by design, closely similar values across conditions are read as consistent with that expectation and not as demonstrated equivalence.
+H5 concerns whether calibration quality differs between the two workflows rather than predicting that either workflow will perform better. Because both conditions use the same Tobii Core calibration engine and Sensa only evaluates the resulting calibration, gaze accuracy and valid data yield were expected to be similar by design. Similar results on these measures are therefore interpreted as consistent with this expectation, but not as evidence of statistical equivalence.
 
-That distinction is deliberate. Demonstrating statistical equivalence would require a formal equivalence procedure, such as two one-sided tests, and a sample large enough to power it. This study has neither, and claiming equivalence from twelve participants would overstate what the data can support. Any observed difference on the H5 measures, in either direction, is therefore examined for its interval, direction and magnitude rather than read from a p-value alone. The importance of this stance is illustrated by the results themselves: one calibration-quality measure, gaze precision, did differ between conditions, and treating a non-significant corrected result as proof of equivalence would have obscured that. First-pass calibration success is the one first-attempt outcome on which the workflows could plausibly diverge, and it is tested with McNemar\textquotesingle s test as described above.
+Establishing equivalence would require a formal procedure, such as two one-sided tests, with an adequately powered sample. With only twelve participants, this study cannot support such a claim. The H5 outcomes are therefore interpreted based on the direction, magnitude, and confidence interval of the observed differences rather than on statistical significance alone. This distinction is important because gaze precision showed a substantial difference between conditions, although it did not meet the corrected significance threshold. Treating that result as evidence of equivalence would therefore be misleading.
+
+First-pass calibration success is the H5 outcome most likely to be influenced by the workflow itself and is analysed using McNemar's test, as described above
 
 \hypertarget{the-eda-comparability-check}{%
 \paragraph{4.6.1.6 The EDA comparability check}\label{the-eda-comparability-check}}
 
-Finally, the mean EDA value serves only as a comparability check and not as a scored quality dimension. It is reported descriptively, as the mean and standard deviation per condition, to confirm that the resting baseline signal and its microsiemens conversion behaved consistently across the two conditions. Where a paired test accompanies these descriptives, it is read only as a check on the consistency of acquisition and conversion, not as a test of a study hypothesis.
+Finally, mean EDA is included only to assess comparability between conditions and is not treated as a study outcome. The mean and standard deviation are reported for each condition to verify that the resting baseline signal and its conversion to microsiemens were consistent across workflows. Any accompanying paired test is interpreted solely as an acquisition and conversion check, not as a test of a study hypothesis.
 
 \hypertarget{qualitative-analysis}{%
 \subsubsection{4.6.2 Qualitative Analysis}\label{qualitative-analysis}}
@@ -1750,21 +1760,27 @@ The qualitative data consisted of the written open-ended post-task responses fro
 \hypertarget{coding-approach}{%
 \paragraph{\texorpdfstring{4.6.2.1 Coding approach }{4.6.2.1 Coding approach }}\label{coding-approach}}
 
-Coding followed a hybrid deductive-inductive approach. Before the analysis, an initial set of deductive codes was defined from the study\textquotesingle s research focus, as seen in Appendix J Table J.1. These were derived from three sources: the five predefined interaction-breakdown categories (repeated calibration attempts, incorrect sequence execution, repeated baseline recording, hesitation periods, and requests for clarification), the study\textquotesingle s usability constructs (perceived workload, perceived usability, and calibration confidence), and the usability heuristics applied in the system design, principally visibility of system status, guidance and instructions, and error recovery. These codes were used to identify whether participants\textquotesingle{} responses and observed problems related to the issues the study was designed to examine, and gave twelve deductive codes in total.
+The written responses and observation notes were coded using a hybrid deductive-inductive approach.
+
+Before the analysis, an initial set of twelve deductive codes was defined from the study\textquotesingle s research focus, as shown in Appendix J, Table J.1. These were derived from three sources. The first was the study\textquotesingle s interaction-breakdown categories, which gave codes for uncertainty about task state, needing help or external reference, sequence or step errors, and repeated calibration or baseline recording (D1 to D4). The second being the study\textquotesingle s usability constructs, which gave codes for ease of use, complexity or overwhelm, calibration confidence, first-time difficulty and learnability, and integration versus tool-switching (D5 to D7, D9, D10). The third were the Nielsen usability heuristics applied in the system design, which gave codes for feedback and visibility of system status, instructions at the point of need, and error prevention and recovery (D8, D11, D12). Together these gave twelve deductive codes, used to identify whether participants\textquotesingle{} responses and observed problems related to the issues the study was designed to examine.
 
 During the analysis, eighteen additional inductive codes were developed directly from the participants\textquotesingle{} responses and the observation notes, as seen in Table J.2. These captured experiences not covered by the initial frame, including reassurance drawn from visible feedback, confusion regarding bluetooth connectivity, anxiety caused by visible readings that looked wrong, uncertainty about sensor placement, the effort of switching between disconnected tools, and the effect of growing familiarity across the two sessions. The deductive and inductive codes together formed a working codebook of thirty codes, reproduced in full in Appendix J.
 
 \hypertarget{analytic-procedure}{%
 \paragraph{4.6.2.2 Analytic procedure}\label{analytic-procedure}}
 
-The analysis proceeded through the six phases described by Braun and Clarke, applied to this corpus as follows. Familiarisation involved repeated reading of all 24 response sets together with the accompanying observation notes. In the coding phase, each meaningful segment of text was assigned to one or more of the thirty codes, so that a single response could carry several codes where it expressed more than one experience. In searching for themes, the thirty codes were examined for shared underlying patterns and grouped into candidate themes. These candidates were then reviewed against the full set of coded extracts, during which codes were relocated, merged, or retained; one candidate concerning familiarity and order was kept as an interpretive rather than an experiential theme. Defining and naming produced five final themes: confidence grounded in system feedback; the burden of coordinating fragmented tools; guidance from the system; the limits of guidance; and familiarity and order effects. The final phase, producing the account, is presented in Chapter 5.2. The complete coding, showing every coded extract, the thirty codes, and their consolidation into the five themes, is provided in Appendix J so that the analysis can be inspected in full rather than through selected examples.
+The analysis followed Braun and Clarke's six-phase process (2006). Familiarisation involved repeatedly reading the 24 condition-specific response sets and their accompanying observation notes. During coding, each meaningful segment was assigned to one or more of the thirty codes, allowing responses that reflected several experiences to receive multiple codes.
+
+The codes were then examined for broader patterns and grouped into candidate themes. These themes were reviewed against the coded extracts and the dataset as a whole, with codes merged, reassigned, or retained where necessary. One candidate theme concerning familiarity and condition order was retained as an interpretive theme because it reflected the possible influence of the study procedure rather than a direct experience of either workflow.
+
+This process produced five final themes: confidence grounded in system feedback; the burden of coordinating fragmented tools; guidance from the system; the limits of guidance; and familiarity and order effects. The resulting thematic account is presented in Cahapter 5.2. Appendix J documents the coded extracts, the thirty codes, and their consolidation into the five themes.
 
 \hypertarget{coder-and-reflexivity}{%
 \paragraph{4.6.2.3 Coder and reflexivity}\label{coder-and-reflexivity}}
 
 The coding and thematic analysis were carried out by the author, consistent with the single-experimenter design of the study, and the author made all interpretive decisions. An AI assistant (Claude) was used to support the process by helping to organise and document the codes and to surface candidate groupings for the author to evaluate; all codes, themes, and interpretations were reviewed and determined by the author. In keeping with the reflexive, rather than coding-reliability, tradition of thematic analysis, the emphasis is on the transparency of the author\textquotesingle s interpretation, evidenced by the full coding in Appendix J, rather than on inter-coder agreement statistics.
 
-As the designer of the unified onboarding and calibration workflow under evaluation, the author held a direct stake in the system being studied, which a reflexive analysis requires be acknowledged rather than set aside. This dual role carried a risk of reading participants\textquotesingle{} accounts more favourably towards the unified workflow. To counter this, the coding deliberately identified and retained the unified workflow\textquotesingle s shortcomings alongside its strengths, so that residual difficulties such as the sensor-placement ambiguity, the uninterpretable EDA values, and the cases in which visible feedback lowered rather than raised confidence appear in the themes as fully as the positive accounts. The complete coding in Appendix J allows the balance of this interpretation to be judged directly.
+As the designer of the unified onboarding and calibration workflow, the author was not a neutral observer but had a vested interest in the system under evaluation. This dual role therefore required explicit reflexive consideration, particularly because it created a risk of interpreting participants' accounts more favourably towards the unified workflow. To manage the risk of interpreting the findings too favourably, the analysis systematically retained evidence that both supported and challenged the expected benefits of the unified workflow. This does not eliminate the author's potential bias, because coding and theme development still involve interpretive judgement. However, retaining contradictory and negative cases reduces the risk of selectively focusing on evidence that confirms the system's advantages. Accordingly, limitations such as ambiguity in sensor placement, unclear EDA values, and instances in which visible feedback reduced rather than increased confidence were included in the coding and reflected in the final themes. The complete coding in Appendix J provides an audit trail through which readers can assess whether favourable and unfavourable evidence were considered consistently.
 
 \hypertarget{integration-with-the-quantitative-findings}{%
 \paragraph{4.6.2.4 Integration with the quantitative findings}\label{integration-with-the-quantitative-findings}}
@@ -1996,15 +2012,17 @@ Descriptively, every measure except gaze precision moved in the direction favour
 
 Setup time was descriptively shorter in the unified condition (M = 998.4 s, SD = 193.4) than in the fragmented condition (M = 1226.0 s, SD = 292.7). As the normality assumption was met (Table 5.2), a paired-samples t-test was conducted. The difference was not statistically significant, t(11) = 2.03, p = .067, dz = 0.59, 95\% CI {[}-0.04, 1.19{]}. Although the estimated effect was moderate, the confidence interval included zero, indicating considerable uncertainty and that the data remain compatible with no effect
 
-\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image31.png}\end{center}
+\begin{figure}[H]
+\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image42.png}\end{center}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{5.1}Setup time by condition.}%
-\textbf{Figure 5.1 S}etup time by condition. Raincloud plot showing the distribution, the box (median and interquartile range), and the individual participant values (N = 12) for the fragmented and unified conditions. Lower values indicate faster setup.
+\textbf{Figure 5.1} Setup time by condition. Raincloud plot showing the distribution, the box (median and interquartile range), and the individual participant values (N = 12) for the fragmented and unified conditions. Lower values indicate faster setup.
+\end{figure}
 
 Calibration time was shorter in the unified condition (M = 666.6 s, SD = 187.5) than in the fragmented condition (M = 925.9 s, SD = 262.2). As the normality assumption was met (Table 5.2), a paired-samples t-test was conducted. The difference was significant at the conventional α = .05 level, t(11) = 2.47, p = .031, dz = 0.71, 95\% CI {[}0.06, 1.34{]}, but did not meet the Bonferroni-adjusted threshold of α = .025 for the H1 family. The confidence interval excluding zero suggests a non-zero estimated effect, while the corrected hypothesis test remains non-significant. As shown in Figure 5.2, the reduction was fairly consistent in direction across participants.
 
 \begin{figure}[H]
-\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image13.png}\end{center}
+\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image11.png}\end{center}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{5.2}Calibration time by condition.}%
 \textbf{Figure 5.2} Calibration time by condition. Raincloud plot (N = 12) for the fragmented and unified conditions. Lower values indicate faster calibration.
@@ -2018,7 +2036,7 @@ H1 predicted that participants would complete both setup and calibration signifi
 Perceived workload was significantly lower in the unified condition (M = 22.22, SD = 18.83) than in the fragmented condition (M = 43.61, SD = 20.01), t(11) = 3.13, p = .010, dz = 0.90, 95\% CI {[}0.21, 1.57{]}. The effect was large and its confidence interval excluded zero. The distribution of scores by condition is shown in Figure 5.3. H2 is supported.
 
 \begin{figure}[H]
-\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image18.png}\end{center}
+\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image8.png}\end{center}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{5.3}NASA-TLX workload by condition.}%
 \textbf{Figure 5.3} NASA-TLX workload by condition. Raincloud plot (N = 12) for the fragmented and unified conditions. Higher values indicate greater perceived workload.
@@ -2030,7 +2048,7 @@ Perceived workload was significantly lower in the unified condition (M = 22.22, 
 Perceived usability was significantly higher in the unified condition (M = 73.33, SD = 20.57) than in the fragmented condition (M = 46.46, SD = 30.22), t(11) = -3.21, p = .008, dz = -0.93, 95\% CI {[}-1.59, -0.23{]}. The effect was large and its confidence interval excluded zero. In absolute terms, the fragmented workflow scored below the commonly cited SUS benchmark of approximately 68 (Bangor et al., 2008) while the unified workflow scored above it. The distribution of scores by condition is shown in Figure 5.4. H3 is supported.
 
 \begin{figure}[H]
-\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image24.png}\end{center}
+\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image20.png}\end{center}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{5.4}SUS scores by condition.}%
 \textbf{Figure 5.4} SUS scores by condition. Raincloud plot (N = 12) for the fragmented and unified conditions. Higher values indicate greater perceived usability.
@@ -2042,7 +2060,7 @@ Perceived usability was significantly higher in the unified condition (M = 73.33
 Calibration confidence is a secondary measure not tied to any of the five hypotheses. Calibration confidence was slightly higher in the unified condition (M = 5.75, SD = 1.42) than in the fragmented condition (M = 5.08, SD = 2.02). However, this difference was not statistically significant, t(11) = -0.82, p = .428, dz = -0.24, 95\% CI {[}-0.81, 0.34{]}. The estimated effect was small, and the confidence interval included zero, indicating substantial uncertainty about both the direction and magnitude of the effect. As illustrated in Figure 5.5, participant-level changes varied in both directions. Calibration confidence is therefore interpreted as broadly similar across the two conditions, while the individual differences are examined further in the qualitative findings in Chapter 5.2.1.
 
 \begin{figure}[H]
-\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image1.png}\end{center}
+\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image39.png}\end{center}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{5.5}Self-rated calibration confidence by condition.}%
 \textbf{Figure 5.5} Self-rated calibration confidence by condition. Raincloud plot (N = 12) for the fragmented and unified conditions, on the 1 to 7 rating scale. Higher values indicate greater confidence. The overlap between conditions reflects the two-directional pattern discussed in Chapter 5.2.1.
@@ -2054,7 +2072,7 @@ Calibration confidence is a secondary measure not tied to any of the five hypoth
 Interaction breakdowns were significantly fewer in the unified condition (M = 8.17, SD = 4.06) than in the fragmented condition (M = 20.00, SD = 4.61), t(11) = 6.67, p \textless{} .001, dz = 1.93, 95\% CI {[}0.94, 2.89{]}. This was the largest effect in the study. As shown in Figure 5.6, the reduction was near-universal at the participant level, with almost every paired line sloping downward. H4 is supported
 
 \begin{figure}[H]
-\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image3.png}\end{center}
+\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image7.png}\end{center}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{5.6}Interaction breakdowns by condition.}%
 \textbf{Figure 5.6} Interaction breakdowns by condition. Raincloud plot (N = 12) for the fragmented and unified conditions. Higher values indicate more observed breakdowns.
@@ -2166,7 +2184,7 @@ H5 held that the unified workflow would achieve calibration quality comparable t
 \textbf{Gaze accuracy:} The difference scores departed from normality (Table 5.2), so a Wilcoxon signed-rank test was conducted. Gaze accuracy did not differ significantly between the fragmented condition (M = 2.03 degrees, SD = 2.25) and the unified condition (M = 1.28 degrees, SD = 0.66), W = 51.5, p = .346, r = 0.32, 95\% CI {[}-0.30, 0.75{]}. The departure from normality was driven by a single elevated fragmented-condition value (P01, 9.07 degrees), visible in Figure 5.7; the rank-based test limits its influence, and the value is discussed as an instrument limitation in Chapter 6.8. The confidence interval was wide, remaining compatible with effects in either direction, and a non-significant result does not establish equivalence; the finding is therefore read as consistent with the expectation of similar accuracy under the shared calibration engine, not as demonstrated equivalence (Chapter 4.6.1.5).
 
 \begin{figure}[H]
-\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image27.png}\end{center}
+\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image24.png}\end{center}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{5.7}Gaze accuracy by condition.}%
 \textbf{Figure 5.7} Gaze accuracy by condition. Raincloud plot (N = 12) for the fragmented and unified conditions, in degrees of visual angle. Higher values indicate poorer accuracy. The elevated fragmented-condition point is the P01 outlier noted in the text.
@@ -2175,7 +2193,7 @@ H5 held that the unified workflow would achieve calibration quality comparable t
 \textbf{Gaze precision:} The difference scores also departed from normality (Table 5.2), so a Wilcoxon signed-rank test was conducted. Gaze precision was poorer in the unified condition (M = 1.29 degrees, SD = 1.27; higher values indicate poorer precision) than in the fragmented condition (M = 0.65 degrees, SD = 0.33), W = 8.5, p = .019, r = -0.78, 95\% CI {[}-0.93, -0.39{]}. The difference was significant at the conventional α = .05 level but did not meet the Bonferroni-adjusted threshold of α = .0125 for the H5 family. As shown in Figure 5.8, the unified-condition distribution contains two values well above the rest (P05 and P11). Possible reasons for this difference are examined in the Discussion (Chapter 6.5).
 
 \begin{figure}[H]
-\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image10.png}\end{center}
+\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image38.png}\end{center}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{5.8}Gaze precision by condition.}%
 \textbf{Figure 5.8} Gaze precision by condition. Raincloud plot (N = 12) for the fragmented and unified conditions, in degrees of visual angle. Higher values indicate poorer precision. The two elevated unified-condition points are P05 and P11, the two unified first-pass failures.
@@ -2184,7 +2202,7 @@ H5 held that the unified workflow would achieve calibration quality comparable t
 \textbf{Valid data yield:} Valid data yield is the percentage of gaze samples collected during the five-point validation procedure that contained a valid binocular gaze estimate (Chapter 4.5.4). Yield was high in both conditions, meaning that almost all recorded gaze samples were usable (fragmented M = 99.54\%, SD = 1.13; unified M = 99.21\%, SD = 1.21). No significant difference was detected, t(11) = 0.70, p = .499, dz = 0.20, 95\% CI {[}-0.37, 0.77{]}. As shown in Figure 5.9, most values in both conditions lie between 98 and 100 percent, so the distributions are compressed against the upper bound of the scale.
 
 \begin{figure}[H]
-\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image22.png}\end{center}
+\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image43.png}\end{center}
 
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{5.9}Valid data yield by condition.}%
 \textbf{Figure 5.9} Valid data yield by condition. Raincloud plot (N = 12) showing the percentage of valid gaze samples for the fragmented and unified conditions. Higher values indicate greater yield.
@@ -2250,7 +2268,7 @@ After Bonferroni correction across the four-test family, none of the four dimens
 
 The mean resting EDA baseline was recorded to check that participants\textquotesingle{} resting physiological starting levels, and the signal acquisition and microsiemens conversion producing them, were consistent across the two workflows (Chapter 4.5.5). It is not a scored calibration-quality outcome and is reported descriptively, with the accompanying paired test read only as a consistency check (Chapter 4.6.1.6). The two conditions showed similar baseline values (fragmented M = 4.53 uS, SD = 3.20; unified M = 5.56 uS, SD = 4.28), and the paired test was not significant, t(11) = -1.88, p = .087, dz = -0.54, 95\% CI {[}-1.14, 0.08{]}; the confidence interval did not provide clear evidence of a difference between the two conditions. The distribution of baseline values by condition is shown in Figure 5.10.
 
-\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image4.png}\end{center}
+\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image15.png}\end{center}
 \phantomsection\addcontentsline{lof}{figure}{\protect\numberline{5.10}Mean resting EDA baseline by condition.}%
 \textbf{Figure 5.10} Mean resting EDA baseline by condition. Raincloud plot (N = 12) in microsiemens for the fragmented and unified conditions.
 
@@ -4991,34 +5009,65 @@ P12 & 2.66 & 3.59 \\
 \phantomsection\addcontentsline{lot}{table}{\protect\numberline{K.4}Per-participant mean resting EDA baseline.}%
 \textbf{Table K.4} Per-participant mean resting EDA baseline. Mean resting electrodermal activity in microsiemens for each participant (N = 12) in both conditions.
 
-\clearpage
-\phantomsection\addcontentsline{toc}{section}{Information on the use of AI-based tools}
-\section*{Information on the use of AI-based tools}
+\textbf{Appendix L: Screenshots of Fragmented workflow tools}
 
-In accordance with the Guidelines on How to Handle AI in Teaching and Learning at Rhine-Waal University of Applied Sciences (November 2024), this section discloses all uses of AI tools as aids in this thesis. In each case the author defined the objectives, verified the outputs, and retains full responsibility for the work. No AI tool generated the research data, statistical results, or findings. The quantitative analysis was performed by the author in JASP, and the qualitative data are participants' own written responses, analysed by the author.
+This appendix presents screenshots of the three tools used in the fragmented condition, shown as participants encountered them: the Tobii Core eye-tracking software (Figures L.1 to L.6), the OpenSignals biosignal software (Figures L.7 to L.10), and the JupyterLab script used to compute the mean EDA value (Figures L.11 and L.12). They are included to make the fragmented workflow concrete alongside the interface figures shown for the unified workflow in Chapter 3.
+
+\begin{figure}[H]
+\begin{center}\includegraphics[width=0.62\linewidth]{media/media/image17.png}\end{center}
+
+\phantomsection\addcontentsline{lof}{figure}{\protect\numberline{L.1}Tobii Core sidetray.}%
+\textbf{Figure L.1} Tobii Core sidetray. The user is shown options to toggle on/off the eye tracker, or navigate to Games and Experience, Interactions, Display Setup, Gaze Trace, and option to set up a new profile by clicking on the left arrow at the bottom.
+\end{figure}
+
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image40.png}\textbf{Figure L.2} Tobii Core expanded sidetray. The user is shown the option to Create a New Profile or use an existing one.
+
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image26.png}\textbf{Figure L.3} Tobii Core calibration sequence Step 1. Live eye detection is shown and communicated to the user.
+
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image23.png}\textbf{Figure L.4} Tobii Core calibration sequence Step 2. The user is shown instructions ``Look at each dot until it explodes'' about what to do in the next step.
+
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image10.png}\textbf{Figure L.5} Tobii Core calibration sequence Step 3. The user is shown 3 dots, which explode when the user focuses on them. This sequence is conducted twice.
+
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image41.png}\textbf{Figure L.6} Tobii Core validation. Test and Improve calibration opens a qualitative eye tracking validation screen. The user is presented with a 9 point grid and can trace their gaze across the screen with a blue pointer, and choose to track either their left, right, or both eyes.
+
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image32.png}\textbf{Figure L.7} OpenSignals Main Screen . The user is shown an interface with buttons for record, play, save, export, hub status (green for enabled, red for disabled), settings, cart and help.
+
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image13.png}\textbf{Figure L.8} OpenSignals Live Hub Status Screen . The user is shown the list of known and new items found, along with a status card depicting the MAC and Physical address of the connected hardware. The user can choose to enable or disable the connection as well.
+
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image21.png}\textbf{Figure L.9} OpenSignals Recording Screen . The user is shown a live waveform view with a time timeline while the recording is being conducted. The waveform view is customisable (zoom in/zoom out) and user can halt the recording by clicking on the stop button on bottom right.
+
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image2.png}\textbf{Figure L.10} OpenSignals Save modal . The user is shown a popup modal which allows them to rename the file, select its save location, change the extension and add description.
+
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image33.png}\textbf{Figure L.11} JupyterLab with Mean EDA Skin Conductance Pipeline. The user is shown a script with instructions on how to run it. Pressing the `play' button executes one chunk of the script.
+
+\includegraphics[max width=\linewidth,max totalheight=0.78\textheight]{media/media/image19.png}\textbf{Figure L.12} JupyterLab with computed Mean EDA. After running the script, the user is shown a skin conductance over time graph. This is accompanied by the computed Mean EDA value, utilizing a transfer function.
+
+\textbf{Appendix M: Google Doc Study Documentation template}
+
+{[}add pdf{]}
+
+\textbf{Information on the use of AI-based tools}
+
+In accordance with the Guidelines on How to Handle AI in Teaching and Learning at Rhine-Waal University of Applied Sciences (November 2024), this section discloses all uses of AI tools as aids in this thesis. In each case the author defined the objectives, verified the outputs, and retains full responsibility for the work. No AI tool generated the research data, statistical results, or findings. The quantitative analysis was performed by the author in JASP, and the qualitative data are participants\textquotesingle{} own written responses, analysed by the author.
 
 \textbf{Consensus (Consensus NLP Inc.)} was used as an aid for concept-based literature searching (Chapter 2.1). All results were screened, read, and selected by the author. No output was reproduced without verification against the primary source.
 
-\textbf{Claude Code (Anthropic)} was used as an aid for pair-programming of the author's own contributions to the prototype. These were the eye-tracking validation layer and the electrodermal-activity signal-quality indicators within the onboarding and calibration workflow (Chapters 3.3 and 3.3.4.4). The methods were designed by the author and verified against the literature and the hardware output. The tool assisted with code, not with method design.
+\textbf{Claude Code (Anthropic)} was used as an aid for pair-programming of the author\textquotesingle s own contributions to the prototype. These were the eye-tracking validation layer and the electrodermal-activity signal-quality indicators within the onboarding and calibration workflow (Chapters 3.3 and 3.3.4.4). The methods were designed by the author and verified against the literature and the hardware output. The tool assisted with code, not with method design.
 
-\textbf{Claude (Anthropic)} was used as an aid during the qualitative analysis (reflexive thematic analysis). It helped organise and document the codes and surface candidate groupings for the author's consideration (Chapter 4.6.2.3). The author generated the codes and themes through their own reflexive engagement with the data and made all final decisions. Where the tool suggested a grouping or framing, the author evaluated it, accepted or rejected it, and reworked it rather than adopting it as given.
+\textbf{Claude (Anthropic)} was used as an aid during the qualitative analysis (reflexive thematic analysis). It helped organise and document the codes and surface candidate groupings for the author\textquotesingle s consideration (Chapter 4.6.2.3). The author generated the codes and themes through their own reflexive engagement with the data and made all final decisions. Where the tool suggested a grouping or framing, the author evaluated it, accepted or rejected it, and reworked it rather than adopting it as given.
 
-\textbf{Claude (Anthropic)} was also used as an aid for editing and revising the text. This included assistance in restructuring passages for clarity, reducing repetition, and checking APA 7 formatting and cross-chapter consistency. Where the tool helped draft specific passages, these were guided, reviewed, revised, and integrated by the author. The content, arguments, results, and conclusions are the author's own.
+\textbf{Claude (Anthropic)} was also used as an aid for editing and revising the text. This included assistance in restructuring passages for clarity, reducing repetition, and checking APA 7 formatting and cross-chapter consistency. Where the tool helped draft specific passages, these were guided, reviewed, revised, and integrated by the author. The content, arguments, results, and conclusions are the author\textquotesingle s own.
 
 The tools were used interactively throughout the project rather than through a fixed set of prompts.
 
-\clearpage
-\phantomsection\addcontentsline{toc}{section}{Declaration}
-\section*{Declaration}
+\textbf{Declaration}
 
 I, Daniyal Admany, hereby declare that the work submitted is the result of my own independent work. No sources or aids other than those explicitly mentioned have been used in its preparation. All materials, ideas, and statements taken from the works of others have been properly cited and acknowledged in the reference list. Direct quotations have been clearly indicated as such, and all other references have been appropriately identified according to their relevance and contribution to this study.
 
 This work has neither been published nor submitted previously for evaluation in the same or substantially similar form.
 
-\vfill
-\noindent Daniyal Admany
-\\[0.4cm]
-\noindent Duisburg, 15.07.2026
-\vspace{1cm}
+Daniyal Admany
+
+Duisburg, 15.07.2026
 
 \end{document}
