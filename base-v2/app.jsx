@@ -71,13 +71,6 @@ function TopBar() {
       <HexLogo size={38}/>
       <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
         <button style={{
-          background: "#a78bfa", color: "#0d0d0d",
-          border: 0, borderRadius: 8, padding: "7px 12px",
-          fontFamily: "inherit", fontWeight: 800, fontSize: 13,
-          letterSpacing: "-0.01em", cursor: "pointer",
-          marginRight: 6,
-        }}>Get PRO</button>
-        <button style={{
           background: "transparent", border: 0, color: "#fff",
           padding: 8, cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center",
@@ -410,7 +403,7 @@ function CardBriefing({ variant = "won" }) {
     roleMins:  "90 minutes",
     heroValue: "3",
     heroLabel: "goals",
-    narrative: "Your first hat trick of the season! That's 9 goals for the year, joint top in your league.",
+    narrative: <><span style={{ fontWeight: 700 }}>Your first hat trick of the season!</span> That's 9 goals for the year, joint top in your league.</>,
   };
 
   return (
@@ -419,7 +412,7 @@ function CardBriefing({ variant = "won" }) {
       subheader={data.sub}
       narrativeIcon={<Pic.ball size={20}/>}
       narrative={data.narrative}
-      cta="View match details"
+      cta="Match recap"
       pulse={pulse}
       traceDelay={variant === "won" ? "3500ms" : "0ms"}
     >
@@ -519,7 +512,7 @@ function CardForm() {
             }}>{label}</div>
             <div style={{
               marginTop: 2,
-              fontWeight: 900, fontSize: 20, color: "var(--fg)",
+              fontWeight: 900, fontSize: 28, color: "var(--fg)",
               letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums",
             }}>{value}{sub && <span style={{ fontWeight: 500, color: "var(--fg-muted)", fontSize: 13 }}> {sub}</span>}</div>
           </div>
@@ -547,35 +540,38 @@ function CardStanding() {
       </div>
       <div style={{
         marginTop: 10,
-        fontSize: 14, fontWeight: 500, color: "var(--fg)",
-        letterSpacing: "-0.01em",
-      }}>top scorer in your league</div>
+        display: "inline-flex", alignItems: "center", gap: 10,
+      }}>
+        <span style={{
+          fontSize: 14, fontWeight: 500, color: "var(--fg)",
+          letterSpacing: "-0.01em",
+        }}>top scorer in NSL Division One</span>
+        <span style={{ width: 1, height: 13, background: "var(--border)", display: "inline-block", flexShrink: 0 }}/>
+        <span style={{
+          fontSize: 12, fontWeight: 700, color: "var(--fg-muted)",
+          letterSpacing: "-0.01em",
+          display: "inline-flex", alignItems: "center", gap: 3,
+        }}>
+          <i className="ph ph-arrow-up" style={{ color: "var(--accent)", fontSize: 13 }}/>
+          <span style={{ color: "var(--accent)" }}>+3 places</span>
+        </span>
+      </div>
 
       <div style={{
         marginTop: 12, marginBottom: 10,
         height: 1, background: "var(--border)",
       }}/>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "space-between" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{
-            fontWeight: 900, fontSize: 24, color: "var(--fg)",
-            letterSpacing: "-0.03em",
-            fontVariantNumeric: "tabular-nums",
-          }}>9</div>
-          <div style={{
-            fontSize: 10, fontWeight: 700, color: "var(--fg-muted)",
-            letterSpacing: "0.16em", textTransform: "uppercase",
-            lineHeight: 1.3,
-          }}>goals<br/>this season</div>
-        </div>
-        <button style={{
-          background: "transparent", color: "var(--accent)",
-          border: "1px solid var(--accent)", borderRadius: 999, padding: "5px 11px",
-          fontFamily: "inherit", fontWeight: 700, fontSize: 11,
-          letterSpacing: "-0.01em", cursor: "pointer",
-          whiteSpace: "nowrap",
-        }}>View All Stats</button>
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{
+          fontWeight: 900, fontSize: 24, color: "var(--fg)",
+          letterSpacing: "-0.03em",
+          fontVariantNumeric: "tabular-nums",
+        }}>9</div>
+        <div style={{
+          fontSize: 10, fontWeight: 700, color: "var(--fg-muted)",
+          letterSpacing: "0.16em", textTransform: "uppercase",
+        }}>goals this season</div>
       </div>
     </CardShell>
   );
@@ -670,7 +666,6 @@ function CardMarket() {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
-  // Target ~18d 3h 23m 24s from "now"
   const targetRef = React.useRef(Date.now() + ((18*24 + 3)*3600 + 23*60 + 24) * 1000);
   const remaining = Math.max(0, targetRef.current - now);
   const days = Math.floor(remaining / 86400000);
@@ -680,7 +675,21 @@ function CardMarket() {
   const pad = n => String(n).padStart(2, "0");
   const countdown = `${pad(days)}:${pad(hrs)}:${pad(min)}:${pad(sec)}`;
 
-  const animatedValue = useCountUp(24300, 1400);
+  // Only start count-up when the card scrolls into view
+  const [visible, setVisible] = React.useState(false);
+  const cardRef = React.useRef(null);
+  React.useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.4 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const animatedValue = useCountUp(visible ? 24300 : 0, 1600);
   const formatted = Math.round(animatedValue).toLocaleString("en-GB");
 
   return (
@@ -696,7 +705,7 @@ function CardMarket() {
         marginTop: 10,
         display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap",
       }}>
-        <div style={{
+        <div ref={cardRef} style={{
           fontWeight: 900, fontSize: 32, color: "var(--fg)",
           letterSpacing: "-0.03em", lineHeight: 1,
           fontVariantNumeric: "tabular-nums",
@@ -833,11 +842,11 @@ function HeroCarousel({ briefingVariant }) {
 // ─────────────────────────────────────────────────────────────
 function QuickAccess() {
   const items = [
-    { key: "qa",     label: "Set up quick\naccess", Icon: Ic.bookmark, ghost: true },
-    { key: "table",  label: "League\nTable",        Icon: Ic.table },
-    { key: "refer",  label: "Refer a\nFriend",      Icon: Ic.refer },
-    { key: "team",   label: "Team\nArea",           Icon: Ic.team },
-    { key: "rank",   label: "League\nRankings",     Icon: Ic.trophy },
+    { key: "qa",    label: "Set up quick\naccess", ghost: true },
+    { key: "table", label: "League\nTable" },
+    { key: "refer", label: "Refer a\nFriend" },
+    { key: "team",  label: "Team\nArea" },
+    { key: "rank",  label: "League\nRankings" },
   ];
   return (
     <div className="h-scroll" style={{
@@ -846,28 +855,42 @@ function QuickAccess() {
       padding: "0 16px",
       scrollSnapType: "x mandatory",
     }}>
-      {items.map(({ key, label, Icon, ghost }) => (
+      {items.map(({ key, label, ghost }) => (
         <div key={key} style={{
           flex: "0 0 auto",
-          width: 96, height: 96,
+          width: 68, height: 48,
           background: ghost ? "transparent" : "var(--surface)",
           border: ghost ? "1px dashed var(--border)" : "1px solid var(--border)",
-          borderRadius: 12,
-          padding: "10px 12px",
-          display: "flex", flexDirection: "column", justifyContent: "space-between",
-          position: "relative",
+          borderRadius: 10,
+          padding: "7px 10px",
+          display: "flex", flexDirection: "column",
+          justifyContent: ghost ? "center" : "space-between",
+          alignItems: ghost ? "center" : "flex-start",
           scrollSnapAlign: "start",
           cursor: "pointer",
         }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <Icon size={20} stroke="#ffffff"/>
-            {!ghost && <Ic.arrowUR size={14} stroke="var(--fg-muted)" sw={1.8}/>}
-          </div>
-          <div style={{
-            fontSize: 12, fontWeight: 700, color: "var(--fg)",
-            lineHeight: 1.2, whiteSpace: "pre-line",
-            letterSpacing: "-0.01em",
-          }}>{label}</div>
+          {ghost ? (
+            <>
+              <i className="ph ph-bookmark-simple" style={{ fontSize: 15, color: "#fff" }}/>
+              <div style={{
+                marginTop: 4,
+                fontSize: 10, fontWeight: 700, color: "var(--fg)",
+                lineHeight: 1.2, whiteSpace: "pre-line",
+                letterSpacing: "-0.01em", textAlign: "center",
+              }}>{label}</div>
+            </>
+          ) : (
+            <>
+              <div style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
+                <Ic.arrowUR size={12} stroke="var(--fg-muted)" sw={1.8}/>
+              </div>
+              <div style={{
+                fontSize: 10, fontWeight: 700, color: "var(--fg)",
+                lineHeight: 1.2, whiteSpace: "pre-line",
+                letterSpacing: "-0.01em",
+              }}>{label}</div>
+            </>
+          )}
         </div>
       ))}
     </div>
